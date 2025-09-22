@@ -1,0 +1,35 @@
+{
+  "name": "Buku Saku Pelatihan",
+  "short_name": "Buku Saku Pelatihan",
+  "start_url": "login.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fda085",
+  "theme_color": "#fda085",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Jadwal Pelatihan",
+      "short_name": "Timeframe",
+      "url": "/timeframe.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

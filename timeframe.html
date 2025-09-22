@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Pelatihan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#fda085">
+  <style>
+    body {
+      background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+      min-height: 100vh;
+    }
+
+    .dashboard-container {
+      max-width: 900px;
+      margin: 10px auto;
+      padding: 28px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fda085 60%, #f6d365 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: #fff;
+      margin-right: 16px;
+      box-shadow: 0 2px 8px rgba(253,160,133,0.18);
+    }
+    .dashboard-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f76b1c;
+      letter-spacing: 1px;
+    }
+
+    .admin-desc, .text-muted { color: #666; }
+
+    .form-row { gap:12px; display:flex; flex-wrap:wrap; margin-bottom:8px; }
+    .form-row > * { flex:1 1 200px; }
+
+    .list-item {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px;
+      border-radius:8px;
+      background:#f8f9fa;
+      margin-bottom:8px;
+    }
+
+    .btn-back {
+      background: linear-gradient(90deg, #f76b1c 60%, #fda085 100%);
+      color: #fff;
+      margin-top: 18px;
+      padding: 10px 36px;
+    }
+    .btn-back:hover {
+      background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
+      color: #fff;
+    }
+
+    .offcanvas {
+      background: #fff8f3;
+      border-top-right-radius: 18px;
+      border-bottom-right-radius: 18px;
+      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
+    }
+    .offcanvas-title {
+      color: #f76b1c;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .nav-link {
+      font-weight: 500;
+      color: #f76b1c;
+      border-radius: 8px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
+      color: #f76b1c;
+    }
+    @media (max-width: 900px) {
+      .dashboard-container {
+        padding: 18px 6px 16px 6px;
+        max-width: 90vw;
+      }
+      .dashboard-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+      }
+      .dashboard-title {
+        text-align: center;
+        width: 100%;
+      }
+      .avatar {
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
+      .offcanvas.offcanvas-start{
+        width: 82%;
+        max-width: 360px;
+        left: 0;
+        top: 0;
+        height: 100%;
+        box-shadow: 2px 8px 40px rgba(0,0,0,0.12);
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+        font-size: 1.4rem;
+      }
+      .offcanvas-backdrop {
+        background-color: rgba(0,0,0,0.35);
+      }
+      .list-group-item {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Tombol buka sidebar dan kembali -->
+    <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰ Menu</button>
+  </div>
+
+  <!-- Sidebar (sinkronkan ke halaman lain) -->
+  <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">📚 Buku Saku</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body px-2">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠 Dashboard</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑 Prosedur</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️ Administrasi</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="login.html">🚪 Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <div class="avatar">🕒</div>
+      <div class="dashboard-title">Jadwal Pelatihan</div>
+    </div>
+
+    <p class="admin-desc">Buat jadwal pelatihan. Data tersimpan ke spreadsheets.</p>
+
+    <form id="timeframeForm" class="mb-3">
+      <div class="form-row">
+        <input required name="paket" class="form-control" placeholder="Nama Pelatihan">
+        <input required name="kegiatan" class="form-control" placeholder="Kegiatan pelatihan">
+      </div>
+      <div class="form-row">
+        <!-- placeholder ditampilkan dengan trik switch type: text -> date -->
+        <input required type="text" name="mulai" class="form-control" placeholder="Tanggal mulai (DD-MM-YYYY)"
+               onfocus="this.type='date'" onblur="if(!this.value) this.type='text'">
+        <input required type="text" name="selesai" class="form-control" placeholder="Tanggal selesai (DD-MM-YYYY)"
+               onfocus="this.type='date'" onblur="if(!this.value) this.type='text'">
+      </div>
+      <div class="d-flex gap-2" style="margin-top:8px;">
+        <button class="btn btn-primary" type="submit">Simpan</button>
+        <button id="clearAll" type="button" class="btn btn-outline-secondary">Reset</button>
+      </div>
+    </form>
+
+    <hr>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="m-0">Daftar Jadwal Pelatihan</h5>
+      <div class="input-group w-50" style="max-width:480px;">
+        <span class="input-group-text" id="search-addon" aria-hidden="true">🔍</span>
+        <input id="searchTimeframe" type="search" class="form-control" placeholder="Cari Nama pelatihan atau Kegiatan pelatihan..." aria-label="Cari" aria-describedby="search-addon">
+      </div>
+    </div>
+    <div id="listTimeframes" class="mt-2"></div>
+
+    <div class="text-center">
+      <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyCbEPQIcaKgBU-jQbmSeC_1R1tXh1Y3hA7d3q8VMCr46qtpm6lanKbrebZ-1OD2Q7h/exec";
+const KEY = 'bukuSakuTimeframes';
+
+// Helper fetch ke GAS (konsisten dengan rostercuti2: kirim JSON body)
+async function apiFetch(jsonBody){
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(jsonBody) // tanpa header agar pola sama dengan rostercuti2
+    });
+    try { return await res.json(); } catch(e){ return null; }
+  } catch(e){
+    console.warn('API request failed', e);
+    return null;
+  }
+}
+
+// Load data + mapping baris spreadsheet (row = sheet row number)
+async function load(){
+  let arr = [];
+  try{
+    const res = await fetch(API_URL + '?action=timeframe');
+    if(res.ok){
+      const data = await res.json();
+      if(Array.isArray(data)){
+        arr = data.map((x,i)=>({ ...x, row: i+2 })); // spreadsheet row = index + 2
+      }
+    }
+  }catch(e){ console.warn(e); }
+  if(!arr.length){
+    try{ arr = JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){ arr=[]; }
+    // if local items have no row, assign incremental row placeholder (will be ignored by remote)
+    arr = arr.map((x,i)=>({ ...x, row: x.row || (i+2) }));
+  }
+  return arr;
+}
+
+function saveLocal(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+
+// CRUD via GAS (konsisten: send action + target; edit/delete use row (1-based))
+async function addRemote(item){
+  // send fields (no row)
+  const payload = { action: 'add', target: 'timeframe', paket: item.paket, nama: item.nama, mulai: item.mulai, selesai: item.selesai };
+  const r = await apiFetch(payload);
+  return r?.status === 'success';
+}
+async function editRemote(row, item){
+  const payload = { action: 'edit', target: 'timeframe', row: parseInt(row,10), paket: item.paket, nama: item.nama, mulai: item.mulai, selesai: item.selesai };
+  const r = await apiFetch(payload);
+  return r?.status === 'success';
+}
+async function deleteRemote(row){
+  const payload = { action: 'delete', target: 'timeframe', row: parseInt(row,10) };
+  const r = await apiFetch(payload);
+  return r?.status === 'success';
+}
+
+// Format tanggal YYYY-MM-DD -> DD-MM-YYYY (display)
+function formatDateDisplay(d){
+  if(!d) return '';
+  const m = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(m) return `${m[3]}-${m[2]}-${m[1]}`;
+  const dt = new Date(d);
+  if(!isNaN(dt)){ const dd=String(dt.getDate()).padStart(2,'0'); const mm=String(dt.getMonth()+1).padStart(2,'0'); const yy=dt.getFullYear(); return `${dd}-${mm}-${yy}`; }
+  return d;
+}
+
+// Render daftar
+async function render(){
+  const list = await load();
+  const root = document.getElementById('listTimeframes');
+  root.innerHTML = '';
+  if(!list.length){ root.innerHTML = '<div class="text-muted">Belum ada timeframe.</div>'; return; }
+
+  const q = (document.getElementById('searchTimeframe')?.value||'').trim().toLowerCase();
+  const filtered = list.filter(item=>{
+    if(!q) return true;
+    const hay = [item.paket||'', item.nama||'', item.mulai||'', item.selesai||'', formatDateDisplay(item.mulai), formatDateDisplay(item.selesai)].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+
+  filtered.forEach(item=>{
+    const el = document.createElement('div');
+    el.className = 'list-item';
+    el.innerHTML = `<div>
+        <strong>${item.paket}</strong> — ${item.nama}<br>
+        <small class="text-muted">${formatDateDisplay(item.mulai)} ↔ ${formatDateDisplay(item.selesai)}</small>
+      </div>
+      <div class="d-flex gap-1">
+        <button class="btn btn-sm btn-outline-secondary" onclick='openEditModal(${item.row})'>Edit</button>
+        <button class="btn btn-sm btn-outline-danger" onclick='hapus(${item.row})'>Hapus</button>
+      </div>`;
+    root.appendChild(el);
+  });
+}
+
+// Tambah jadwal (gunakan form di halaman)
+document.getElementById('timeframeForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const obj = {
+    paket: (f.get('paket')||'').trim(),
+    nama: (f.get('kegiatan')||'').trim(),
+    mulai: f.get('mulai'),
+    selesai: f.get('selesai')
+  };
+  const ok = await addRemote(obj);
+  if(!ok){
+    const arr = await load();
+    arr.push(obj);
+    saveLocal(arr);
+  }
+  e.target.reset();
+  await render();
+});
+
+// Reset/clear local data & reset form
+const clearBtn = document.getElementById('clearAll');
+if (clearBtn) {
+  clearBtn.addEventListener('click', async () => {
+    if (!confirm('Reset: hapus data lokal (tidak menghapus data di spreadsheet) dan setel ulang form?')) return;
+    document.getElementById('timeframeForm').reset();
+    localStorage.removeItem(KEY); // hapus cache lokal
+    await render(); // tampilkan ulang dari sumber remote (jika ada)
+  });
+}
+
+// Hapus jadwal
+async function hapus(row){
+  if(!confirm('Yakin hapus timeframe ini?')) return;
+  const ok = await deleteRemote(row);
+  if(!ok){
+    const arr = (await load()).filter(x=>x.row!==row);
+    saveLocal(arr);
+  }
+  await render();
+}
+
+// buka modal edit (simple modal-less prompt fallback)
+function openEditModal(row){
+  // prefer modal if present (id: editModal + inputs) else prompt
+  const modalEl = document.getElementById('editModal');
+  if(modalEl){
+    // populate modal inputs if they exist
+    const arrPromise = load();
+    arrPromise.then(arr=>{
+      const idx = arr.findIndex(x=>x.row===row);
+      if(idx===-1) return;
+      const item = arr[idx];
+      // try to find inputs by id (editPaket, editNama, editMulai, editSelesai)
+      const ip = document.getElementById('editPaket');
+      const iname = document.getElementById('editNama');
+      const im = document.getElementById('editMulai');
+      const is = document.getElementById('editSelesai');
+      if(ip) ip.value = item.paket || '';
+      if(iname) iname.value = item.nama || '';
+      if(im) im.value = item.mulai || '';
+      if(is) is.value = item.selesai || '';
+      // store row in hidden input if present
+      const irow = document.getElementById('editRow');
+      if(irow) irow.value = row;
+      new bootstrap.Modal(modalEl).show();
+    });
+    return;
+  }
+
+  // fallback: prompt series like roster alternative
+  (async ()=>{
+    const arr = await load();
+    const idx = arr.findIndex(x=>x.row===row);
+    if(idx===-1) return;
+    const item = arr[idx];
+    const paket = prompt('Nama pelatihan', item.paket||''); if(paket===null) return;
+    const nama = prompt('Kegiatan pelatihan', item.nama||''); if(nama===null) return;
+    const mulai = prompt('Tanggal mulai (YYYY-MM-DD)', item.mulai||''); if(mulai===null) return;
+    const selesai = prompt('Tanggal selesai (YYYY-MM-DD)', item.selesai||''); if(selesai===null) return;
+    const updated = { paket: paket.trim(), nama: nama.trim(), mulai, selesai };
+    const ok = await editRemote(row, updated);
+    if(!ok){
+      const a = await load();
+      const idxx = a.findIndex(x=>x.row===row);
+      if(idxx!==-1){ a[idxx] = { ...a[idxx], ...updated }; saveLocal(a); }
+    }
+    await render();
+  })();
+}
+
+// If modal edit form present, wire submit to editRemote
+const editForm = document.getElementById('editForm');
+if(editForm){
+  editForm.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const row = document.getElementById('editRow')?.value;
+    const paket = document.getElementById('editPaket')?.value || '';
+    const nama = document.getElementById('editNama')?.value || '';
+    const mulai = document.getElementById('editMulai')?.value || '';
+    const selesai = document.getElementById('editSelesai')?.value || '';
+    if(!row) return;
+    const ok = await editRemote(row, { paket: paket.trim(), nama: nama.trim(), mulai, selesai });
+    if(!ok){
+      const a = await load();
+      const idxx = a.findIndex(x=>x.row===parseInt(row,10));
+      if(idxx!==-1){ a[idxx] = { ...a[idxx], paket, nama, mulai, selesai }; saveLocal(a); }
+    }
+    new bootstrap.Modal(document.getElementById('editModal')).hide();
+    await render();
+  });
+}
+
+// Search & initial render
+document.addEventListener('DOMContentLoaded', ()=>{
+  const s = document.getElementById('searchTimeframe');
+  if(s) s.addEventListener('input', render);
+  render();
+});
+  </script>
+
+</body>
+</html>

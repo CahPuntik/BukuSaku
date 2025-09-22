@@ -1,0 +1,27 @@
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+*.tmp
+
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Mac
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+
+# Node modules (if any)
+node_modules/
+
+# Logs
+*.log
+
+# Cache
+.cache/

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prosedur Kerja</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#fda085">
+  <style>
+    body {
+      background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+      min-height: 100vh;
+    }
+    .prosedur-container {
+      max-width: 900px;
+      margin: 10px auto;
+      padding: 32px 28px 24px 28px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .prosedur-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fda085 60%, #f6d365 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(253,160,133,0.18);
+    }
+    .prosedur-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f76b1c;
+      letter-spacing: 1px;
+    }
+    .controls .form-control, .controls .form-select {
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid #fda08544;
+    }
+    .table thead th {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 1;
+      text-align: center;
+    }
+    .table-bordered > :not(caption) > * > * {
+      border-color: #fda08555;
+    }
+    .table-hover tbody tr:hover {
+      background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
+      transition: background 0.18s;
+    }
+    .list-group-item {
+      font-size: 1.08rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px !important;
+      margin-bottom: 10px;
+      background: #f8f9fa;
+      color: #f76b1c;
+      box-shadow: 0 2px 8px rgba(253,160,133,0.06);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-primary, .btn-success, .btn-warning, .btn-danger, .btn-back {
+      border: none;
+      font-weight: 600;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(253,160,133,0.13);
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #f76b1c 60%, #fda085 100%);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
+      color: #fff;
+    }
+    .btn-back {
+      background: linear-gradient(90deg, #f76b1c 60%, #fda085 100%);
+      color: #fff;
+      margin-top: 18px;
+      padding: 10px 36px;
+    }
+    .btn-back:hover {
+      background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
+      color: #fff;
+    }
+    .btn-outline-secondary, .btn-outline-primary {
+      border-radius: 8px;
+    }
+    .offcanvas {
+      background: #fff8f3;
+      border-top-right-radius: 18px;
+      border-bottom-right-radius: 18px;
+      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
+    }
+    .offcanvas-title {
+      color: #f76b1c;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .nav-link {
+      font-weight: 500;
+      color: #f76b1c;
+      border-radius: 8px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
+      color: #f76b1c;
+    }
+    .btn-menu {
+      margin-bottom: 8px;
+    }
+    @media (max-width: 900px) {
+      .prosedur-container {
+        padding: 18px 6px 16px 6px;
+        max-width: 90vw;
+      }
+      .prosedur-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+      }
+      .prosedur-title {
+        text-align: center;
+        width: 100%;
+      }
+      .avatar {
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
+      .offcanvas.offcanvas-start{
+        width: 82%;
+        max-width: 360px;
+        left: 0;
+        top: 0;
+        height: 100%;
+        box-shadow: 2px 8px 40px rgba(0,0,0,0.12);
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+        font-size: 1.4rem;
+      }
+      .offcanvas-backdrop {
+        background-color: rgba(0,0,0,0.35);
+      }
+      .list-group-item {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Tombol buka sidebar -->
+  <button class="btn btn-outline-secondary btn-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+  ☰ Menu
+</button>
+
+  <!-- Sidebar Offcanvas -->
+  <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">📚 Buku Saku</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body px-2">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠 Dashboard</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="prosedur2.html">📑 Prosedur</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️ Administrasi</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="login.html">🚪 Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="prosedur-container">
+    <div class="prosedur-header">
+      <div class="avatar">📑</div>
+      <div class="prosedur-title">PROSEDUR KERJA</div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+      <div></div>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">➕ Tambah File</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="row g-2 controls mb-3">
+      <div class="col-12 col-md-6">
+        <input id="searchInput" class="form-control" type="text" placeholder="🔍 Cari STD / INK / keterangan…">
+      </div>
+      <div class="col-6 col-md-3">
+        <select id="statusFilter" class="form-select">
+          <option value="">Filter Prosedur (Semua)</option>
+          <option value="SOP">SOP</option>
+          <option value="STD">STD</option>
+          <option value="INK">INK</option>
+          <option value="JSA">JSA</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <small class="text-muted" id="resultInfo">Menampilkan semua file</small>
+      <div class="btn-group">
+        <button id="resetBtn" class="btn btn-outline-secondary btn-sm">Reset</button>
+        <button onclick="window.print()" class="btn btn-outline-primary btn-sm">Print</button>
+      </div>
+    </div>
+
+    <!-- Tabel -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle" id="cutiTable">
+        <thead>
+          <tr>
+            <th style="min-width:20px;">No</th>
+            <th style="min-width:320px;">Nama file</th>
+            <th style="min-width:80px;">URL</th>
+            <th style="min-width:100px;">Jenis File</th>
+            <th style="min-width:100px;">Keterangan</th>
+            <th style="min-width:150px;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="cutiBody">
+          <!-- Data diisi oleh JS -->
+        </tbody>
+      </table>
+    </div>
+    <div class="text-center mt-4">
+      <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Modal Tambah -->
+  <div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Tambah Prosedur</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="text" class="form-control mb-2" id="namaFile" placeholder="Nama File" required>
+            <input type="text" class="form-control mb-2" id="url" placeholder="URL google drive" required>
+            <select class="form-select mb-2" id="jenis" required>
+              <option value="">Jenis Prosedur</option>
+              <option value="SOP">SOP</option>
+              <option value="STD">STD</option>
+              <option value="INK">INK</option>
+              <option value="JSA">JSA</option>
+            </select>
+            <input type="text" class="form-control mb-2" id="keterangan" placeholder="Keterangan" required>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button class="btn btn-success" type="submit">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="editForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Data File</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editIndex">
+            <input type="text" class="form-control mb-2" id="editNamaFile" required>
+            <input type="text" class="form-control mb-2" id="editUrl" required>
+            <select class="form-select mb-2" id="editJenis" required>
+              <option value="SOP">SOP</option>
+              <option value="STD">STD</option>
+              <option value="INK">INK</option>
+              <option value="JSA">JSA</option>
+            </select>
+            <input type="text" class="form-control mb-2" id="editKet" required>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button class="btn btn-success" type="submit">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyCbEPQIcaKgBU-jQbmSeC_1R1tXh1Y3hA7d3q8VMCr46qtpm6lanKbrebZ-1OD2Q7h/exec";   
+const tbody = document.getElementById("cutiBody");
+const addForm = document.getElementById("addForm");
+const editForm = document.getElementById("editForm");
+
+// Ambil data dari server
+async function loadData(){
+  const res = await fetch(API_URL + "?action=files");
+  const data = await res.json();
+  tbody.innerHTML = "";
+  data.forEach((row,i)=>{
+    tbody.insertAdjacentHTML("beforeend", `
+      <tr data-row="${i}">
+        <td>${i+1}</td>
+        <td>${row.namaFile}</td>
+        <td><a href="${row.url}" target="_blank">BACA</a></td>
+        <td>${row.jenis}</td>
+        <td>${row.keterangan}</td>
+        <td>
+          <button class="btn btn-warning btn-sm edit-btn">✏️ edit</button>
+          <button class="btn btn-danger btn-sm delete-btn">🗑️ hapus</button>
+        </td>
+      </tr>
+    `);
+  });
+}
+
+// Delegasi tombol edit/hapus
+tbody.addEventListener("click", e=>{
+  const tr = e.target.closest("tr");
+  if(!tr) return;
+  const idx = tr.dataset.row;
+
+  if(e.target.classList.contains("edit-btn")){
+    document.getElementById("editIndex").value = idx;
+    document.getElementById("editNamaFile").value = tr.children[1].innerText;
+    document.getElementById("editUrl").value = tr.children[2].querySelector("a").href;
+    document.getElementById("editJenis").value = tr.children[3].innerText;
+    document.getElementById("editKet").value = tr.children[4].innerText;
+    new bootstrap.Modal(document.getElementById("editModal")).show();
+  } 
+  else if(e.target.classList.contains("delete-btn")){
+    if(confirm("Yakin hapus data ini?")){
+      fetch(API_URL, {
+        method:"POST",
+        body: JSON.stringify({action:"delete", row:parseInt(idx)+2, target: "file"})
+      }).then(()=> loadData());
+    }
+  }
+});
+
+// Tambah data
+addForm.addEventListener("submit", async e=>{
+  e.preventDefault();
+  const namaFile = document.getElementById("namaFile").value;
+  const url = document.getElementById("url").value;
+  const jenis = document.getElementById("jenis").value;
+  const keterangan = document.getElementById("keterangan").value;
+
+  await fetch(API_URL, {
+    method:"POST",
+    body: JSON.stringify({action:"add", namaFile, url, jenis, keterangan, target: "file"})
+  });
+
+  bootstrap.Modal.getInstance(document.getElementById("addModal")).hide();
+  addForm.reset();
+  loadData();
+});
+
+// Edit data
+editForm.addEventListener("submit", async e=>{
+  e.preventDefault();
+  const idx = document.getElementById("editIndex").value;
+  const namaFile = document.getElementById("editNamaFile").value;
+  const url = document.getElementById("editUrl").value;
+  const jenis = document.getElementById("editJenis").value;
+  const keterangan = document.getElementById("editKet").value;
+
+  await fetch(API_URL, {
+    method:"POST",
+    body: JSON.stringify({action:"edit", row:parseInt(idx)+2, namaFile, url, jenis, keterangan, target: "file"})
+  });
+
+  bootstrap.Modal.getInstance(document.getElementById("editModal")).hide();
+  loadData();
+});
+
+// Pertama kali load
+loadData();
+// Fungsi filter tabel
+function filterTable() {
+  const searchValue = document.getElementById("searchInput").value.toLowerCase();
+  const statusValue = document.getElementById("statusFilter").value;
+  let visibleCount = 0;
+
+  const rows = tbody.querySelectorAll("tr");
+  rows.forEach(row => {
+    const namaFile = row.children[1].innerText.toLowerCase();
+    const url = row.children[2].innerText.toLowerCase();
+    const jenis = row.children[3].innerText.toLowerCase();
+    const ket = row.children[4].innerText.toLowerCase();
+
+    const matchSearch = namaFile.includes(searchValue) || url.includes(searchValue) || ket.includes(searchValue);
+    const matchStatus = statusValue === "" || jenis === statusValue.toLowerCase();
+
+    if (matchSearch && matchStatus) {
+      row.style.display = "";
+      visibleCount++;
+    } else {
+      row.style.display = "none";
+    }
+  });
+
+  // Update info
+  const info = document.getElementById("resultInfo");
+  if (visibleCount === rows.length) {
+    info.textContent = "Menampilkan semua file";
+  } else {
+    info.textContent = `Menampilkan ${visibleCount} file dari total ${rows.length}`;
+  }
+}
+
+// Event listener untuk search & filter
+document.getElementById("searchInput").addEventListener("input", filterTable);
+document.getElementById("statusFilter").addEventListener("change", filterTable);
+document.getElementById("resetBtn").addEventListener("click", () => {
+  document.getElementById("searchInput").value = "";
+  document.getElementById("statusFilter").value = "";
+  filterTable();
+});
+
+// Cek login, redirect jika belum login
+const user = JSON.parse(localStorage.getItem('bukuSakuUser') || '{}');
+if (!user.username) {
+  window.location.href = "login.html";
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js');
+  });
+}
+</script>
+</body>
+</html>
