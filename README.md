@@ -29,7 +29,7 @@ Aplikasi web Progressive Web App (PWA) untuk manajemen aktivitas harian dan time
 - `prosedur2.html` - Prosedur dan panduan
 - `preposttest.html` - Pre/post test
 - `administrasi.html` - Administrasi
-- `login.html` - Halaman login
+- `index.html` - Halaman login
 
 ## 🛠️ Instalasi dan Penggunaan
 

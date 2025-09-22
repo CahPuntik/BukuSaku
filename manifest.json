@@ -1,7 +1,7 @@
 {
   "name": "Buku Saku Pelatihan",
   "short_name": "Buku Saku Pelatihan",
-  "start_url": "login.html",
+  "start_url": "index.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#fda085",

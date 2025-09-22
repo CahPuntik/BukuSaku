@@ -8,7 +8,7 @@ const urlsToCache = [
   '/prosedur2.html',
   '/rostercuti2.html',
   '/administrasi.html',
-  '/login.html',
+  '/index.html',
   '/manifest.json',
   '/icon-192.jpg',
   '/icon-512.png',
