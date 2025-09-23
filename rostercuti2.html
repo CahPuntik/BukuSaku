@@ -100,6 +100,31 @@
       border-radius: 8px;
       font-weight: 500;
     }
+    
+    /* Status berdasarkan tanggal - Override Bootstrap table styles */
+    .table tbody tr.row-expired {
+      background-color: #ffebee !important; /* Merah muda untuk yang sudah lewat */
+    }
+    .table tbody tr.row-expired:hover {
+      background-color: #ffcdd2 !important;
+    }
+    .table tbody tr.row-expired td {
+      background-color: transparent !important; /* Pastikan td tidak override */
+    }
+    
+    .table tbody tr.row-active {
+      background-color: #e8f5e8 !important; /* Hijau muda untuk yang sedang berlangsung */
+    }
+    .table tbody tr.row-active:hover {
+      background-color: #c8e6c9 !important;
+    }
+    .table tbody tr.row-active td {
+      background-color: transparent !important; /* Pastikan td tidak override */
+    }
+    
+    .table tbody tr.row-upcoming {
+      background-color: inherit; /* Default untuk yang akan datang */
+    }
     .offcanvas {
       background: #fff8f3;
       border-top-right-radius: 18px;
@@ -238,6 +263,25 @@
       </div>
     </div>
 
+    <!-- Legend Keterangan Warna -->
+    <div class="mb-3">
+      <small class="text-muted fw-bold">Keterangan Warna:</small>
+      <div class="d-flex flex-wrap gap-3 mt-2">
+        <div class="d-flex align-items-center">
+          <div style="width: 20px; height: 20px; background-color: #ffebee; border: 1px solid #ddd; border-radius: 4px; margin-right: 8px;"></div>
+          <small class="text-muted">Sudah Berakhir</small>
+        </div>
+        <div class="d-flex align-items-center">
+          <div style="width: 20px; height: 20px; background-color: #e8f5e8; border: 1px solid #ddd; border-radius: 4px; margin-right: 8px;"></div>
+          <small class="text-muted">Sedang Berlangsung</small>
+        </div>
+        <div class="d-flex align-items-center">
+          <div style="width: 20px; height: 20px; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; margin-right: 8px;"></div>
+          <small class="text-muted">Akan Datang</small>
+        </div>
+      </div>
+    </div>
+
     <!-- Tabel -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle" id="cutiTable">
@@ -351,9 +395,52 @@ if ('serviceWorker' in navigator) {
     }
 
     async function loadData(){
-      const res = await fetch(API_URL + "?action=roster");
-      const data = await res.json();
+      try {
+        const res = await fetch(API_URL + "?action=roster");
+        const data = await res.json();
+        renderTableData(data);
+      } catch (error) {
+        console.log("API error, using test data:", error);
+        // Test data untuk debugging
+        const testData = [
+          {
+            nama: "Test User 1",
+            nrp: "12345",
+            tglMulai: "2025-09-01", // Sudah lewat (merah)
+            tglSelesai: "2025-09-10",
+            lama: "9",
+            status: "Cuti",
+            ket: "Test expired"
+          },
+          {
+            nama: "Test User 2", 
+            nrp: "67890",
+            tglMulai: "2025-09-20", // Sedang berlangsung (hijau)
+            tglSelesai: "2025-09-25",
+            lama: "5",
+            status: "Izin",
+            ket: "Test active"
+          },
+          {
+            nama: "Test User 3",
+            nrp: "11111", 
+            tglMulai: "2025-10-01", // Akan datang (default)
+            tglSelesai: "2025-10-05",
+            lama: "4",
+            status: "Cuti",
+            ket: "Test upcoming"
+          }
+        ];
+        renderTableData(testData);
+      }
+    }
+    
+    function renderTableData(data) {
       tbody.innerHTML = "";
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set ke awal hari untuk perbandingan yang tepat
+      console.log("Today:", today);
+      
       data.forEach((row,i)=>{
         let badgeClass = "secondary";
         if(row.status==="Cuti") badgeClass = "success";
@@ -361,8 +448,46 @@ if ('serviceWorker' in navigator) {
         else if(row.status==="Sakit") badgeClass = "danger";
         else if(row.status==="Dinas") badgeClass = "info text-dark";
         else if(row.status==="Training") badgeClass = "primary";
+        
+        // Tentukan status berdasarkan tanggal
+        // Parsing tanggal dengan lebih robust
+        let startDate, endDate;
+        
+        // Jika format tanggal dari API adalah DD/MM/YYYY, konversi ke format yang benar
+        if (typeof row.tglMulai === 'string' && row.tglMulai.includes('/')) {
+          const [day, month, year] = row.tglMulai.split('/');
+          startDate = new Date(year, month - 1, day);
+        } else {
+          startDate = new Date(row.tglMulai);
+        }
+        
+        if (typeof row.tglSelesai === 'string' && row.tglSelesai.includes('/')) {
+          const [day, month, year] = row.tglSelesai.split('/');
+          endDate = new Date(year, month - 1, day);
+        } else {
+          endDate = new Date(row.tglSelesai);
+        }
+        
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        
+        let rowClass = "";
+        if (endDate < today) {
+          // Sudah berakhir - merah
+          rowClass = "row-expired";
+          console.log("Row expired:", row.nama, "End:", endDate, "Today:", today);
+        } else if (startDate <= today && today <= endDate) {
+          // Sedang berlangsung - hijau
+          rowClass = "row-active";
+          console.log("Row active:", row.nama, "Start:", startDate, "End:", endDate, "Today:", today);
+        } else {
+          // Belum dimulai - default
+          rowClass = "row-upcoming";
+          console.log("Row upcoming:", row.nama, "Start:", startDate, "Today:", today);
+        }
+        
         tbody.insertAdjacentHTML("beforeend", `
-          <tr data-row="${i}">
+          <tr data-row="${i}" class="${rowClass}">
             <td>${i+1}</td>
             <td>${row.nama}</td>
             <td>${row.nrp}</td>
