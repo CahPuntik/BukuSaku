@@ -111,7 +111,7 @@
       color: #f76b1c;
     }
     @media (max-width: 900px) {
-      .dashboard-container {
+      .container-card {
         padding: 18px 6px 16px 6px;
         max-width: 90vw;
       }
@@ -146,6 +146,114 @@
       .list-group-item {
         font-size: 1.4rem;
       }
+    }
+    
+    /* Table styling mirip table.html */
+    .activity-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #000;
+    }
+    
+    .activity-table th,
+    .activity-table td {
+      border: 1px solid #000;
+      padding: 8px 4px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 11px;
+    }
+    
+    .activity-table th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+    
+    .activity-table tbody tr:hover {
+      background-color: #f5f5f5;
+    }
+    
+    /* Column widths */
+    .date-col { width: 50px; min-width: 50px; }
+    .activity-col { 
+      width: 200px; 
+      min-width: 200px;
+      text-align: left !important;
+      padding-left: 8px !important;
+    }
+    .hours-col { width: 45px; min-width: 45px; }
+    .total-col { width: 45px; min-width: 45px; font-weight: bold; }
+    .sign-col { width: 80px; min-width: 80px; }
+    
+    /* Input styling dalam tabel */
+    .hours-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      padding: 2px;
+    }
+    
+    .activity-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: left;
+      padding: 2px 4px;
+    }
+    
+    .sign-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      padding: 2px;
+    }
+    
+    /* Footer totals styling */
+    .activity-table tfoot td {
+      background-color: #e9ecef;
+      font-weight: bold;
+      border-top: 2px solid #000;
+    }
+    
+    /* Notes section */
+    .notes-section {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      font-size: 12px;
+    }
+    
+    .notes-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #495057;
+    }
+    
+    .notes-section div:not(.notes-title) {
+      margin-bottom: 4px;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .activity-table {
+        font-size: 10px;
+      }
+      
+      .activity-table th,
+      .activity-table td {
+        padding: 4px 2px;
+      }
+      
+      .date-col { width: 40px; min-width: 40px; }
+      .activity-col { width: 150px; min-width: 150px; }
+      .hours-col { width: 35px; min-width: 35px; }
+      .sign-col { width: 60px; min-width: 60px; }
     }
   </style>
 </head>
@@ -210,14 +318,57 @@
     </form>
 
     <div class="table-responsive">
-      <table class="table table-sm table-striped">
-        <thead class="table-light">
+      <table class="activity-table">
+        <thead>
           <tr>
-            <th>Date</th><th>Activity</th><th>TC</th><th>ID</th><th>MD</th><th>PD</th><th>TR</th><th>L</th><th>S</th><th>TOT</th><th>SIGN</th><th></th>
+            <th rowspan="2" class="date-col">DATE</th>
+            <th rowspan="2" class="activity-col">ACTIVITY</th>
+            <th colspan="8">HOURS</th>
+            <th rowspan="2" class="sign-col">SIGN</th>
+            <th rowspan="2" style="width: 60px;">ACTION</th>
+          </tr>
+          <tr>
+            <th class="hours-col">TC</th>
+            <th class="hours-col">ID</th>
+            <th class="hours-col">MD</th>
+            <th class="hours-col">PD</th>
+            <th class="hours-col">TR</th>
+            <th class="hours-col">L</th>
+            <th class="hours-col">S</th>
+            <th class="hours-col total-col">TOT</th>
           </tr>
         </thead>
-        <tbody id="listDaily"></tbody>
+        <tbody id="listDaily">
+          <!-- Data akan ditampilkan di sini -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" style="text-align: center; font-weight: bold;">TOTAL</td>
+            <td id="totalTC" style="font-weight: bold;">0</td>
+            <td id="totalID" style="font-weight: bold;">0</td>
+            <td id="totalMD" style="font-weight: bold;">0</td>
+            <td id="totalPD" style="font-weight: bold;">0</td>
+            <td id="totalTR" style="font-weight: bold;">0</td>
+            <td id="totalL" style="font-weight: bold;">0</td>
+            <td id="totalS" style="font-weight: bold;">0</td>
+            <td id="grandTotal" class="total-col" style="background-color: #ffc107; font-weight: bold;">0</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
+    </div>
+
+    <!-- Notes Section -->
+    <div class="notes-section">
+      <div class="notes-title">Note:</div>
+      <div><strong>TC:</strong> Teaching</div>
+      <div><strong>ID:</strong> Instructor Development</div>
+      <div><strong>MD:</strong> Material Development</div>
+      <div><strong>PD:</strong> Program Development</div>
+      <div><strong>TR:</strong> Travelling/Perjalanan</div>
+      <div><strong>L:</strong> Leave / Cuti</div>
+      <div><strong>S:</strong> Sick / Sakit</div>
     </div>
 
     <!-- Pengirim + Kirim -->
@@ -300,7 +451,11 @@ function computeTotFromInputs(){
 function updateTot() {
   const tot = computeTotFromInputs();
   const el = document.getElementById('inpTOT');
-  if (el) el.value = String(tot);
+  if (el) {
+    // Jika tot adalah null (belum ada input), set ke empty string
+    // Jika tot adalah number, convert ke string
+    el.value = tot === null ? '' : String(tot);
+  }
 }
 // Pasang listener agar TOT auto-update
 function wireTotAuto() {
@@ -340,24 +495,59 @@ function renderTable() {
     const sheetRow = idx + 2; // baris di sheet (1-based, + header)
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${row.date ?? ""}</td>
-      <td>${row.activity ?? ""}</td>
-      <td>${num0(row.tc)}</td>
-      <td>${num0(row.id)}</td>
-      <td>${num0(row.md)}</td>
-      <td>${num0(row.pd)}</td>
-      <td>${num0(row.tr)}</td>
-      <td>${num0(row.l)}</td>
-      <td>${num0(row.s)}</td>
-      <td>${num0(row.tot)}</td>
-      <td>${row.sign ?? ""}</td>
-      <td>
-        <button class="btn btn-sm btn-warning" onclick="onEdit(${sheetRow})">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="onDelete(${sheetRow})">Hapus</button>
+      <td class="date-col">${row.date ?? ""}</td>
+      <td class="activity-col" style="text-align: left; padding-left: 8px;">${row.activity ?? ""}</td>
+      <td class="hours-col">${num0(row.tc)}</td>
+      <td class="hours-col">${num0(row.id)}</td>
+      <td class="hours-col">${num0(row.md)}</td>
+      <td class="hours-col">${num0(row.pd)}</td>
+      <td class="hours-col">${num0(row.tr)}</td>
+      <td class="hours-col">${num0(row.l)}</td>
+      <td class="hours-col">${num0(row.s)}</td>
+      <td class="total-col" style="background-color: #fff3cd; font-weight: bold;">${num0(row.tot)}</td>
+      <td class="sign-col">${row.sign ?? ""}</td>
+      <td style="width: 60px; font-size: 10px;">
+        <button class="btn btn-sm btn-warning" onclick="onEdit(${sheetRow})" style="font-size: 9px; padding: 2px 4px;">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="onDelete(${sheetRow})" style="font-size: 9px; padding: 2px 4px;">Del</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
+  
+  // Calculate and display totals
+  calculateTotals();
+}
+
+// 🔹 Calculate totals for footer
+function calculateTotals() {
+  const num0 = v => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  let totalTC = 0, totalID = 0, totalMD = 0, totalPD = 0;
+  let totalTR = 0, totalL = 0, totalS = 0, grandTotal = 0;
+
+  STATE.forEach(row => {
+    totalTC += num0(row.tc);
+    totalID += num0(row.id);
+    totalMD += num0(row.md);
+    totalPD += num0(row.pd);
+    totalTR += num0(row.tr);
+    totalL += num0(row.l);
+    totalS += num0(row.s);
+    grandTotal += num0(row.tot);
+  });
+
+  // Update footer totals
+  document.getElementById('totalTC').textContent = totalTC;
+  document.getElementById('totalID').textContent = totalID;
+  document.getElementById('totalMD').textContent = totalMD;
+  document.getElementById('totalPD').textContent = totalPD;
+  document.getElementById('totalTR').textContent = totalTR;
+  document.getElementById('totalL').textContent = totalL;
+  document.getElementById('totalS').textContent = totalS;
+  document.getElementById('grandTotal').textContent = grandTotal;
 }
 
 // 🔹 Tambah / Update data via form
@@ -393,7 +583,15 @@ function onEdit(row) {
 
   const form = document.querySelector("#dailyForm");
   Object.keys(data).forEach(k => {
-    if (form[k]) form[k].value = data[k];
+    if (form[k]) {
+      // Handle null/undefined values untuk input numbers
+      const value = data[k];
+      if (value === null || value === undefined || value === 'null') {
+        form[k].value = '';
+      } else {
+        form[k].value = value;
+      }
+    }
   });
   document.querySelector("#editingRow").value = row;
   const btnSave = document.getElementById("btnSave");
