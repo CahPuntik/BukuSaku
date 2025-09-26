@@ -377,7 +377,7 @@
       <select id="pengirim" class="form-select d-none">
   <option value="Slamet Herianto|082122726176" selected>Slamet Herianto (082122726176)</option>
 </select>
-      <button id="btnKirim" class="btn btn-success ms-auto">Download</button>
+      <button id="btnKirim" class="btn btn-success ms-auto">📥 Download Excel</button>
     </div>
 
     <!-- Tombol kembali di halaman (bukan sidebar) -->
@@ -620,42 +620,25 @@ async function onDelete(row) {
   reload();
 }
 async function exportExcel() {
-  if (!STATE.length) {
-    alert("Tidak ada data untuk diexport!");
-    return;
+  // URL Google Sheets untuk download format Excel
+  const downloadUrl = "https://docs.google.com/spreadsheets/d/1mzO7xLNDTdlKCRDOX1Of4-UZGd5iPmb6_HKECFiBLbU/export?format=xlsx&gid=452254970";
+  
+  try {
+    // Buka URL download di tab baru untuk mengunduh file
+    window.open(downloadUrl, '_blank');
+    
+    // Alternatif: Jika ingin mengunduh secara otomatis tanpa membuka tab baru
+    // const link = document.createElement('a');
+    // link.href = downloadUrl;
+    // link.download = 'Daily_Activity.xlsx';
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+    
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    alert("Gagal mengunduh file. Silakan coba lagi.");
   }
-
-  // ✅ Ambil template Excel (pastikan file contoh saja.xlsx ada di server/public folder)
-  const resp = await fetch("contoh saja.xlsx"); 
-  const buf = await resp.arrayBuffer();
-  const wb = XLSX.read(buf, { type: "array" });
-
-  // Ambil sheet pertama
-  const ws = wb.Sheets[wb.SheetNames[0]];
-
-  // Tentukan baris awal untuk data (misal row 5, sesuaikan dengan template kamu)
-  let row = 14;
-
-  STATE.forEach(item => {
-    ws[`B${row}`] = { v: item.date };
-    ws[`C${row}`] = { v: item.activity };
-    ws[`D${row}`] = { v: item.tc };
-    ws[`E${row}`] = { v: item.id };
-    ws[`F${row}`] = { v: item.md };
-    ws[`G${row}`] = { v: item.pd };
-    ws[`H${row}`] = { v: item.tr };
-    ws[`I${row}`] = { v: item.l };
-    ws[`J${row}`] = { v: item.s };
-    ws[`K${row}`] = { v: item.tot };
-    ws[`L${row}`] = { v: item.sign };
-    row++;
-  });
-
-  // Update area range supaya Excel tahu batas data
-  ws['!ref'] = `A1:K${row-1}`;
-
-  // Simpan hasil export
-  XLSX.writeFile(wb, "DailyActivity.xlsx");
 }
 
 // 🔹 Init
