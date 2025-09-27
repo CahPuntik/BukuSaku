@@ -97,6 +97,198 @@
       background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
       color: #f76b1c;
     }
+    /* Timeline Styles */
+    .timeline-container {
+      margin: 30px 0;
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .timeline-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f76b1c;
+      margin: 0;
+    }
+
+    .timeline-view-toggle {
+      display: flex;
+      gap: 5px;
+    }
+
+    .timeline-view-toggle .btn {
+      padding: 3px 12px;
+      font-size: 0.85rem;
+      border-radius: 60px;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, #fda085, #f6d365);
+      border-radius: 2px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 30px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-left: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .timeline-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -35px;
+      top: 20px;
+      width: 12px;
+      height: 12px;
+      background: #fda085;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 3px #fda085;
+    }
+
+    .timeline-item.current::before {
+      background: #28a745;
+      box-shadow: 0 0 0 3px #28a745;
+      animation: pulse 2s infinite;
+    }
+
+    .timeline-item.completed::before {
+      background: #6c757d;
+      box-shadow: 0 0 0 3px #6c757d;
+    }
+
+    .timeline-item.upcoming::before {
+      background: #ffc107;
+      box-shadow: 0 0 0 3px #ffc107;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .timeline-content {
+      position: relative;
+    }
+
+    .timeline-date {
+      position: absolute;
+      top: -8px;
+      right: 0;
+      background: linear-gradient(45deg, #fda085, #f6d365);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .timeline-title-item {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .timeline-subtitle {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .timeline-duration {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+
+    .duration-badge {
+      background: #e9ecef;
+      color: #495057;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-current {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+
+    .status-completed {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .status-upcoming {
+      background: #fff3cd;
+      color: #664d03;
+    }
+
+    .timeline-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .timeline-actions .btn {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+    }
+
+    .timeline-empty {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .timeline-empty .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: #ddd;
+    }
+
     @media (max-width: 900px) {
       .dashboard-container {
         padding: 18px 6px 16px 6px;
@@ -132,6 +324,25 @@
       }
       .list-group-item {
         font-size: 1.4rem;
+      }
+      .timeline {
+        padding-left: 20px;
+      }
+      .timeline-item {
+        margin-left: 15px;
+      }
+      .timeline-item::before {
+        left: -28px;
+      }
+      .timeline-date {
+        position: static;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+      .timeline-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
       }
     }
   </style>
@@ -189,14 +400,20 @@
 
     <hr>
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h5 class="m-0">Daftar Jadwal Pelatihan</h5>
-      <div class="input-group w-50" style="max-width:480px;">
-        <span class="input-group-text" id="search-addon" aria-hidden="true">🔍</span>
-        <input id="searchTimeframe" type="search" class="form-control" placeholder="Cari Nama pelatihan atau Kegiatan pelatihan..." aria-label="Cari" aria-describedby="search-addon">
+    <!-- Timeline Section -->
+    <div class="timeline-container">
+      <div class="timeline-header">
+        <h5 class="timeline-title">📅 Timeline Pelatihan</h5>
+        <div class="timeline-view-toggle">
+          <button class="btn btn-outline-secondary btn-sm active" id="timelineViewAll">Semua</button>
+          <button class="btn btn-outline-secondary btn-sm" id="timelineViewCurrent">Saat Ini</button>
+          <button class="btn btn-outline-secondary btn-sm" id="timelineViewUpcoming">Mendatang</button>
+        </div>
+      </div>
+      <div id="timelineContent" class="timeline">
+        <!-- Timeline items will be generated here -->
       </div>
     </div>
-    <div id="listTimeframes" class="mt-2"></div>
 
     <div class="text-center">
       <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
@@ -272,32 +489,189 @@ function formatDateDisplay(d){
   return d;
 }
 
-// Render daftar
+// Render timeline saja (tanpa daftar)
 async function render(){
   const list = await load();
-  const root = document.getElementById('listTimeframes');
-  root.innerHTML = '';
-  if(!list.length){ root.innerHTML = '<div class="text-muted">Belum ada timeframe.</div>'; return; }
+  
+  // Filter berdasarkan pencarian jika ada search input
+  const searchInput = document.getElementById('searchTimeframe');
+  let filtered = list;
+  
+  if (searchInput) {
+    const q = (searchInput.value || '').trim().toLowerCase();
+    filtered = list.filter(item=>{
+      if(!q) return true;
+      const hay = [item.paket||'', item.nama||'', item.mulai||'', item.selesai||'', formatDateDisplay(item.mulai), formatDateDisplay(item.selesai)].join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+  }
+  
+  // Render timeline
+  renderTimeline(filtered);
+}
 
-  const q = (document.getElementById('searchTimeframe')?.value||'').trim().toLowerCase();
-  const filtered = list.filter(item=>{
-    if(!q) return true;
-    const hay = [item.paket||'', item.nama||'', item.mulai||'', item.selesai||'', formatDateDisplay(item.mulai), formatDateDisplay(item.selesai)].join(' ').toLowerCase();
-    return hay.includes(q);
+// Timeline Functions
+function getTrainingStatus(mulai, selesai) {
+  if (!mulai || !selesai) return 'upcoming';
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const startDate = new Date(mulai);
+  const endDate = new Date(selesai);
+  startDate.setHours(0, 0, 0, 0);
+  endDate.setHours(23, 59, 59, 999);
+  
+  if (today >= startDate && today <= endDate) {
+    return 'current';
+  } else if (today > endDate) {
+    return 'completed';
+  } else {
+    return 'upcoming';
+  }
+}
+
+function calculateDuration(mulai, selesai) {
+  if (!mulai || !selesai) return 'N/A';
+  
+  const start = new Date(mulai);
+  const end = new Date(selesai);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
+  
+  if (diffDays === 1) return '1 hari';
+  if (diffDays < 7) return `${diffDays} hari`;
+  if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    const remainingDays = diffDays % 7;
+    if (remainingDays === 0) return `${weeks} minggu`;
+    return `${weeks} minggu ${remainingDays} hari`;
+  }
+  
+  const months = Math.floor(diffDays / 30);
+  const remainingDays = diffDays % 30;
+  if (remainingDays === 0) return `${months} bulan`;
+  return `${months} bulan ${remainingDays} hari`;
+}
+
+function formatTimelineDate(dateStr) {
+  if (!dateStr) return '';
+  
+  const date = new Date(dateStr);
+  if (isNaN(date)) return dateStr;
+  
+  const options = { 
+    weekday: 'short', 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  };
+  
+  return date.toLocaleDateString('id-ID', options);
+}
+
+function getStatusBadge(status) {
+  const badges = {
+    current: { class: 'status-current', text: '🔄 Sedang Berjalan', icon: '🟢' },
+    completed: { class: 'status-completed', text: '✅ Selesai', icon: '🔵' },
+    upcoming: { class: 'status-upcoming', text: '⏳ Akan Datang', icon: '🟡' }
+  };
+  
+  const badge = badges[status] || badges.upcoming;
+  return `<span class="status-badge ${badge.class}">${badge.icon} ${badge.text}</span>`;
+}
+
+function sortTimelineItems(items) {
+  return items.sort((a, b) => {
+    const statusPriority = { current: 1, upcoming: 2, completed: 3 };
+    const statusA = getTrainingStatus(a.mulai, a.selesai);
+    const statusB = getTrainingStatus(b.mulai, b.selesai);
+    
+    if (statusA !== statusB) {
+      return statusPriority[statusA] - statusPriority[statusB];
+    }
+    
+    // If same status, sort by start date
+    const dateA = new Date(a.mulai || '1900-01-01');
+    const dateB = new Date(b.mulai || '1900-01-01');
+    return dateA - dateB;
   });
+}
 
-  filtered.forEach(item=>{
-    const el = document.createElement('div');
-    el.className = 'list-item';
-    el.innerHTML = `<div>
-        <strong>${item.paket}</strong> — ${item.nama}<br>
-        <small class="text-muted">${formatDateDisplay(item.mulai)} ↔ ${formatDateDisplay(item.selesai)}</small>
+function renderTimeline(items = []) {
+  const timelineContent = document.getElementById('timelineContent');
+  
+  if (!items || items.length === 0) {
+    timelineContent.innerHTML = `
+      <div class="timeline-empty">
+        <div class="empty-icon">📅</div>
+        <h5>Belum Ada Jadwal</h5>
+        <p class="text-muted">Tambahkan jadwal pelatihan untuk melihat timeline</p>
       </div>
-      <div class="d-flex gap-1">
-        <button class="btn btn-sm btn-outline-secondary" onclick='openEditModal(${item.row})'>Edit</button>
-        <button class="btn btn-sm btn-outline-danger" onclick='hapus(${item.row})'>Hapus</button>
-      </div>`;
-    root.appendChild(el);
+    `;
+    return;
+  }
+  
+  // Get current filter
+  const activeFilter = document.querySelector('.timeline-view-toggle .btn.active')?.id || 'timelineViewAll';
+  
+  // Filter items based on current view
+  let filteredItems = [...items];
+  if (activeFilter === 'timelineViewCurrent') {
+    filteredItems = items.filter(item => getTrainingStatus(item.mulai, item.selesai) === 'current');
+  } else if (activeFilter === 'timelineViewUpcoming') {
+    filteredItems = items.filter(item => getTrainingStatus(item.mulai, item.selesai) === 'upcoming');
+  }
+  
+  if (filteredItems.length === 0) {
+    const filterText = {
+      'timelineViewCurrent': 'sedang berjalan',
+      'timelineViewUpcoming': 'yang akan datang'
+    };
+    timelineContent.innerHTML = `
+      <div class="timeline-empty">
+        <div class="empty-icon">🔍</div>
+        <h5>Tidak Ada Pelatihan</h5>
+        <p class="text-muted">Tidak ada pelatihan ${filterText[activeFilter] || ''} saat ini</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Sort items for better timeline display
+  const sortedItems = sortTimelineItems(filteredItems);
+  
+  timelineContent.innerHTML = '';
+  
+  sortedItems.forEach(item => {
+    const status = getTrainingStatus(item.mulai, item.selesai);
+    const duration = calculateDuration(item.mulai, item.selesai);
+    
+    const timelineItem = document.createElement('div');
+    timelineItem.className = `timeline-item ${status}`;
+    
+    timelineItem.innerHTML = `
+      <div class="timeline-content">
+        <div class="timeline-date">${formatTimelineDate(item.mulai)}</div>
+        <div class="timeline-title-item">${item.paket || 'Pelatihan'}</div>
+        <div class="timeline-subtitle">${item.nama || 'Kegiatan pelatihan'}</div>
+        <div class="timeline-duration">
+          <span class="duration-badge">📅 ${duration}</span>
+          ${getStatusBadge(status)}
+          <span class="duration-badge">📍 ${formatTimelineDate(item.mulai)} - ${formatTimelineDate(item.selesai)}</span>
+        </div>
+        <div class="timeline-actions">
+          <button class="btn btn-outline-primary btn-sm" onclick='openEditModal(${item.row})'>
+            ✏️ Edit
+          </button>
+          <button class="btn btn-outline-danger btn-sm" onclick='hapus(${item.row})'>
+            🗑️ Hapus  
+          </button>
+        </div>
+      </div>
+    `;
+    
+    timelineContent.appendChild(timelineItem);
   });
 }
 
@@ -414,10 +788,28 @@ if(editForm){
   });
 }
 
-// Search & initial render
+// Timeline filter event listeners
+function initTimelineFilters() {
+  const filterButtons = document.querySelectorAll('.timeline-view-toggle .btn');
+  
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Remove active class from all buttons
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      // Add active class to clicked button
+      button.classList.add('active');
+      // Re-render timeline with new filter
+      render();
+    });
+  });
+}
+
+// Initial render
 document.addEventListener('DOMContentLoaded', ()=>{
-  const s = document.getElementById('searchTimeframe');
-  if(s) s.addEventListener('input', render);
+  // Initialize timeline filters
+  initTimelineFilters();
+  
+  // Initial render
   render();
 });
   </script>
