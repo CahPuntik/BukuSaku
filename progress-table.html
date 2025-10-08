@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Progress Table</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="theme-color" content="#fda085">
+  <style>
+    body {
+      background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+      min-height: 100vh;
+    }
+    
+    .btn-back {
+      background: linear-gradient(90deg, #f76b1c 60%, #fda085 100%);
+      color: #fff;
+      margin-top: 18px;
+      padding: 10px 36px;
+    }
+    .btn-back:hover {
+      background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
+      color: #fff;
+    }
+
+    .offcanvas {
+      background: #fff8f3;
+      border-top-right-radius: 18px;
+      border-bottom-right-radius: 18px;
+      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
+    }
+    .offcanvas-title {
+      color: #f76b1c;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .nav-link {
+      font-weight: 500;
+      color: #f76b1c;
+      border-radius: 8px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
+      color: #f76b1c;
+    }
+
+    .dashboard-container {
+      max-width: 900px;
+      margin: 10px auto;
+      padding: 28px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fda085 60%, #f6d365 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: #fff;
+      margin-right: 16px;
+      box-shadow: 0 2px 8px rgba(253,160,133,0.18);
+    }
+    
+    .dashboard-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f76b1c;
+      letter-spacing: 1px;
+    }
+
+    .admin-desc, .text-muted { 
+      color: #666; 
+    }
+
+    .form-row { 
+      gap: 12px; 
+      display: flex; 
+      flex-wrap: wrap; 
+      margin-bottom: 8px; 
+    }
+    .form-row > * { 
+      flex: 1 1 200px; 
+    }
+    
+    .form-select {
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      background-color: #fff;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-select:focus {
+      border-color: #fda085;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(253, 160, 133, 0.25);
+    }
+
+    /* Table general styling */
+    table td, table th { 
+      vertical-align: middle; 
+    }
+
+    /* Progress Table styling */
+    .progress-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      border: 1px solid #000;
+      background: #fff;
+      table-layout: fixed;
+    }
+    
+    .progress-table th,
+    .progress-table td {
+      border: 1px solid #000;
+      padding: 4px 2px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 10px;
+      word-wrap: break-word;
+    }
+
+    /* Header styling */
+    .main-header {
+      background: linear-gradient(135deg, #4472C4 0%, #5B9BD5 100%) !important;
+      color: white !important;
+      font-weight: bold;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    .sub-header {
+      background: linear-gradient(135deg, #9DC3E6 0%, #BDD7EE 100%) !important;
+      color: #000 !important;
+      font-weight: bold;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    /* Column specific styling */
+    .no-col { 
+      width: 40px;
+      background: linear-gradient(135deg, #D9E1F2 0%, #E7EFFA 100%) !important;
+      color: #000 !important;
+    }
+    
+    .nama-col { 
+      width: 150px;
+      background: linear-gradient(135deg, #D9E1F2 0%, #E7EFFA 100%) !important;
+      color: #000 !important;
+      text-align: center !important;
+    }
+
+    .nrp-col {
+      width: 80px;
+      background: linear-gradient(135deg, #D9E1F2 0%, #E7EFFA 100%) !important;
+      color: #000 !important;
+    }
+
+    /* Training stage columns with alternating light blue backgrounds */
+    .stage-col {
+      width: 50px;
+      background: linear-gradient(135deg, #E7F3FF 0%, #F0F8FF 100%) !important;
+    }
+
+    /* Progress columns - plan/actual */
+    .progress-col {
+      width: 45px;
+      font-size: 9px;
+      background: linear-gradient(135deg, #E7F3FF 0%, #F0F8FF 100%) !important;
+    }
+
+    /* DDT and Orientasi columns */
+    .single-col {
+      width: 50px;
+      background: linear-gradient(135deg, #F0F8FF 0%, #E7F3FF 100%) !important;
+    }
+
+    /* Total columns with yellow background */
+    .total-col {
+      width: 50px;
+      background: linear-gradient(135deg, #FFF2CC 0%, #FFEB9C 100%) !important;
+      font-weight: bold;
+      color: #000 !important;
+    }
+
+    /* Achievement column with green background */
+    .achievement-col {
+      width: 50px;
+      background: linear-gradient(135deg, #E2EFDA 0%, #C6E0B4 100%) !important;
+      font-weight: bold;
+      color: #000 !important;
+    }
+
+    /* OJT columns with orange background */
+    .ojt-col {
+      width: 45px;
+      background: linear-gradient(135deg, #FCE4D6 0%, #F8CBAD 100%) !important;
+      color: #000 !important;
+    }
+
+    /* Data rows without background colors */
+    .progress-table tbody tr:not(.average-row) {
+      background: transparent !important;
+    }
+
+    .progress-table tbody tr:not(.average-row) td {
+      background: transparent !important;
+    }
+
+    .progress-table tbody tr:not(.average-row):hover {
+      background: #f0f8ff !important;
+    }
+
+    .progress-table tbody tr:not(.average-row):hover td {
+      background: #f0f8ff !important;
+    }
+
+    /* Orange background for all P header cells */
+    .orange-header {
+      background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%) !important;
+      color: white !important;
+    }
+
+    /* Light blue background for all A header cells */
+    .light-blue-header {
+      background: linear-gradient(135deg, #87CEEB 0%, #ADD8E6 100%) !important;
+      color: #000 !important;
+    }
+
+    /* Average row styling */
+    .average-row {
+      background: linear-gradient(135deg, #FFEB9C 0%, #FFD966 100%) !important;
+      font-weight: bold;
+    }
+
+    .average-row td {
+      background: linear-gradient(135deg, #FFEB9C 0%, #FFD966 100%) !important;
+      font-weight: bold;
+      color: #000 !important;
+    }
+
+    /* Green background for average sub A columns */
+    .average-row td[data-field="avg_sim_a"],
+    .average-row td[data-field="avg_unit_a"],
+    .average-row td[data-field="avg_pend_op_a"],
+    .average-row td[data-field="avg_tanpa_a"],
+    .average-row td[data-field="avg_praktek_a"],
+    .average-row td[data-field="avg_ddt_a"],
+    .average-row td[data-field="avg_orientasi_a"],
+    .average-row td[data-field="avg_ojt_a"] {
+      background: linear-gradient(135deg, #90EE90 0%, #32CD32 100%) !important;
+      color: #000 !important;
+      font-weight: bold;
+    }
+
+    /* Red background for average sub P columns */
+    .average-row td[data-field="avg_sim_p"],
+    .average-row td[data-field="avg_unit_p"],
+    .average-row td[data-field="avg_pend_op_p"],
+    .average-row td[data-field="avg_tanpa_p"],
+    .average-row td[data-field="avg_praktek_p"],
+    .average-row td[data-field="avg_ddt_p"],
+    .average-row td[data-field="avg_orientasi_p"],
+    .average-row td[data-field="avg_ojt_p"] {
+      background: linear-gradient(135deg, #FFB6C1 0%, #f54165 100%) !important;
+      color: #fff !important;
+      font-weight: bold;
+    }
+
+    /* Editable cells */
+    .editable {
+      background: #fff !important;
+      cursor: text;
+      transition: background-color 0.2s ease;
+    }
+
+    .editable:hover {
+      background: #f0f8ff !important;
+    }
+
+    .editable:focus {
+      background: #e6f3ff !important;
+      outline: 2px solid #4472C4;
+    }
+
+    /* Horizontal scroll container */
+    .table-container {
+      overflow-x: auto;
+      max-width: 100%;
+      border: 2px solid #000;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #fda085 #f0f0f0;
+    }
+
+    .table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, #fda085, #f76b1c);
+      border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(90deg, #f76b1c, #fda085);
+    }
+
+    /* Responsive design */
+    @media (min-width: 1200px) {
+      .dashboard-container {
+        max-width: 1200px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-container {
+        padding: 18px 6px 16px 6px;
+        max-width: 90vw;
+      }
+      .dashboard-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+      }
+      .dashboard-title {
+        text-align: center;
+        width: 100%;
+      }
+      .avatar {
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
+      
+      .offcanvas.offcanvas-start {
+        width: 82%;
+        max-width: 360px;
+        left: 0;
+        top: 0;
+        height: 100%;
+        box-shadow: 2px 8px 40px rgba(0,0,0,0.12);
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+        font-size: 1.4rem;
+      }
+      
+      .offcanvas-backdrop {
+        background-color: rgba(0,0,0,0.35);
+      }
+      
+      .nav-buttons {
+        flex-wrap: nowrap;
+        gap: 8px;
+        justify-content: center;
+        margin: 15px 0;
+      }
+      
+      .btn-nav {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        flex: 1;
+        max-width: 48%;
+        min-width: 80px;
+      }
+      
+      .table-container {
+        margin: 15px 0;
+        border-radius: 8px;
+        border: 2px solid #000;
+      }
+      
+      .progress-table {
+        font-size: 7px;
+        min-width: 800px;
+      }
+      
+      .progress-table th,
+      .progress-table td {
+        padding: 3px 1px;
+        font-size: 6px;
+        line-height: 1.2;
+      }
+      
+      .action-buttons {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      
+      .action-buttons button {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+        flex: 1 1 calc(50% - 4px);
+        min-width: 120px;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .form-row > * {
+        flex: 1 1 auto;
+      }
+      
+      .respon-container {
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+        font-size: 0.85rem;
+      }
+      
+      .respon-container h5 {
+        font-size: 1rem;
+      }
+      
+      .respon-container .form-label {
+        font-size: 0.8rem;
+      }
+      
+      .respon-container .btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+      }
+      
+      .respon-container .card {
+        font-size: 0.8rem;
+      }
+      
+      .respon-container .card-title {
+        font-size: 0.9rem;
+      }
+      
+      .respon-container .form-control,
+      .respon-container .form-select {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Extra small screens */
+    @media (max-width: 480px) {
+      .dashboard-container {
+        padding: 10px;
+      }
+      
+      .nav-buttons {
+        gap: 5px;
+      }
+      
+      .avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+      }
+      
+      .dashboard-title {
+        font-size: 1.1rem;
+      }
+      
+      .btn-nav {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+        flex: 1;
+        max-width: 48%;
+      }
+      
+      .progress-table {
+        font-size: 6px;
+      }
+      
+      .progress-table th,
+      .progress-table td {
+        padding: 2px 1px;
+        font-size: 5px;
+      }
+      
+      .action-buttons button {
+        flex: 1 1 100%;
+        margin-bottom: 5px;
+      }
+      
+      .respon-container {
+        font-size: 0.75rem;
+        padding: 12px;
+      }
+      
+      .respon-container h5 {
+        font-size: 0.9rem;
+      }
+      
+      .respon-container .form-label {
+        font-size: 0.7rem;
+      }
+      
+      .respon-container .btn {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+      }
+      
+      .respon-container .card {
+        font-size: 0.7rem;
+      }
+      
+      .respon-container .card-title {
+        font-size: 0.8rem;
+      }
+      
+      .respon-container .form-control,
+      .respon-container .form-select {
+        font-size: 0.75rem;
+        padding: 6px 8px;
+      }
+    }
+
+    /* Tablet */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .dashboard-container {
+        max-width: 720px;
+        padding: 24px;
+      }
+      
+      .progress-table {
+        font-size: 9px;
+      }
+      
+      .progress-table th,
+      .progress-table td {
+        padding: 3px 2px;
+        font-size: 8px;
+      }
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-save {
+      background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+      background: linear-gradient(90deg, #20c997 0%, #28a745 100%);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-clear {
+      background: linear-gradient(90deg, #6c757d 0%, #495057 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-clear:hover {
+      background: linear-gradient(90deg, #495057 0%, #6c757d 100%);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Navigation buttons */
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-nav {
+      background: linear-gradient(90deg, #6c757d 0%, #495057 100%);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-nav:hover {
+      background: linear-gradient(90deg, #495057 0%, #6c757d 100%);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-nav.active {
+      background: linear-gradient(90deg, #f76b1c 0%, #fda085 100%);
+      color: white;
+    }
+
+    .btn-nav.active:hover {
+      background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Section content */
+    .section-content {
+      display: none;
+    }
+
+    .section-content.active {
+      display: block;
+    }
+
+    /* Respon section styling */
+    .respon-container {
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border: 1px solid #dee2e6;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .form-control {
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      background-color: #fff;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-control:focus {
+      border-color: #fda085;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(253, 160, 133, 0.25);
+    }
+
+    .data-display .card {
+      border: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .data-display .card-header {
+      border-bottom: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tombol buka sidebar dan kembali -->
+    <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰ Menu</button>
+  </div>
+
+  <!-- Sidebar (sinkronkan ke halaman lain) -->
+  <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">📚 Buku Saku</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body px-2">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠 Dashboard</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑 Prosedur</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️ Administrasi</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="progress-table.html">⏰ Update HM</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="login.html">🚪 Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <div class="avatar">⏰</div>
+      <div class="dashboard-title">Update HM</div>
+    </div>
+    
+    <div class="mb-3 text-center">
+      <p class="admin-desc mb-0">Tabel perolehan jam praktek dengan format yang sama dengan Summary pada spreadsheet.</p>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons mb-3">
+      <button class="btn btn-nav active" id="summaryBtn" onclick="showSection('summary')">⏰ SUMMARY</button>
+      <button class="btn btn-nav" id="responBtn" onclick="showSection('respon')">📋 RESPON</button>
+    </div>
+
+    <!-- Summary Section (Table) -->
+    <div id="summarySection" class="section-content active">
+
+    <!-- Progress Table -->
+    <div class="table-container">
+      <table class="progress-table" id="progressTable">
+        <thead>
+          <tr>
+            <th rowspan="3" class="no-col main-header">NO</th>
+            <th rowspan="3" class="nama-col main-header">NAMA</th>
+            <th rowspan="3" class="nrp-col main-header">NRP</th>
+            <th colspan="4" class="main-header">PENDAMPINGAN INSTRUKTUR</th>
+            <th colspan="2" rowspan="2" class="main-header">PENDAMPINGAN OPERATOR</th>
+            <th colspan="2" rowspan="2" class="main-header">TANPA PENDAMPINGAN</th>
+            <th colspan="2" rowspan="2" class="main-header">PRAKTEK MALAM</th>
+            <th colspan="2" rowspan="2" class="main-header">DDT</th>
+            <th colspan="2" rowspan="2" class="main-header">ORIENTASI UNIT LAIN</th>
+            <th rowspan="3" class="achievement-col main-header">TOTAL PLAN</th>
+            <th rowspan="3" class="achievement-col main-header">TOTAL ACTUAL</th>
+            <th rowspan="3" class="achievement-col main-header">ACHIEVEMENT</th>
+            <th colspan="2" rowspan="2" class="main-header">OJT</th>
+          </tr>
+          <tr>
+            <th colspan="2" class="sub-header">SIMULATOR</th>
+            <th colspan="2" class="sub-header">UNIT</th>
+          </tr>
+          <tr>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+            <th class="progress-col sub-header orange-header">P</th>
+            <th class="progress-col sub-header light-blue-header">A</th>
+          </tr>
+        </thead>
+        <tbody id="progressBody">
+          <!-- Data rows will be generated here -->
+        </tbody>
+      </table>
+    </div>
+    </div>
+
+    <!-- Respon Section (Data) -->
+    <div id="responSection" class="section-content">
+      <div class="respon-container">
+        <h5 class="mb-3">📋 Data Response</h5>
+        
+        <!-- Training Data Dropdown -->
+        <div class="mb-4">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <label for="trainingSelect" class="form-label fw-bold">📚 Pilih Data Pelatihan:</label>
+              <select class="form-select" id="trainingSelect" onchange="loadTrainingData()">
+                <option value="">-- Pilih Pelatihan --</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-success" onclick="showAddForm()">
+                  ➕ Tambah
+                </button>
+                <button class="btn btn-warning" onclick="showEditForm()">
+                  ✏️ Edit
+                </button>
+                <button class="btn btn-danger" onclick="showDeleteForm()">
+                  🗑️ Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Training Form Modal -->
+        <div class="modal fade" id="addTrainingModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Tambah Data Pelatihan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <form id="trainingForm">
+                  <div class="mb-3">
+                    <label for="programPelatihan" class="form-label">Program Pelatihan *</label>
+                    <select class="form-select" id="programPelatihan" required>
+                      <option value="">-- Pilih Program Pelatihan --</option>
+                      <option value="OPP">OPP</option>
+                      <option value="OPP TS">OPP TS</option>
+                      <option value="OCD INTERNAL">OCD INTERNAL</option>
+                      <option value="OCD INTERNAL TS">OCD INTERNAL TS</option>
+                      <option value="OCD EKSTERNAL">OCD EKSTERNAL</option>
+                      <option value="OCD EKSTERNAL TS">OCD EKSTERNAL TS</option>
+                      <option value="OSO INTERNAL">OSO INTERNAL</option>
+                      <option value="OSO INTERNAL TS">OSO INTERNAL TS</option>
+                      <option value="OSO EKSTERNAL">OSO EKSTERNAL</option>
+                      <option value="OSO EKSTERNAL TS">OSO EKSTERNAL TS</option>
+                      <option value="ORP">ORP</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="classId" class="form-label">Class ID *</label>
+                    <input type="text" class="form-control" id="classId" placeholder="Contoh: OSOHDT2525" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="trainingLink" class="form-label">Link *</label>
+                    <input type="url" class="form-control" id="trainingLink" placeholder="https://..." required>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success" onclick="saveTrainingData()">💾 Simpan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Training Form Modal -->
+        <div class="modal fade" id="deleteTrainingModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">🗑️ Hapus Data Pelatihan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-warning" role="alert">
+                  <strong>⚠️ Peringatan!</strong> Data yang dihapus tidak dapat dikembalikan.
+                </div>
+                <div class="mb-3">
+                  <label for="deleteTrainingSelect" class="form-label">Pilih Data yang akan dihapus:</label>
+                  <select class="form-select" id="deleteTrainingSelect">
+                    <option value="">-- Pilih data untuk dihapus --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteTraining()">
+                  🗑️ Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Training Form Modal -->
+        <div class="modal fade" id="editTrainingModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">✏️ Edit Data Pelatihan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="editTrainingSelect" class="form-label">Pilih Data yang akan diedit:</label>
+                  <select class="form-select" id="editTrainingSelect" onchange="loadEditData()">
+                    <option value="">-- Pilih data untuk diedit --</option>
+                  </select>
+                </div>
+                <form id="editTrainingForm">
+                  <div class="mb-3">
+                    <label for="editProgramPelatihan" class="form-label">Program Pelatihan *</label>
+                    <select class="form-select" id="editProgramPelatihan" required>
+                      <option value="">-- Pilih Program Pelatihan --</option>
+                      <option value="OPP">OPP</option>
+                      <option value="OPP TS">OPP TS</option>
+                      <option value="OCD INTERNAL">OCD INTERNAL</option>
+                      <option value="OCD INTERNAL TS">OCD INTERNAL TS</option>
+                      <option value="OCD EKSTERNAL">OCD EKSTERNAL</option>
+                      <option value="OCD EKSTERNAL TS">OCD EKSTERNAL TS</option>
+                      <option value="OSO INTERNAL">OSO INTERNAL</option>
+                      <option value="OSO INTERNAL TS">OSO INTERNAL TS</option>
+                      <option value="OSO EKSTERNAL">OSO EKSTERNAL</option>
+                      <option value="OSO EKSTERNAL TS">OSO EKSTERNAL TS</option>
+                      <option value="ORP">ORP</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="editClassId" class="form-label">Class ID *</label>
+                    <input type="text" class="form-control" id="editClassId" placeholder="Contoh: OSOHDT2525" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="editTrainingLink" class="form-label">Link *</label>
+                    <input type="url" class="form-control" id="editTrainingLink" placeholder="https://..." required>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-warning" onclick="saveEditTraining()">
+                  ✏️ Update
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-display" id="dataSummary">
+          <p class="text-muted">Data akan ditampilkan setelah memilih sumber pelatihan...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back button -->
+    <div class="text-center">
+      <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Initialize table data
+    let tableData = [];
+    
+    // Initialize training data
+    let trainingDataList = [];
+    
+    // Store current displayed data state
+    let currentDisplayedData = null;
+    let selectedTrainingSource = null;
+
+    // Load training data from localStorage
+    function loadTrainingList() {
+      const savedTraining = localStorage.getItem('trainingDataList');
+      if (savedTraining) {
+        trainingDataList = JSON.parse(savedTraining);
+        
+        // Migrate old data format to new format if needed
+        let needsMigration = false;
+        trainingDataList.forEach((training, index) => {
+          if (!training.programPelatihan && !training.classId && training.name) {
+            // Old format detected, migrate it
+            trainingDataList[index] = {
+              programPelatihan: training.name.split(' - ')[0] || training.name,
+              classId: training.name.split(' - ')[1] || 'Legacy',
+              link: training.link,
+              name: training.name,
+              dateAdded: training.dateAdded,
+              lastUpdated: training.lastUpdated
+            };
+            needsMigration = true;
+          } else if (training.programPelatihan && training.classId && !training.name) {
+            // Ensure name property exists
+            trainingDataList[index].name = `${training.programPelatihan} - ${training.classId}`;
+            needsMigration = true;
+          }
+        });
+        
+        // Save migrated data
+        if (needsMigration) {
+          localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+        }
+        
+        updateTrainingDropdown();
+      }
+    }
+
+    // Update training dropdown options
+    function updateTrainingDropdown() {
+      const select = document.getElementById('trainingSelect');
+      if (!select) return;
+      
+      // Clear existing options except the first one
+      select.innerHTML = '<option value="">-- Pilih Pelatihan --</option>';
+      
+      // Add training options
+      trainingDataList.forEach((training, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = training.name;
+        select.appendChild(option);
+      });
+      
+      // Restore previous selection if it exists and is still valid
+      if (selectedTrainingSource !== null && selectedTrainingSource < trainingDataList.length) {
+        select.value = selectedTrainingSource;
+      }
+    }
+
+    // Show add training form
+    function showAddForm() {
+      const modal = new bootstrap.Modal(document.getElementById('addTrainingModal'));
+      // Clear form
+      document.getElementById('trainingForm').reset();
+      modal.show();
+    }
+
+    // Save training data
+    function saveTrainingData() {
+      const name = document.getElementById('trainingName').value.trim();
+      const link = document.getElementById('trainingLink').value.trim();
+      
+      if (!name || !link) {
+        alert('Semua field harus diisi!');
+        return;
+      }
+      
+      // Validate URL
+      try {
+        new URL(link);
+      } catch (e) {
+        alert('Link tidak valid! Gunakan format: https://...');
+        return;
+      }
+      
+      // Add to training list
+      trainingDataList.push({
+        name: name,
+        link: link,
+        dateAdded: new Date().toISOString()
+      });
+      
+      // Save to localStorage
+      localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+      
+      // Update dropdown
+      updateTrainingDropdown();
+      
+      // Close modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('addTrainingModal'));
+      modal.hide();
+      
+      alert('Data pelatihan berhasil disimpan!');
+    }
+
+    // Load selected training data
+    function loadTrainingData() {
+      const select = document.getElementById('trainingSelect');
+      const selectedIndex = select.value;
+      
+      if (selectedIndex === '') {
+        // Clear displayed data if no selection
+        currentDisplayedData = null;
+        selectedTrainingSource = null;
+        const dataSummary = document.getElementById('dataSummary');
+        dataSummary.innerHTML = '<p class="text-muted">Data akan ditampilkan setelah memilih sumber pelatihan...</p>';
+        
+        // Clear table data when no source is selected
+        clearTableData();
+        return;
+      }
+      
+      const training = trainingDataList[selectedIndex];
+      if (training) {
+        // Store selected source
+        selectedTrainingSource = selectedIndex;
+        
+        // Immediately populate plan columns based on selected program
+        populatePlanColumnsForProgram(training.programPelatihan);
+        
+        // Fetch data from Google Sheets via GAS
+        fetchGoogleSheetsData(training.link, training.name);
+      }
+    }
+
+    // Fetch data from Google Sheets via Google Apps Script
+    async function fetchGoogleSheetsData(gasUrl, trainingName) {
+      try {
+        // Show loading message
+        const dataSummary = document.getElementById('dataSummary');
+        dataSummary.innerHTML = `
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Mengambil data dari: <strong>${trainingName}</strong></p>
+          </div>
+        `;
+
+        // Fetch data from GAS endpoint
+        const response = await fetch(gasUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Display the fetched data
+        displayGoogleSheetsData(data, trainingName);
+        
+      } catch (error) {
+        console.error('Error fetching Google Sheets data:', error);
+        
+        // Clear table data on error
+        clearTableData();
+        
+        // Show error message
+        const dataSummary = document.getElementById('dataSummary');
+        dataSummary.innerHTML = `
+          <div class="alert alert-danger" role="alert">
+            <strong>❌ Error!</strong> Gagal mengambil data dari Google Sheets.
+            <br><small>Error: ${error.message}</small>
+            <br><small>Pastikan link GAS sudah benar dan dapat diakses.</small>
+          </div>
+        `;
+      }
+    }
+
+    // Display Google Sheets data in a formatted way
+    function displayGoogleSheetsData(data, trainingName) {
+      const dataSummary = document.getElementById('dataSummary');
+      
+      if (!data || !data.values || data.values.length === 0) {
+        dataSummary.innerHTML = `
+          <div class="alert alert-warning" role="alert">
+            <strong>⚠️ Peringatan!</strong> Tidak ada data ditemukan di sheet "Form Responses 1".
+          </div>
+        `;
+        return;
+      }
+
+      // Get headers (first row) and data rows
+      const headers = data.values[0];
+      const rows = data.values.slice(1);
+
+      // Store current data for persistence
+      currentDisplayedData = {
+        data: data,
+        trainingName: trainingName,
+        headers: headers,
+        rows: rows,
+        timestamp: new Date().toISOString()
+      };
+
+      // Create table HTML
+      let tableHtml = `
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Data dari: ${trainingName}</h5>
+            <small>Sheet: Form Responses 1 | Total Records: ${rows.length}</small>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+              <table class="table table-striped table-bordered table-sm">
+                <thead class="table-dark sticky-top">
+                  <tr>
+      `;
+
+      // Add headers
+      headers.forEach(header => {
+        tableHtml += `<th style="min-width: 120px;">${header}</th>`;
+      });
+
+      tableHtml += `
+                  </tr>
+                </thead>
+                <tbody>
+      `;
+
+      // Add data rows
+      rows.forEach((row, index) => {
+        tableHtml += `<tr>`;
+        headers.forEach((header, colIndex) => {
+          const cellValue = row[colIndex] || '';
+          // Format numeric values to avoid floating point precision issues
+          let displayValue = cellValue;
+          if (typeof cellValue === 'number' && !isNaN(cellValue)) {
+            // Round to 1 decimal place and remove unnecessary zeros
+            displayValue = parseFloat(cellValue.toFixed(1));
+          } else if (typeof cellValue === 'string' && !isNaN(parseFloat(cellValue))) {
+            // Handle string numbers
+            const numValue = parseFloat(cellValue);
+            displayValue = parseFloat(numValue.toFixed(1));
+          }
+          tableHtml += `<td>${displayValue}</td>`;
+        });
+        tableHtml += `</tr>`;
+      });
+
+      tableHtml += `
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-3">
+              <button class="btn btn-info btn-sm" onclick="refreshGoogleSheetsData()">
+                🔄 Refresh Data
+              </button>
+          </div>
+        </div>
+      `;
+
+      dataSummary.innerHTML = tableHtml;
+      
+      // Store current data
+      window.currentGoogleSheetsData = { headers, rows, trainingName };
+      
+      // Automatically populate nama and nrp when data is displayed
+      setTimeout(() => {
+        autoPopulateDataToTable();
+      }, 100); // Small delay to ensure DOM is updated
+    }
+
+    // Automatically populate data to table (without alerts)
+    function autoPopulateDataToTable() {
+      if (!window.currentGoogleSheetsData) {
+        return;
+      }
+
+      const { headers, rows } = window.currentGoogleSheetsData;
+      
+      // Find NRP and NAMA column indexes
+      let nrpColumnIndex = -1;
+      let namaColumnIndex = -1;
+      let tahapanColumnIndex = -1;
+      let hmAwalColumnIndex = -1;
+      let hmAkhirColumnIndex = -1;
+      
+      headers.forEach((header, index) => {
+        const normalizedHeader = header.toLowerCase().trim();
+        if (['nrp', 'id', 'employee_id', 'emp_id'].includes(normalizedHeader)) {
+          nrpColumnIndex = index;
+        }
+        if (['nama', 'name', 'peserta', 'participant', 'nama siswa'].includes(normalizedHeader)) {
+          namaColumnIndex = index;
+        }
+        if (['tahapan pelatihan', 'tahapan', 'phase', 'training phase'].includes(normalizedHeader)) {
+          tahapanColumnIndex = index;
+        }
+        if (['hm awal', 'jam awal', 'initial hours', 'start hours'].includes(normalizedHeader)) {
+          hmAwalColumnIndex = index;
+        }
+        if (['hm akhir', 'jam akhir', 'final hours', 'end hours'].includes(normalizedHeader)) {
+          hmAkhirColumnIndex = index;
+        }
+      });
+
+      if (nrpColumnIndex === -1 || namaColumnIndex === -1) {
+        return; // Silently fail if basic columns not found
+      }
+
+      // Extract unique NRP values with their names
+      const uniqueNRPData = [];
+      const nrpSet = new Set();
+
+      rows.forEach(row => {
+        const nrp = row[nrpColumnIndex] ? row[nrpColumnIndex].toString().trim() : '';
+        const nama = row[namaColumnIndex] ? row[namaColumnIndex].toString().trim() : '';
+        
+        if (nrp && nama && !nrpSet.has(nrp)) {
+          nrpSet.add(nrp);
+          uniqueNRPData.push({ nrp, nama });
+        }
+      });
+
+      if (uniqueNRPData.length === 0) {
+        return; // No valid data found
+      }
+
+      // Check current table rows and add more if needed
+      const currentRows = document.querySelectorAll('#progressBody tr:not(.average-row)').length;
+      const neededRows = uniqueNRPData.length;
+
+      if (neededRows > currentRows) {
+        const additionalRows = neededRows - currentRows;
+        for (let i = 0; i < additionalRows; i++) {
+          addRowForNRP();
+        }
+      }
+
+      // Clear existing data
+      tableData = [];
+
+      // Populate NRP and NAMA data
+      uniqueNRPData.forEach((data, index) => {
+        const rowNumber = index + 1;
+        
+        // Fill NRP
+        const nrpCell = document.querySelector(`[data-row="${rowNumber}"][data-field="nrp"]`);
+        if (nrpCell) {
+          nrpCell.textContent = data.nrp;
+        }
+        
+        // Fill NAMA
+        const namaCell = document.querySelector(`[data-row="${rowNumber}"][data-field="nama"]`);
+        if (namaCell) {
+          namaCell.textContent = data.nama;
+        }
+
+        // Initialize tableData
+        tableData[index] = {
+          nrp: data.nrp,
+          nama: data.nama
+        };
+      });
+
+      // Calculate and populate training hours if HM columns are available
+      if (tahapanColumnIndex !== -1 && hmAwalColumnIndex !== -1 && hmAkhirColumnIndex !== -1) {
+        calculateAndPopulateTrainingHours(rows, nrpColumnIndex, tahapanColumnIndex, hmAwalColumnIndex, hmAkhirColumnIndex, uniqueNRPData);
+      }
+
+      // Recalculate totals after populating all data
+      recalculateAllTotals();
+      
+      // Also recalculate Total Plan in case plan values were populated
+      calculateAllTotalPlan();
+
+      // Check if selected training program has predefined plan values and populate plan columns
+      const selectedIndex = selectedTrainingSource;
+      if (selectedIndex !== null && trainingDataList[selectedIndex]) {
+        const training = trainingDataList[selectedIndex];
+        populatePlanColumnsForProgram(training.programPelatihan);
+      }
+
+      // Clear remaining rows if any
+      const allRows = document.querySelectorAll('#progressBody tr:not(.average-row)');
+      for (let i = uniqueNRPData.length; i < allRows.length; i++) {
+        const rowNumber = i + 1;
+        const editableCells = document.querySelectorAll(`[data-row="${rowNumber}"].editable`);
+        editableCells.forEach(cell => {
+          if (cell.getAttribute('data-field') !== 'nrp' && cell.getAttribute('data-field') !== 'nama') {
+            cell.textContent = '';
+          }
+        });
+      }
+
+      // Save to localStorage
+      localStorage.setItem('progressTableData', JSON.stringify(tableData));
+    }
+
+    // Calculate and populate training hours based on NRP and training phases
+    function calculateAndPopulateTrainingHours(rows, nrpColumnIndex, tahapanColumnIndex, hmAwalColumnIndex, hmAkhirColumnIndex, uniqueNRPData) {
+      // Training phase mapping to table columns
+      const phaseMapping = {
+        'pendampingan instruktur simulator': 'sim_a',
+        'pendampingan instruktur unit': 'unit_a',
+        'pendampingan operator': 'pend_op_a',
+        'tanpa pendampingan': 'tanpa_a',
+        'praktek malam': 'praktek_a',
+        'ddt': 'ddt_a',
+        'orientasi unit lain': 'orientasi_a',
+        'ojt': 'ojt_a'
+      };
+
+      // Accumulate hours by NRP and phase
+      const hoursAccumulation = {};
+
+      rows.forEach(row => {
+        const nrp = row[nrpColumnIndex] ? row[nrpColumnIndex].toString().trim() : '';
+        const tahapan = row[tahapanColumnIndex] ? row[tahapanColumnIndex].toString().toLowerCase().trim() : '';
+        const hmAwal = parseFloat(row[hmAwalColumnIndex]) || 0;
+        const hmAkhir = parseFloat(row[hmAkhirColumnIndex]) || 0;
+        
+        if (nrp && tahapan && (hmAkhir > 0 || hmAwal > 0)) {
+          const jamAkumulasi = hmAkhir - hmAwal;
+          
+          if (!hoursAccumulation[nrp]) {
+            hoursAccumulation[nrp] = {};
+          }
+          
+          // Find matching phase
+          const mappedField = findMatchingPhase(tahapan, phaseMapping);
+          if (mappedField) {
+            if (!hoursAccumulation[nrp][mappedField]) {
+              hoursAccumulation[nrp][mappedField] = 0;
+            }
+            hoursAccumulation[nrp][mappedField] += jamAkumulasi;
+          }
+        }
+      });
+
+      // Get all training phase fields to populate
+      const allTrainingFields = ['sim_a', 'unit_a', 'pend_op_a', 'tanpa_a', 'praktek_a', 'ddt_a', 'orientasi_a', 'ojt_a'];
+      
+      // Populate the table with accumulated hours
+      Object.keys(hoursAccumulation).forEach(nrp => {
+        // Find the row number for this NRP
+        const nrpCell = document.querySelector(`[data-field="nrp"][textContent="${nrp}"], [data-field="nrp"]`);
+        let rowNumber = null;
+        
+        // Find the correct row by checking NRP content
+        const allNrpCells = document.querySelectorAll('[data-field="nrp"]');
+        allNrpCells.forEach(cell => {
+          if (cell.textContent.trim() === nrp) {
+            rowNumber = cell.getAttribute('data-row');
+          }
+        });
+
+        if (rowNumber) {
+          const rowIndex = parseInt(rowNumber) - 1;
+          
+          // Populate all training fields
+          allTrainingFields.forEach(field => {
+            const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+            
+            if (cell) {
+              const hours = hoursAccumulation[nrp][field] || 0;
+              cell.textContent = hours > 0 ? hours.toFixed(1) : '0';
+              
+              // Update tableData
+              if (!tableData[rowIndex]) {
+                tableData[rowIndex] = {};
+              }
+              tableData[rowIndex][field] = hours > 0 ? hours.toFixed(1) : '0';
+            }
+          });
+          
+          // Calculate Total Actual for this row immediately
+          calculateTotalActualForRow(rowNumber);
+        }
+      });
+
+      // Also populate zeros for NRPs that have no training data at all
+      uniqueNRPData.forEach((data, index) => {
+        const nrp = data.nrp;
+        const rowNumber = index + 1;
+        const rowIndex = index;
+        
+        // If this NRP has no training hours data, fill all fields with 0
+        if (!hoursAccumulation[nrp]) {
+          allTrainingFields.forEach(field => {
+            const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+            
+            if (cell) {
+              cell.textContent = '0';
+              
+              // Update tableData
+              if (!tableData[rowIndex]) {
+                tableData[rowIndex] = {};
+              }
+              tableData[rowIndex][field] = '0';
+            }
+          });
+          
+          // Calculate Total Actual for this row (should be 0)
+          calculateTotalActualForRow(rowNumber);
+        }
+      });
+
+      // Calculate and populate Total Actual (sum of all sub A columns except OJT)
+      uniqueNRPData.forEach((data, index) => {
+        const rowNumber = index + 1;
+        const rowIndex = index;
+        
+        // Fields to include in total (all sub A columns except ojt_a)
+        const fieldsForTotal = ['sim_a', 'unit_a', 'pend_op_a', 'tanpa_a', 'praktek_a', 'ddt_a', 'orientasi_a'];
+        
+        let totalActual = 0;
+        fieldsForTotal.forEach(field => {
+          const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+          if (cell) {
+            const value = parseFloat(cell.textContent) || 0;
+            totalActual += value;
+          }
+        });
+        
+        // Update Total Actual cell
+        const totalActualCell = document.querySelector(`[data-row="${rowNumber}"][data-field="total_a"]`);
+        if (totalActualCell) {
+          totalActualCell.textContent = totalActual.toFixed(1);
+          
+          // Update tableData
+          if (!tableData[rowIndex]) {
+            tableData[rowIndex] = {};
+          }
+          tableData[rowIndex]['total_a'] = totalActual.toFixed(1);
+        } else {
+          // Skip if Total Actual cell not found
+        }
+      });
+      
+      // Calculate achievements for all populated rows
+      for (let i = 1; i <= 5; i++) {
+        calculateAchievementForRow(i);
+      }
+    }
+
+    // Find matching training phase
+    function findMatchingPhase(tahapan, phaseMapping) {
+      const normalizedTahapan = tahapan.toLowerCase().trim();
+      
+      // Direct mapping check
+      if (phaseMapping[normalizedTahapan]) {
+        return phaseMapping[normalizedTahapan];
+      }
+      
+      // Partial matching for more flexible recognition
+      for (const [phase, field] of Object.entries(phaseMapping)) {
+        if (normalizedTahapan.includes(phase) || phase.includes(normalizedTahapan)) {
+          return field;
+        }
+      }
+      
+      // Additional flexible matching
+      if (normalizedTahapan.includes('simulator') || normalizedTahapan.includes('sim')) {
+        return 'sim_a';
+      }
+      if (normalizedTahapan.includes('unit') && normalizedTahapan.includes('instruktur')) {
+        return 'unit_a';
+      }
+      if (normalizedTahapan.includes('operator')) {
+        return 'pend_op_a';
+      }
+      if (normalizedTahapan.includes('tanpa') || normalizedTahapan.includes('mandiri')) {
+        return 'tanpa_a';
+      }
+      if (normalizedTahapan.includes('malam') || normalizedTahapan.includes('night')) {
+        return 'praktek_a';
+      }
+      if (normalizedTahapan.includes('ddt')) {
+        return 'ddt_a';
+      }
+      if (normalizedTahapan.includes('orientasi')) {
+        return 'orientasi_a';
+      }
+      if (normalizedTahapan.includes('ojt')) {
+        return 'ojt_a';
+      }
+      
+      return null; // No matching phase found
+    }
+
+    // Populate Plan columns based on training program
+    function populatePlanColumnsForProgram(programPelatihan) {
+      // Plan values for different training programs based on the provided data
+      const programPlanValues = {
+        'OPP': {
+          sim_p: '8',        // Simulator P
+          unit_p: '33',      // Unit P  
+          pend_op_p: '53.5', // Pendampingan Operator P
+          tanpa_p: '7.5',    // Tanpa Pendampingan P
+          praktek_p: '36',   // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29.5' // Orientasi Unit Lain P
+        },
+        'OPP TS': {
+          sim_p: '0',        // Simulator P
+          unit_p: '35',      // Unit P  
+          pend_op_p: '53.5', // Pendampingan Operator P
+          tanpa_p: '7.5',    // Tanpa Pendampingan P
+          praktek_p: '36',   // Praktek Malam P
+          ddt_p: '7',        // DDT P
+          orientasi_p: '29'  // Orientasi Unit Lain P
+        },
+        'OCD INTERNAL': {
+          sim_p: '9',        // Simulator P
+          unit_p: '20',      // Unit P  
+          pend_op_p: '25',   // Pendampingan Operator P
+          tanpa_p: '18',     // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29'  // Orientasi Unit Lain P
+        },
+        'OCD INTERNAL TS': {
+          sim_p: '0',        // Simulator P
+          unit_p: '16',      // Unit P  
+          pend_op_p: '25',   // Pendampingan Operator P
+          tanpa_p: '18',     // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29'  // Orientasi Unit Lain P
+        },
+        'OCD EKSTERNAL': {
+          sim_p: '9',        // Simulator P
+          unit_p: '20',      // Unit P  
+          pend_op_p: '25',   // Pendampingan Operator P
+          tanpa_p: '18',     // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29',  // Orientasi Unit Lain P
+          ojt_p: '74'        // OJT P (not provided, assuming 0)
+        },
+        'OCD EKSTERNAL TS': {
+          sim_p: '0',        // Simulator P
+          unit_p: '16',      // Unit P  
+          pend_op_p: '25',   // Pendampingan Operator P
+          tanpa_p: '18',     // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29',  // Orientasi Unit Lain P
+          ojt_p: '74'        // OJT P (not provided, assuming 0)
+        },
+        'OSO INTERNAL': {
+          sim_p: '9',        // Simulator P
+          unit_p: '8',       // Unit P  
+          pend_op_p: '7',    // Pendampingan Operator P
+          tanpa_p: '8',      // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29'  // Orientasi Unit Lain P
+        },
+        'OSO INTERNAL TS': {
+          sim_p: '0',        // Simulator P
+          unit_p: '2',       // Unit P  
+          pend_op_p: '7',    // Pendampingan Operator P
+          tanpa_p: '8',      // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29'  // Orientasi Unit Lain P
+        },
+        'OSO EKSTERNAL': {
+          sim_p: '9',        // Simulator P
+          unit_p: '13',      // Unit P  
+          pend_op_p: '14',   // Pendampingan Operator P
+          tanpa_p: '16',     // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29',  // Orientasi Unit Lain P
+          ojt_p: '44'        // OJT P (not provided, assuming 0)
+        },
+        'OSO EKSTERNAL TS': {
+          sim_p: '0',        // Simulator P
+          unit_p: '9',       // Unit P  
+          pend_op_p: '14',   // Pendampingan Operator P
+          tanpa_p: '16',     // Tanpa Pendampingan P
+          praktek_p: '8',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '29',  // Orientasi Unit Lain P
+          ojt_p: '44'        // OJT P (not provided, assuming 0)
+        },
+        'ORP': {
+          sim_p: '0',        // Simulator P
+          unit_p: '0',       // Unit P  
+          pend_op_p: '0',    // Pendampingan Operator P
+          tanpa_p: '4',      // Tanpa Pendampingan P
+          praktek_p: '0',    // Praktek Malam P
+          ddt_p: '4',        // DDT P
+          orientasi_p: '0'   // Orientasi Unit Lain P
+        }
+      };
+
+      // Check if the program has predefined plan values
+      const planValues = programPlanValues[programPelatihan];
+      if (!planValues) {
+        // No predefined values for this program
+        return;
+      }
+
+      // Get all rows (including empty ones for immediate plan population)
+      const allRows = document.querySelectorAll('#progressBody tr:not(.average-row)');
+      
+      allRows.forEach((row, index) => {
+        const rowNumber = index + 1;
+        
+        // Populate plan columns for all rows when training source is selected
+        Object.keys(planValues).forEach(field => {
+          const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+          if (cell) {
+            cell.textContent = planValues[field];
+            
+            // Update tableData
+            if (!tableData[index]) {
+              tableData[index] = {};
+            }
+            tableData[index][field] = planValues[field];
+          }
+        });
+      });
+
+      // Save to localStorage
+      localStorage.setItem('progressTableData', JSON.stringify(tableData));
+      
+      // Calculate Total Plan after populating plan values
+      calculateAllTotalPlan();
+    }
+
+    // Calculate Total Plan for all rows
+    function calculateAllTotalPlan() {
+      const allRows = document.querySelectorAll('#progressBody tr:not(.average-row)');
+      
+      allRows.forEach((row, index) => {
+        const rowNumber = index + 1;
+        calculateTotalPlanForRow(rowNumber);
+      });
+    }
+
+    // Calculate Total Plan for specific row
+    function calculateTotalPlanForRow(rowNumber) {
+      const fieldsForTotal = ['sim_p', 'unit_p', 'pend_op_p', 'tanpa_p', 'praktek_p', 'ddt_p', 'orientasi_p'];
+      
+      let totalPlan = 0;
+      fieldsForTotal.forEach(field => {
+        const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+        if (cell && cell.textContent.trim() !== '') {
+          const value = parseFloat(cell.textContent) || 0;
+          totalPlan += value;
+        }
+      });
+      
+      // Update Total Plan cell
+      const totalPlanCell = document.querySelector(`[data-row="${rowNumber}"][data-field="total_p"]`);
+      if (totalPlanCell) {
+        totalPlanCell.textContent = totalPlan.toFixed(1);
+        
+        // Update tableData
+        const rowIndex = parseInt(rowNumber) - 1;
+        if (!tableData[rowIndex]) {
+          tableData[rowIndex] = {};
+        }
+        tableData[rowIndex]['total_p'] = totalPlan.toFixed(1);
+        
+        // Save to localStorage
+        localStorage.setItem('progressTableData', JSON.stringify(tableData));
+        
+        // Calculate achievement after updating total plan
+        calculateAchievementForRow(rowNumber);
+      }
+      
+      return totalPlan;
+    }
+
+    // Recalculate all totals for all rows
+    function recalculateAllTotals() {
+      const allRows = document.querySelectorAll('#progressBody tr:not(.average-row)');
+      
+      allRows.forEach((row, index) => {
+        const rowNumber = index + 1;
+        
+        // Fields to include in total (all sub A columns except ojt_a)
+        const fieldsForTotal = ['sim_a', 'unit_a', 'pend_op_a', 'tanpa_a', 'praktek_a', 'ddt_a', 'orientasi_a'];
+        
+        let totalActual = 0;
+        fieldsForTotal.forEach(field => {
+          const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+          if (cell) {
+            const value = parseFloat(cell.textContent) || 0;
+            totalActual += value;
+          }
+        });
+        
+        // Update Total Actual cell
+        const totalActualCell = document.querySelector(`[data-row="${rowNumber}"][data-field="total_a"]`);
+        if (totalActualCell) {
+          totalActualCell.textContent = totalActual.toFixed(1);
+          
+          // Update tableData
+          if (!tableData[index]) {
+            tableData[index] = {};
+          }
+          tableData[index]['total_a'] = totalActual.toFixed(1);
+        }
+      });
+    }
+
+    // Calculate Total Actual for specific row
+    function calculateTotalActualForRow(rowNumber) {
+      const fieldsForTotal = ['sim_a', 'unit_a', 'pend_op_a', 'tanpa_a', 'praktek_a', 'ddt_a', 'orientasi_a'];
+      
+      let totalActual = 0;
+      fieldsForTotal.forEach(field => {
+        const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+        if (cell && cell.textContent.trim() !== '') {
+          const value = parseFloat(cell.textContent) || 0;
+          totalActual += value;
+        }
+      });
+      
+      // Update Total Actual cell
+      const totalActualCell = document.querySelector(`[data-row="${rowNumber}"][data-field="total_a"]`);
+      if (totalActualCell) {
+        totalActualCell.textContent = totalActual.toFixed(1);
+        
+        // Update tableData
+        const rowIndex = parseInt(rowNumber) - 1;
+        if (!tableData[rowIndex]) {
+          tableData[rowIndex] = {};
+        }
+        tableData[rowIndex]['total_a'] = totalActual.toFixed(1);
+        
+        // Save to localStorage
+        localStorage.setItem('progressTableData', JSON.stringify(tableData));
+        
+        // Calculate achievement after updating total actual
+        calculateAchievementForRow(rowNumber);
+      }
+      
+      return totalActual;
+    }
+
+    // Calculate achievement percentage for a row
+    function calculateAchievementForRow(rowNumber) {
+      const totalPlanCell = document.querySelector(`[data-row="${rowNumber}"][data-field="total_p"]`);
+      const totalActualCell = document.querySelector(`[data-row="${rowNumber}"][data-field="total_a"]`);
+      const achievementCell = document.querySelector(`[data-row="${rowNumber}"][data-field="achievement"]`);
+      
+      if (totalPlanCell && totalActualCell && achievementCell) {
+        const totalPlan = parseFloat(totalPlanCell.textContent) || 0;
+        const totalActual = parseFloat(totalActualCell.textContent) || 0;
+        
+        let achievement = 0;
+        if (totalPlan > 0) {
+          achievement = (totalActual / totalPlan) * 100;
+        }
+        
+        // Format as percentage with 1 decimal place
+        const achievementText = achievement.toFixed(1) + '%';
+        achievementCell.textContent = achievementText;
+        
+        // Update tableData
+        const rowIndex = parseInt(rowNumber) - 1;
+        if (!tableData[rowIndex]) {
+          tableData[rowIndex] = {};
+        }
+        tableData[rowIndex]['achievement'] = achievementText;
+        
+        // Save to localStorage
+        localStorage.setItem('progressTableData', JSON.stringify(tableData));
+        
+        // Update averages after achievement calculation
+        calculateAverages();
+        
+        return achievement;
+      }
+      
+      return 0;
+    }
+
+    // Calculate average values for all columns
+    function calculateAverages() {
+      const allRows = document.querySelectorAll('#progressBody tr:not(.average-row)');
+      const allFields = ['sim_p', 'sim_a', 'unit_p', 'unit_a', 'pend_op_p', 'pend_op_a', 
+                        'tanpa_p', 'tanpa_a', 'praktek_p', 'praktek_a', 'ddt_p', 'ddt_a', 
+                        'orientasi_p', 'orientasi_a', 'total_p', 'total_a', 'ojt_p', 'ojt_a'];
+      
+      allFields.forEach(field => {
+        let sum = 0;
+        let count = 0;
+        
+        allRows.forEach(row => {
+          const cell = row.querySelector(`[data-field="${field}"]`);
+          if (cell && cell.textContent.trim() !== '') {
+            const value = parseFloat(cell.textContent) || 0;
+            sum += value;
+            count++;
+          }
+        });
+        
+        const average = count > 0 ? (sum / count) : 0;
+        const avgCell = document.querySelector(`[data-field="avg_${field}"]`);
+        if (avgCell) {
+          avgCell.textContent = average.toFixed(1);
+        }
+      });
+      
+      // Calculate achievement average separately (as percentage)
+      let achievementSum = 0;
+      let achievementCount = 0;
+      
+      allRows.forEach(row => {
+        const achievementCell = row.querySelector('[data-field="achievement"]');
+        if (achievementCell && achievementCell.textContent.trim() !== '') {
+          const achievementText = achievementCell.textContent.replace('%', '');
+          const value = parseFloat(achievementText) || 0;
+          achievementSum += value;
+          achievementCount++;
+        }
+      });
+      
+      const avgAchievement = achievementCount > 0 ? (achievementSum / achievementCount) : 0;
+      const avgAchievementCell = document.querySelector('[data-field="avg_achievement"]');
+      if (avgAchievementCell) {
+        avgAchievementCell.textContent = avgAchievement.toFixed(1) + '%';
+      }
+    }
+
+    // Clear all table data on page refresh
+    function clearAllTableData() {
+      // Clear the global tableData array
+      tableData = [];
+      
+      // Clear localStorage
+      localStorage.removeItem('progressTableData');
+      
+      // Clear current Google Sheets data
+      window.currentGoogleSheetsData = null;
+      
+      // Reset training source selection
+      const trainingSelect = document.getElementById('trainingSelect');
+      if (trainingSelect) {
+        trainingSelect.value = '';
+      }
+      
+      // Clear all table cells (now that they're not editable)
+      const allDataCells = document.querySelectorAll('[data-field]');
+      allDataCells.forEach(cell => {
+        if (!cell.querySelector('strong')) { // Skip cells with <strong> content like "AVERAGE"
+          cell.textContent = '';
+        }
+      });
+    }
+
+    // Clear table data
+    function clearTableData() {
+      // Clear all editable cells
+      const editableCells = document.querySelectorAll('.editable');
+      editableCells.forEach(cell => {
+        cell.textContent = '';
+      });
+      
+      // Clear tableData
+      tableData = [];
+      
+      // Save empty data to localStorage
+      localStorage.setItem('progressTableData', JSON.stringify(tableData));
+    }
+
+    // Add row specifically for NRP data (without showing to user)
+    function addRowForNRP() {
+      const tbody = document.getElementById('progressBody');
+      const rows = tbody.querySelectorAll('tr:not(.average-row)');
+      const newRowNumber = rows.length + 1;
+      
+      // Create new row
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="no-col">${newRowNumber}</td>
+        <td class="nama-col editable" contenteditable="true" data-field="nama" data-row="${newRowNumber}"></td>
+        <td class="nrp-col editable" contenteditable="true" data-field="nrp" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="sim_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="sim_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="unit_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="unit_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="pend_op_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="pend_op_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="tanpa_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="tanpa_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="praktek_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="praktek_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="ddt_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="ddt_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="orientasi_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col editable" contenteditable="true" data-field="orientasi_a" data-row="${newRowNumber}"></td>
+        <td class="total-col editable" contenteditable="true" data-field="total_p" data-row="${newRowNumber}"></td>
+        <td class="total-col editable" contenteditable="true" data-field="total_a" data-row="${newRowNumber}"></td>
+        <td class="achievement-col editable" contenteditable="true" data-field="achievement" data-row="${newRowNumber}"></td>
+        <td class="ojt-col editable" contenteditable="true" data-field="ojt_p" data-row="${newRowNumber}"></td>
+        <td class="ojt-col editable" contenteditable="true" data-field="ojt_a" data-row="${newRowNumber}"></td>
+      `;
+      
+      // Insert before average row
+      const avgRow = tbody.querySelector('.average-row');
+      tbody.insertBefore(tr, avgRow);
+      
+      // Re-add event listeners
+      addEventListeners();
+      
+      // Remove the auto calculation listeners since table is now non-editable
+      // Auto calculation listeners for sub A columns are no longer needed
+    }
+
+    // Refresh Google Sheets data
+    function refreshGoogleSheetsData() {
+      const select = document.getElementById('trainingSelect');
+      const selectedIndex = select.value;
+      
+      if (selectedIndex === '') {
+        alert('Pilih sumber data terlebih dahulu!');
+        return;
+      }
+      
+      // Reload data
+      loadTrainingData();
+    }
+
+    // Show delete training form
+    function showDeleteForm() {
+      if (trainingDataList.length === 0) {
+        alert('Tidak ada data pelatihan untuk dihapus!');
+        return;
+      }
+      
+      const modal = new bootstrap.Modal(document.getElementById('deleteTrainingModal'));
+      updateDeleteDropdown();
+      modal.show();
+    }
+
+    // Update delete dropdown options
+    function updateDeleteDropdown() {
+      const select = document.getElementById('deleteTrainingSelect');
+      if (!select) return;
+      
+      // Clear existing options
+      select.innerHTML = '<option value="">-- Pilih data untuk dihapus --</option>';
+      
+      // Add training options
+      trainingDataList.forEach((training, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${training.name} (${new Date(training.dateAdded).toLocaleDateString()})`;
+        select.appendChild(option);
+      });
+    }
+
+    // Confirm delete training data
+    function confirmDeleteTraining() {
+      const select = document.getElementById('deleteTrainingSelect');
+      const selectedIndex = select.value;
+      
+      if (selectedIndex === '') {
+        alert('Pilih data yang akan dihapus!');
+        return;
+      }
+      
+      const training = trainingDataList[selectedIndex];
+      
+      if (confirm(`Apakah Anda yakin ingin menghapus "${training.name}"?`)) {
+        // Remove from array
+        trainingDataList.splice(selectedIndex, 1);
+        
+        // Save to localStorage
+        localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+        
+        // Update both dropdowns
+        updateTrainingDropdown();
+        updateDeleteDropdown();
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteTrainingModal'));
+        modal.hide();
+        
+        alert('Data pelatihan berhasil dihapus!');
+      }
+    }
+
+    // Show edit training form
+    function showEditForm() {
+      if (trainingDataList.length === 0) {
+        alert('Tidak ada data pelatihan untuk diedit!');
+        return;
+      }
+      
+      const modal = new bootstrap.Modal(document.getElementById('editTrainingModal'));
+      updateEditDropdown();
+      // Clear form
+      document.getElementById('editTrainingForm').reset();
+      modal.show();
+    }
+
+    // Update edit dropdown options
+    function updateEditDropdown() {
+      const select = document.getElementById('editTrainingSelect');
+      if (!select) return;
+      
+      // Clear existing options
+      select.innerHTML = '<option value="">-- Pilih data untuk diedit --</option>';
+      
+      // Add training options
+      trainingDataList.forEach((training, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${training.name} (${new Date(training.dateAdded).toLocaleDateString()})`;
+        select.appendChild(option);
+      });
+    }
+
+    // Load data to edit form
+    function loadEditData() {
+      const select = document.getElementById('editTrainingSelect');
+      const selectedIndex = select.value;
+      
+      if (selectedIndex === '') {
+        // Clear form
+        document.getElementById('editProgramPelatihan').value = '';
+        document.getElementById('editClassId').value = '';
+        document.getElementById('editTrainingLink').value = '';
+        return;
+      }
+      
+      const training = trainingDataList[selectedIndex];
+      
+      // Populate form with existing data
+      document.getElementById('editProgramPelatihan').value = training.programPelatihan || '';
+      document.getElementById('editClassId').value = training.classId || '';
+      document.getElementById('editTrainingLink').value = training.link;
+    }
+
+    // Save edited training data
+    function saveEditTraining() {
+      const select = document.getElementById('editTrainingSelect');
+      const selectedIndex = select.value;
+      
+      if (selectedIndex === '') {
+        alert('Pilih data yang akan diedit!');
+        return;
+      }
+      
+      const programPelatihan = document.getElementById('editProgramPelatihan').value.trim();
+      const classId = document.getElementById('editClassId').value.trim();
+      const link = document.getElementById('editTrainingLink').value.trim();
+      
+      if (!programPelatihan || !classId || !link) {
+        alert('Semua field harus diisi!');
+        return;
+      }
+      
+      // Validate URL
+      try {
+        new URL(link);
+      } catch (e) {
+        alert('Link tidak valid! Gunakan format: https://...');
+        return;
+      }
+      
+      // Update training data
+      trainingDataList[selectedIndex] = {
+        programPelatihan: programPelatihan,
+        classId: classId,
+        link: link,
+        name: `${programPelatihan} - ${classId}`, // Combined display name
+        dateAdded: trainingDataList[selectedIndex].dateAdded, // Keep original date
+        lastUpdated: new Date().toISOString() // Add update timestamp
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+      
+      // Update all dropdowns
+      updateTrainingDropdown();
+      updateDeleteDropdown();
+      updateEditDropdown();
+      
+      // Close modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('editTrainingModal'));
+      modal.hide();
+      
+      alert('Data pelatihan berhasil diupdate!');
+    }
+
+    // Generate table rows
+    function generateTable() {
+      const tbody = document.getElementById('progressBody');
+      tbody.innerHTML = '';
+
+      // Create 5 data rows
+      for (let i = 1; i <= 5; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="no-col">${i}</td>
+          <td class="nama-col" data-field="nama" data-row="${i}"></td>
+          <td class="nrp-col" data-field="nrp" data-row="${i}"></td>
+          <td class="progress-col" data-field="sim_p" data-row="${i}"></td>
+          <td class="progress-col" data-field="sim_a" data-row="${i}"></td>
+          <td class="progress-col" data-field="unit_p" data-row="${i}"></td>
+          <td class="progress-col" data-field="unit_a" data-row="${i}"></td>
+          <td class="progress-col" data-field="pend_op_p" data-row="${i}"></td>
+          <td class="progress-col" data-field="pend_op_a" data-row="${i}"></td>
+          <td class="progress-col" data-field="tanpa_p" data-row="${i}"></td>
+          <td class="progress-col" data-field="tanpa_a" data-row="${i}"></td>
+          <td class="progress-col" data-field="praktek_p" data-row="${i}"></td>
+          <td class="progress-col" data-field="praktek_a" data-row="${i}"></td>
+          <td class="progress-col" data-field="ddt_p" data-row="${i}"></td>
+          <td class="progress-col" data-field="ddt_a" data-row="${i}"></td>
+          <td class="progress-col" data-field="orientasi_p" data-row="${i}"></td>
+          <td class="progress-col" data-field="orientasi_a" data-row="${i}"></td>
+          <td class="total-col" data-field="total_p" data-row="${i}"></td>
+          <td class="total-col" data-field="total_a" data-row="${i}"></td>
+          <td class="achievement-col" data-field="achievement" data-row="${i}"></td>
+          <td class="ojt-col" data-field="ojt_p" data-row="${i}"></td>
+          <td class="ojt-col" data-field="ojt_a" data-row="${i}"></td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      // Add average row
+      const avgRow = document.createElement('tr');
+      avgRow.className = 'average-row';
+      avgRow.innerHTML = `
+        <td></td>
+        <td><strong>AVERAGE</strong></td>
+        <td></td>
+        <td data-field="avg_sim_p"></td>
+        <td data-field="avg_sim_a"></td>
+        <td data-field="avg_unit_p"></td>
+        <td data-field="avg_unit_a"></td>
+        <td data-field="avg_pend_op_p"></td>
+        <td data-field="avg_pend_op_a"></td>
+        <td data-field="avg_tanpa_p"></td>
+        <td data-field="avg_tanpa_a"></td>
+        <td data-field="avg_praktek_p"></td>
+        <td data-field="avg_praktek_a"></td>
+        <td data-field="avg_ddt_p"></td>
+        <td data-field="avg_ddt_a"></td>
+        <td data-field="avg_orientasi_p"></td>
+        <td data-field="avg_orientasi_a"></td>
+        <td data-field="avg_total_p"></td>
+        <td data-field="avg_total_a"></td>
+        <td data-field="avg_achievement"></td>
+        <td data-field="avg_ojt_p"></td>
+        <td data-field="avg_ojt_a"></td>
+      `;
+      tbody.appendChild(avgRow);
+
+      // Add event listeners for data changes
+      addEventListeners();
+    }
+
+    // Add event listeners to editable cells
+    function addEventListeners() {
+      const editableCells = document.querySelectorAll('.editable');
+      editableCells.forEach(cell => {
+        cell.addEventListener('blur', function() {
+          const row = this.getAttribute('data-row');
+          const field = this.getAttribute('data-field');
+          const value = this.textContent.trim();
+          
+          if (row && field) {
+            // Update data array
+            if (!tableData[row - 1]) {
+              tableData[row - 1] = {};
+            }
+            tableData[row - 1][field] = value;
+            
+            // Save to localStorage
+            localStorage.setItem('progressTableData', JSON.stringify(tableData));
+          }
+        });
+
+        // Handle Enter key to move to next cell
+        cell.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const nextCell = this.closest('td').nextElementSibling;
+            if (nextCell && nextCell.classList.contains('editable')) {
+              nextCell.focus();
+            } else {
+              const nextRow = this.closest('tr').nextElementSibling;
+              if (nextRow) {
+                const firstEditableInRow = nextRow.querySelector('.editable');
+                if (firstEditableInRow) {
+                  firstEditableInRow.focus();
+                }
+              }
+            }
+          }
+        });
+      });
+    }
+
+    // Load saved data
+    function loadData() {
+      const savedData = localStorage.getItem('progressTableData');
+      if (savedData) {
+        tableData = JSON.parse(savedData);
+        
+        // Populate table with saved data
+        tableData.forEach((rowData, index) => {
+          Object.keys(rowData).forEach(field => {
+            const cell = document.querySelector(`[data-row="${index + 1}"][data-field="${field}"]`);
+            if (cell) {
+              cell.textContent = rowData[field];
+            }
+          });
+        });
+        
+        // Calculate achievements for all rows after loading data
+        for (let i = 1; i <= 5; i++) {
+          calculateAchievementForRow(i);
+        }
+      }
+    }
+
+    // Save data function
+    function saveData() {
+      // Collect all data from editable cells
+      const editableCells = document.querySelectorAll('.editable[data-row]');
+      const newData = [];
+
+      editableCells.forEach(cell => {
+        const row = parseInt(cell.getAttribute('data-row')) - 1;
+        const field = cell.getAttribute('data-field');
+        const value = cell.textContent.trim();
+        
+        if (!newData[row]) {
+          newData[row] = {};
+        }
+        newData[row][field] = value;
+      });
+
+      tableData = newData;
+      localStorage.setItem('progressTableData', JSON.stringify(tableData));
+      
+      // Show success message
+      alert('Data berhasil disimpan!');
+    }
+
+    // Clear table function
+    function clearTable() {
+      if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
+        const editableCells = document.querySelectorAll('.editable');
+        editableCells.forEach(cell => {
+          cell.textContent = '';
+        });
+        
+        tableData = [];
+        localStorage.removeItem('progressTableData');
+        
+        alert('Tabel berhasil dibersihkan!');
+      }
+    }
+
+    // Add new row function
+    function addRow() {
+      const tbody = document.getElementById('progressBody');
+      const rows = tbody.querySelectorAll('tr:not(.average-row)');
+      const newRowNumber = rows.length + 1;
+      
+      // Create new row
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="no-col">${newRowNumber}</td>
+        <td class="nama-col" data-field="nama" data-row="${newRowNumber}"></td>
+        <td class="nrp-col" data-field="nrp" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="sim_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="sim_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="unit_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="unit_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="pend_op_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="pend_op_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="tanpa_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="tanpa_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="praktek_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="praktek_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="ddt_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="ddt_a" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="orientasi_p" data-row="${newRowNumber}"></td>
+        <td class="progress-col" data-field="orientasi_a" data-row="${newRowNumber}"></td>
+        <td class="total-col" data-field="total_p" data-row="${newRowNumber}"></td>
+        <td class="total-col" data-field="total_a" data-row="${newRowNumber}"></td>
+        <td class="achievement-col" data-field="achievement" data-row="${newRowNumber}"></td>
+        <td class="ojt-col" data-field="ojt_p" data-row="${newRowNumber}"></td>
+        <td class="ojt-col" data-field="ojt_a" data-row="${newRowNumber}"></td>
+      `;
+      
+      // Insert before average row
+      const avgRow = tbody.querySelector('.average-row');
+      tbody.insertBefore(tr, avgRow);
+      
+      // Re-add event listeners
+      addEventListeners();
+    }
+
+    // Initialize on page load
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Clear any existing data on page load/refresh
+      clearAllTableData();
+      generateTable();
+      loadData();
+      
+      // Calculate achievements for all rows after loading
+      for (let i = 1; i <= 5; i++) {
+        calculateAchievementForRow(i);
+      }
+      
+      // Calculate averages
+      calculateAverages();
+      
+      loadTrainingList(); // Load training data
+      // Show SUMMARY section by default
+      showSection('summary');
+    });
+
+    // Section navigation functions
+    function showSection(sectionName) {
+      // Hide all sections
+      const sections = document.querySelectorAll('.section-content');
+      sections.forEach(section => section.classList.remove('active'));
+      
+      // Remove active class from all buttons
+      const buttons = document.querySelectorAll('.btn-nav');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      
+      // Show selected section
+      const targetSection = document.getElementById(sectionName + 'Section');
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+      
+      // Add active class to clicked button
+      const activeButton = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
+      if (activeButton) {
+        activeButton.classList.add('active');
+      }
+      
+      // Update data summary if showing RESPON section
+      if (sectionName === 'respon') {
+        updateDataSummary();
+      }
+    }
+
+    // Update data summary for RESPON section
+    function updateDataSummary() {
+      const summaryContainer = document.getElementById('dataSummary');
+      if (!summaryContainer) return;
+      
+      // Check if we have stored displayed data
+      if (currentDisplayedData) {
+        // Restore the previously displayed data
+        displayGoogleSheetsData(currentDisplayedData.data, currentDisplayedData.trainingName);
+        
+        // Restore dropdown selection
+        if (selectedTrainingSource !== null) {
+          const select = document.getElementById('trainingSelect');
+          if (select) {
+            select.value = selectedTrainingSource;
+          }
+        }
+      } else {
+        // Simply show a message that data will be displayed when source is selected
+        summaryContainer.innerHTML = `
+          <p class="text-muted">Data akan ditampilkan setelah memilih sumber pelatihan...</p>
+        `;
+      }
+    }
+
+    // Make functions globally available
+    window.saveData = saveData;
+    window.clearTable = clearTable;
+    window.addRow = addRow;
+    window.showSection = showSection;
+    window.updateDataSummary = updateDataSummary;
+    window.showAddForm = showAddForm;
+    window.saveTrainingData = saveTrainingData;
+    window.loadTrainingData = loadTrainingData;
+    window.showDeleteForm = showDeleteForm;
+    window.confirmDeleteTraining = confirmDeleteTraining;
+    window.showEditForm = showEditForm;
+    window.loadEditData = loadEditData;
+    window.saveEditTraining = saveEditTraining;
+    window.fetchGoogleSheetsData = fetchGoogleSheetsData;
+    window.displayGoogleSheetsData = displayGoogleSheetsData;
+    window.recalculateAllTotals = recalculateAllTotals;
+    window.calculateTotalActualForRow = calculateTotalActualForRow;
+    window.calculateAchievementForRow = calculateAchievementForRow;
+    window.calculateAverages = calculateAverages;
+    window.clearAllTableData = clearAllTableData;
+    window.populatePlanColumnsForProgram = populatePlanColumnsForProgram;
+    window.calculateAllTotalPlan = calculateAllTotalPlan;
+    window.calculateTotalPlanForRow = calculateTotalPlanForRow;
+    window.autoPopulateDataToTable = autoPopulateDataToTable;
+    window.clearTableData = clearTableData;
+    window.refreshGoogleSheetsData = refreshGoogleSheetsData;
+  </script>
+</body>
+</html>
