@@ -1022,10 +1022,11 @@
 
     // Save training data
     function saveTrainingData() {
-      const name = document.getElementById('trainingName').value.trim();
+      const programPelatihan = document.getElementById('programPelatihan').value.trim();
+      const classId = document.getElementById('classId').value.trim();
       const link = document.getElementById('trainingLink').value.trim();
       
-      if (!name || !link) {
+      if (!programPelatihan || !classId || !link) {
         alert('Semua field harus diisi!');
         return;
       }
@@ -1040,8 +1041,10 @@
       
       // Add to training list
       trainingDataList.push({
-        name: name,
+        programPelatihan: programPelatihan,
+        classId: classId,
         link: link,
+        name: `${programPelatihan} - ${classId}`, // Combined display name
         dateAdded: new Date().toISOString()
       });
       
