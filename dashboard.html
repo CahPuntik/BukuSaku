@@ -64,13 +64,19 @@
       margin-bottom: 18px;
       text-align: center;
     }
-    .update-time {
-      text-align: right;
-      font-size: 0.98rem;
-      color: #888;
-      margin-bottom: 8px;
-      font-style: italic;
-      padding-right: 6px;
+    .datetime-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .current-datetime {
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
     .cards-container {
       display: grid;
@@ -139,26 +145,6 @@
       background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
       box-shadow: 0 4px 16px rgba(253,160,133,0.18);
     }
-    .offcanvas {
-      background: #fff8f3;
-      border-top-right-radius: 18px;
-      border-bottom-right-radius: 18px;
-      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
-    }
-    .offcanvas-title {
-      color: #f76b1c;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    .nav-link {
-      font-weight: 500;
-      color: #f76b1c;
-      border-radius: 8px;
-    }
-    .nav-link:hover, .nav-link.active {
-      background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
-      color: #f76b1c;
-    }
     @media (max-width: 900px) {
       body {
         padding: 5px;
@@ -197,60 +183,22 @@
       .card-title {
         font-size: 0.75rem;
       }
-      .offcanvas.offcanvas-start{
-        width: 82%;
-        max-width: 360px;
-        left: 0;
-        top: 0;
-        height: 100%;
-        box-shadow: 2px 8px 40px rgba(0,0,0,0.12);
-        border-top-right-radius: 18px;
-        border-bottom-right-radius: 18px;
-        font-size: 1.4rem;
-      }
-      .offcanvas-backdrop {
-        background-color: rgba(0,0,0,0.35);
-      }
-      .nav-link {
-        font-size: 1.4rem;
-      }
     }
   </style>
 </head>
 <body>
-  <!-- Tombol buka sidebar -->
-  <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
-    ☰ Menu
-  </button>
-
-  <!-- Sidebar Offcanvas -->
-  <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title">📚 Buku Saku</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <div class="offcanvas-body px-2">
-    <ul class="nav flex-column">
-      <li class="nav-item mb-2"><a class="nav-link active" href="dashboard.html">🏠 Dashboard</a></li>
-      <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑 Prosedur</a></li>
-      <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
-      <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️ Administrasi</a></li>
-      <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
-      <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
-      <li class="nav-item mb-2"><a class="nav-link" href="progress-table.html">⏰ Update HM</a></li>
-      <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
-      <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪 Logout</a></li>
-    </ul>
-  </div>
-</nav>
-
-  <div class="update-time" id="updateTime"></div>
   <div class="dashboard-container">
     <div class="dashboard-header">
       <div class="avatar">👤</div>
       <div class="dashboard-title">DASHBOARD INSTRUKTUR</div>
     </div>
     <div id="welcomeMessage" class="welcome"></div>
+    
+    <!-- Container Jam Otomatis -->
+    <div class="datetime-container">
+      <div id="currentDateTime" class="current-datetime"></div>
+    </div>
+    
     <hr>
     <div class="cards-container">
       <a href="prosedur2.html" class="dashboard-card">
@@ -312,21 +260,30 @@ document.getElementById('welcomeMessage').textContent = namaUser
     function logout() {
       window.location.href = "index.html";
     }
-    function updateDateTime() {
+
+    function updateCurrentDateTime() {
       const now = new Date();
-      const options = { 
-        weekday: 'long', year: 'numeric', month: 'long', 
-        day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' 
-      };
-      document.getElementById('updateTime').textContent = 
-        now.toLocaleDateString('id-ID', options);
+      const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      
+      const dayName = days[now.getDay()];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      
+      const dateTimeString = `${dayName}, ${day} ${month} ${year} pukul ${hours}.${minutes}.${seconds}`;
+      document.getElementById('currentDateTime').textContent = dateTimeString;
     }
 
     // Jalankan sekali saat load
-    updateDateTime();
+    updateCurrentDateTime();
 
     // Update setiap detik
-    setInterval(updateDateTime, 1000);
+    setInterval(updateCurrentDateTime, 1000);
   </script>
 </body>
 </html>
