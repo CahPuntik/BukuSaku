@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Buku Saku</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#fda085">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Buku Saku">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="description" content="PWA untuk manajemen aktivitas harian dan timeframe pelatihan">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
+      import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+      import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+      import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
+        authDomain: "buku-saku-instruktur.firebaseapp.com",
+        projectId: "buku-saku-instruktur",
+        storageBucket: "buku-saku-instruktur.firebasestorage.app",
+        messagingSenderId: "180222950163",
+        appId: "1:180222950163:web:3331e9673249098aa038e6"
+      };
+      
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+      
+      // Make Firebase available globally
+      window.firebase = { app, db, auth };
+      
+      // Check if user is already logged in
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is signed in, redirect to dashboard
+          window.location.href = 'dashboard.html';
+        }
+      });
+      
+      // Login function
+      window.loginUser = async function() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('error-message');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        if (!email || !password) {
+          showError('Silakan masukkan email dan password');
+          return;
+        }
+        
+        try {
+          loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in...';
+          loginBtn.disabled = true;
+          errorDiv.style.display = 'none';
+          
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          
+          // Get user profile from Firestore
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          let userData = { email: user.email, uid: user.uid };
+          
+          if (userDoc.exists()) {
+            userData = { ...userData, ...userDoc.data() };
+          }
+          
+          // Save user data to localStorage
+          localStorage.setItem('bukuSakuUser', JSON.stringify(userData));
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+          
+        } catch (error) {
+          console.error('Login error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
+          let errorMessage = 'Terjadi kesalahan saat login';
+          
+          switch (error.code) {
+            case 'auth/user-not-found':
+              errorMessage = 'Email tidak terdaftar';
+              break;
+            case 'auth/wrong-password':
+              errorMessage = 'Password salah';
+              break;
+            case 'auth/invalid-email':
+              errorMessage = 'Format email tidak valid';
+              break;
+            case 'auth/too-many-requests':
+              errorMessage = 'Terlalu banyak percobaan login. Coba lagi nanti';
+              break;
+            case 'auth/invalid-credential':
+              errorMessage = 'Email atau password salah';
+              break;
+            case 'auth/network-request-failed':
+              errorMessage = 'Gagal terhubung ke server. Periksa koneksi internet';
+              break;
+            case 'auth/operation-not-allowed':
+              errorMessage = 'Email/password authentication belum diaktifkan';
+              break;
+            case 'auth/configuration-not-found':
+              errorMessage = 'Firebase Authentication belum dikonfigurasi. Hubungi administrator.';
+              break;
+            case 'auth/api-key-not-valid':
+              errorMessage = 'API Key Firebase tidak valid';
+              break;
+            case 'auth/project-not-found':
+              errorMessage = 'Project Firebase tidak ditemukan';
+              break;
+            default:
+              errorMessage = `Terjadi kesalahan: ${error.message}`;
+          }
+          
+          showError(errorMessage);
+        } finally {
+          loginBtn.innerHTML = 'Login';
+          loginBtn.disabled = false;
+        }
+      }
+      
+      // Register function
+      window.registerUser = async function() {
+        const name = document.getElementById('regName').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+        const errorDiv = document.getElementById('register-error-message');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        if (!name || !email || !password || !confirmPassword) {
+          showRegisterError('Silakan isi semua field');
+          return;
+        }
+        
+        if (password !== confirmPassword) {
+          showRegisterError('Password tidak sama');
+          return;
+        }
+        
+        if (password.length < 6) {
+          showRegisterError('Password minimal 6 karakter');
+          return;
+        }
+        
+        try {
+          registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating account...';
+          registerBtn.disabled = true;
+          errorDiv.style.display = 'none';
+          
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          
+          // Save user profile to Firestore
+          const userData = {
+            nama: name,
+            email: email,
+            role: 'instruktur',
+            createdAt: new Date(),
+            lastLogin: new Date()
+          };
+          
+          await setDoc(doc(db, 'users', user.uid), userData);
+          
+          // Save to localStorage
+          localStorage.setItem('bukuSakuUser', JSON.stringify({
+            ...userData,
+            uid: user.uid
+          }));
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+          
+        } catch (error) {
+          console.error('Register error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
+          let errorMessage = 'Terjadi kesalahan saat mendaftar';
+          
+          switch (error.code) {
+            case 'auth/email-already-in-use':
+              errorMessage = 'Email sudah terdaftar';
+              break;
+            case 'auth/invalid-email':
+              errorMessage = 'Format email tidak valid';
+              break;
+            case 'auth/weak-password':
+              errorMessage = 'Password terlalu lemah (minimal 6 karakter)';
+              break;
+            case 'auth/operation-not-allowed':
+              errorMessage = 'Email/password authentication belum diaktifkan';
+              break;
+            case 'auth/network-request-failed':
+              errorMessage = 'Gagal terhubung ke server. Periksa koneksi internet';
+              break;
+            case 'permission-denied':
+              errorMessage = 'Tidak memiliki izin untuk menulis ke database';
+              break;
+            default:
+              errorMessage = `Terjadi kesalahan: ${error.message}`;
+          }
+          
+          showRegisterError(errorMessage);
+        } finally {
+          registerBtn.innerHTML = 'Daftar';
+          registerBtn.disabled = false;
+        }
+      }
+      
+      function showError(message) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+      }
+      
+      function showRegisterError(message) {
+        const errorDiv = document.getElementById('register-error-message');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+      }
+      
+      // Toggle between login and register forms
+      window.showRegister = function() {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'block';
+      }
+      
+      window.showLogin = function() {
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+      }
+      
+      // Enter key handler
+      window.handleEnter = function(event, action) {
+        if (event.key === 'Enter') {
+          if (action === 'login') {
+            loginUser();
+          } else if (action === 'register') {
+            registerUser();
+          }
+        }
+      }
+    </script>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+      body {
+        background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .auth-container {
+        max-width: 400px;
+        width: 90%;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+      }
+      
+      .auth-header {
+        background: linear-gradient(135deg, #f76b1c 0%, #fda085 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+      
+      .auth-header h2 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+      }
+      
+      .auth-header p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+      }
+      
+      .auth-body {
+        padding: 30px;
+      }
+      
+      .form-group {
+        margin-bottom: 20px;
+      }
+      
+      .form-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+        display: block;
+      }
+      
+      .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+      
+      .form-control:focus {
+        border-color: #f76b1c;
+        box-shadow: 0 0 0 0.2rem rgba(247, 107, 28, 0.25);
+      }
+      
+      .password-wrapper {
+        position: relative;
+      }
+      
+      .password-wrapper .form-control {
+        padding-right: 45px;
+      }
+      
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #6c757d;
+        user-select: none;
+        z-index: 10;
+        padding: 5px;
+        transition: color 0.3s ease;
+      }
+      
+      .password-toggle:hover {
+        color: #f76b1c;
+      }
+      
+      .btn-auth {
+        background: linear-gradient(135deg, #f76b1c 0%, #fda085 100%);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(247, 107, 28, 0.4);
+        color: white;
+      }
+      
+      .btn-auth:disabled {
+        opacity: 0.7;
+        transform: none;
+      }
+      
+      .auth-toggle {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+      }
+      
+      .auth-toggle a {
+        color: #f76b1c;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      
+      .auth-toggle a:hover {
+        text-decoration: underline;
+      }
+      
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        border: 1px solid #f5c6cb;
+        display: none;
+      }
+      
+      .logo {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .logo img {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="logo">
+          <img src="Alamtri_logo.png" alt="Alamtri Logo">
+        </div>
+        <h2>Buku Saku</h2>
+        <p>LOGIN dulu Pelatih !!!!!</p>
+      </div>
+      
+      <div class="auth-body">
+        <!-- Login Form -->
+        <div id="loginForm">
+          <div id="error-message" class="error-message"></div>
+          
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Masukkan email Anda" onkeypress="handleEnter(event, 'login')">
+          </div>
+          
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <div class="password-wrapper">
+              <input type="password" class="form-control" id="password" placeholder="Masukkan password Anda" onkeypress="handleEnter(event, 'login')">
+              <span class="password-toggle" onclick="togglePassword('password', this)">👁️</span>
+            </div>
+          </div>
+          
+          <button type="button" class="btn btn-auth" id="loginBtn" onclick="loginUser()">
+            Login
+          </button>
+          
+          <div class="auth-toggle">
+            <p>Belum punya akun? <a href="#" onclick="showRegister()">Daftar di sini</a></p>
+          </div>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="registerForm" style="display: none;">
+          <div id="register-error-message" class="error-message"></div>
+          
+          <div class="form-group">
+            <label for="regName" class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-control" id="regName" placeholder="Masukkan nama lengkap" onkeypress="handleEnter(event, 'register')">
+          </div>
+          
+          <div class="form-group">
+            <label for="regEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="regEmail" placeholder="Masukkan email Anda" onkeypress="handleEnter(event, 'register')">
+          </div>
+          
+          <div class="form-group">
+            <label for="regPassword" class="form-label">Password</label>
+            <div class="password-wrapper">
+              <input type="password" class="form-control" id="regPassword" placeholder="Minimal 6 karakter" onkeypress="handleEnter(event, 'register')">
+              <span class="password-toggle" onclick="togglePassword('regPassword', this)">👁️</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="regConfirmPassword" class="form-label">Konfirmasi Password</label>
+            <div class="password-wrapper">
+              <input type="password" class="form-control" id="regConfirmPassword" placeholder="Ulangi password Anda" onkeypress="handleEnter(event, 'register')">
+              <span class="password-toggle" onclick="togglePassword('regConfirmPassword', this)">👁️</span>
+            </div>
+          </div>
+          
+          <button type="button" class="btn btn-auth" id="registerBtn" onclick="registerUser()">
+            Daftar
+          </button>
+          
+          <div class="auth-toggle">
+            <p>Sudah punya akun? <a href="#" onclick="showLogin()">Login di sini</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+      // Toggle password visibility
+      function togglePassword(inputId, toggleElement) {
+        const passwordInput = document.getElementById(inputId);
+        const isPassword = passwordInput.type === 'password';
+        
+        // Toggle input type
+        passwordInput.type = isPassword ? 'text' : 'password';
+        
+        // Toggle icon
+        toggleElement.textContent = isPassword ? '🙈' : '👁️';
+      }
+      
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('service-worker.js')
+            .then(function(registration) {
+              console.log('ServiceWorker registration successful');
+            })
+            .catch(function(err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
