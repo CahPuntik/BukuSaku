@@ -1,0 +1,40 @@
+rules_version='2'
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - only authenticated users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Daily activities - authenticated users can CRUD their own activities
+    match /daily_activities/{activityId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Training schedules - authenticated users can read, instructors can write
+    match /training_schedule/{scheduleId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Roster cuti - authenticated users can read/write
+    match /roster_cuti/{rosterId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Pre/Post tests - authenticated users can read/write
+    match /prepost_test/{testId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Progress updates - authenticated users can read/write
+    match /progress_update/{progressId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Administrasi - authenticated users can read/write
+    match /administrasi/{adminId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+  }
+}
