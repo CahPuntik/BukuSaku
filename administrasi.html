@@ -173,7 +173,7 @@
         <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
         <li class="nav-item mb-2"><a class="nav-link" href="progress-table.html">⏰ Update HM</a></li>
         <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
-        <li class="nav-item mt-4"><a class="nav-link text-danger" href="login.html">🚪 Logout</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪 Logout</a></li>
       </ul>
     </div>
   </nav>
@@ -216,7 +216,7 @@ if ('serviceWorker' in navigator) {
 // Cek login, redirect jika belum login
 const user = JSON.parse(localStorage.getItem('bukuSakuUser') || '{}');
 if (!user.username) {
-  window.location.href = "login.html";
+  window.location.href = "index.html";
 }
 </script>
 </body>
