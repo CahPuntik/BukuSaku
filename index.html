@@ -288,6 +288,32 @@
         box-shadow: 0 0 0 0.2rem rgba(247, 107, 28, 0.25);
       }
       
+      .password-wrapper {
+        position: relative;
+      }
+      
+      .password-wrapper .form-control {
+        padding-right: 45px;
+      }
+      
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #6c757d;
+        user-select: none;
+        z-index: 10;
+        padding: 5px;
+        transition: color 0.3s ease;
+      }
+      
+      .password-toggle:hover {
+        color: #f76b1c;
+      }
+      
       .btn-auth {
         background: linear-gradient(135deg, #f76b1c 0%, #fda085 100%);
         border: none;
@@ -367,7 +393,7 @@
           <img src="Alamtri_logo.png" alt="Alamtri Logo">
         </div>
         <h2>Buku Saku</h2>
-        <p>Sistem Manajemen Pelatihan</p>
+        <p>LOGIN dulu Pelatih !!!!!</p>
       </div>
       
       <div class="auth-body">
@@ -382,7 +408,10 @@
           
           <div class="form-group">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Masukkan password Anda" onkeypress="handleEnter(event, 'login')">
+            <div class="password-wrapper">
+              <input type="password" class="form-control" id="password" placeholder="Masukkan password Anda" onkeypress="handleEnter(event, 'login')">
+              <span class="password-toggle" onclick="togglePassword('password', this)">👁️</span>
+            </div>
           </div>
           
           <button type="button" class="btn btn-auth" id="loginBtn" onclick="loginUser()">
@@ -410,12 +439,18 @@
           
           <div class="form-group">
             <label for="regPassword" class="form-label">Password</label>
-            <input type="password" class="form-control" id="regPassword" placeholder="Minimal 6 karakter" onkeypress="handleEnter(event, 'register')">
+            <div class="password-wrapper">
+              <input type="password" class="form-control" id="regPassword" placeholder="Minimal 6 karakter" onkeypress="handleEnter(event, 'register')">
+              <span class="password-toggle" onclick="togglePassword('regPassword', this)">👁️</span>
+            </div>
           </div>
           
           <div class="form-group">
             <label for="regConfirmPassword" class="form-label">Konfirmasi Password</label>
-            <input type="password" class="form-control" id="regConfirmPassword" placeholder="Ulangi password Anda" onkeypress="handleEnter(event, 'register')">
+            <div class="password-wrapper">
+              <input type="password" class="form-control" id="regConfirmPassword" placeholder="Ulangi password Anda" onkeypress="handleEnter(event, 'register')">
+              <span class="password-toggle" onclick="togglePassword('regConfirmPassword', this)">👁️</span>
+            </div>
           </div>
           
           <button type="button" class="btn btn-auth" id="registerBtn" onclick="registerUser()">
@@ -433,6 +468,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+      // Toggle password visibility
+      function togglePassword(inputId, toggleElement) {
+        const passwordInput = document.getElementById(inputId);
+        const isPassword = passwordInput.type === 'password';
+        
+        // Toggle input type
+        passwordInput.type = isPassword ? 'text' : 'password';
+        
+        // Toggle icon
+        toggleElement.textContent = isPassword ? '🙈' : '👁️';
+      }
+      
       // Register Service Worker for PWA
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
