@@ -19,15 +19,15 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
     import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
-    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
     
     const firebaseConfig = {
-      apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
+      apiKey: "AIzaSyDh8YbByLG7AZEaaCgXiWJOK3cuzjxkqog",
       authDomain: "buku-saku-instruktur.firebaseapp.com",
       projectId: "buku-saku-instruktur",
       storageBucket: "buku-saku-instruktur.firebasestorage.app",
-      messagingSenderId: "180222950163",
-      appId: "1:180222950163:web:3331e9673249098aa038e6"
+      messagingSenderId: "971524107627",
+      appId: "1:971524107627:web:89707dc7b42b32e7d1e470"
     };
     
     const app = initializeApp(firebaseConfig);
@@ -36,6 +36,45 @@
     
     // Make Firebase available globally
     window.firebase = { app, db, auth };
+
+    // Check authentication state and show real user info
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Check localStorage as fallback
+        const localUser = JSON.parse(localStorage.getItem('bukuSakuUser') || '{}');
+        if (!localUser.username && !localUser.email) {
+          window.location.href = 'index.html';
+          return;
+        }
+        // Use localStorage user
+        const namaUser = localUser.nama || localUser.email || localUser.username || 'Pengguna';
+        document.getElementById('welcomeMessage').textContent = `Selamat datang! ${namaUser}`;
+      } else {
+        // Use Firebase user
+        const namaUser = user.displayName || user.email || 'Pengguna';
+        document.getElementById('welcomeMessage').textContent = `Selamat datang! ${namaUser}`;
+        
+        // Update localStorage with real user data
+        localStorage.setItem('bukuSakuUser', JSON.stringify({
+          email: user.email,
+          username: user.email,
+          nama: user.displayName || user.email
+        }));
+      }
+    });
+    
+    // Firebase logout function
+    window.logout = async function() {
+      try {
+        await signOut(auth);
+        localStorage.removeItem('bukuSakuUser');
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error('Logout error:', error);
+        localStorage.removeItem('bukuSakuUser');
+        window.location.href = "index.html";
+      }
+    }
   </script>
   
   <!-- Bootstrap CSS -->
@@ -287,37 +326,8 @@
       });
     }
   </script>
-  <script type="module">
-    import { signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
-    
-    // Check authentication state
-    onAuthStateChanged(window.firebase.auth, (user) => {
-      if (!user) {
-        // User is not logged in, redirect to login
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      // User is logged in, show welcome message
-      const userData = JSON.parse(localStorage.getItem('bukuSakuUser') || '{}');
-      const namaUser = userData.nama || userData.email || 'Pengguna';
-      document.getElementById('welcomeMessage').textContent = `Selamat datang! ${namaUser}`;
-    });
-    
-    // Firebase logout function
-    window.logout = async function() {
-      try {
-        await signOut(window.firebase.auth);
-        localStorage.removeItem('bukuSakuUser');
-        window.location.href = "index.html";
-      } catch (error) {
-        console.error('Logout error:', error);
-        // Fallback: clear localStorage and redirect
-        localStorage.removeItem('bukuSakuUser');
-        window.location.href = "index.html";
-      }
-    }
-
+  
+  <script>
     function updateCurrentDateTime() {
       const now = new Date();
       const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
