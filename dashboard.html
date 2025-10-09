@@ -62,17 +62,23 @@
       margin-bottom: 18px;
     }
     .avatar {
-      width: 54px;
-      height: 54px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #fda085 60%, #f6d365 100%);
+      background: rgba(255, 255, 255, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.2rem;
-      color: #fff;
       margin-right: 16px;
-      box-shadow: 0 2px 8px rgba(253,160,133,0.18);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    .avatar img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      border-radius: 50%;
     }
     .dashboard-title {
       font-size: 1.4rem;
@@ -189,6 +195,13 @@
       .avatar {
         margin-right: 0;
         margin-bottom: 6px;
+        width: 56px;
+        height: 56px;
+      }
+      
+      .avatar img {
+        width: 48px;
+        height: 48px;
       }
       .cards-container {
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -212,7 +225,9 @@
 <body>
   <div class="dashboard-container">
     <div class="dashboard-header">
-      <div class="avatar">👤</div>
+      <div class="avatar">
+        <img src="Alamtri_logo.png" alt="Alamtri Logo">
+      </div>
       <div class="dashboard-title">DASHBOARD INSTRUKTUR</div>
     </div>
     <div id="welcomeMessage" class="welcome"></div>

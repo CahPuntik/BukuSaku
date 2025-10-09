@@ -339,15 +339,23 @@
       }
       
       .logo {
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 255, 255, 0.2);
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.9);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 15px;
-        font-size: 1.8rem;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .logo img {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        border-radius: 50%;
       }
     </style>
   </head>
@@ -355,7 +363,9 @@
   <body>
     <div class="auth-container">
       <div class="auth-header">
-        <div class="logo">📚</div>
+        <div class="logo">
+          <img src="Alamtri_logo.png" alt="Alamtri Logo">
+        </div>
         <h2>Buku Saku</h2>
         <p>Sistem Manajemen Pelatihan</p>
       </div>
