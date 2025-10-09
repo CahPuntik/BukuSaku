@@ -82,6 +82,9 @@
           
         } catch (error) {
           console.error('Login error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
           let errorMessage = 'Terjadi kesalahan saat login';
           
           switch (error.code) {
@@ -100,6 +103,14 @@
             case 'auth/invalid-credential':
               errorMessage = 'Email atau password salah';
               break;
+            case 'auth/network-request-failed':
+              errorMessage = 'Gagal terhubung ke server. Periksa koneksi internet';
+              break;
+            case 'auth/operation-not-allowed':
+              errorMessage = 'Email/password authentication belum diaktifkan';
+              break;
+            default:
+              errorMessage = `Terjadi kesalahan: ${error.message}`;
           }
           
           showError(errorMessage);
@@ -163,6 +174,9 @@
           
         } catch (error) {
           console.error('Register error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
           let errorMessage = 'Terjadi kesalahan saat mendaftar';
           
           switch (error.code) {
@@ -173,8 +187,19 @@
               errorMessage = 'Format email tidak valid';
               break;
             case 'auth/weak-password':
-              errorMessage = 'Password terlalu lemah';
+              errorMessage = 'Password terlalu lemah (minimal 6 karakter)';
               break;
+            case 'auth/operation-not-allowed':
+              errorMessage = 'Email/password authentication belum diaktifkan';
+              break;
+            case 'auth/network-request-failed':
+              errorMessage = 'Gagal terhubung ke server. Periksa koneksi internet';
+              break;
+            case 'permission-denied':
+              errorMessage = 'Tidak memiliki izin untuk menulis ke database';
+              break;
+            default:
+              errorMessage = `Terjadi kesalahan: ${error.message}`;
           }
           
           showRegisterError(errorMessage);
