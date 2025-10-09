@@ -212,12 +212,33 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
   });
 }
+</script>
 
-// Cek login, redirect jika belum login
-const user = JSON.parse(localStorage.getItem('bukuSakuUser') || '{}');
-if (!user.username) {
-  window.location.href = "index.html";
-}
+<!-- Firebase Authentication Script -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDh8YbByLG7AZEaaCgXiWJOK3cuzjxkqog",
+  authDomain: "buku-saku-instruktur.firebaseapp.com",
+  projectId: "buku-saku-instruktur",
+  storageBucket: "buku-saku-instruktur.firebasestorage.app",
+  messagingSenderId: "971524107627",
+  appId: "1:971524107627:web:89707dc7b42b32e7d1e470"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Check authentication status
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
+    console.log("User authenticated:", user.email);
+  }
+});
 </script>
 </body>
 </html>
