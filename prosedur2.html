@@ -317,150 +317,242 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   
   <!-- Authentication Script with Fallback -->
-  <script src="auth-helper.js"></script>
+  <script src="auth-helper-simple.js"></script>
 
   <!-- Main Application Script -->
-  <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyCbEPQIcaKgBU-jQbmSeC_1R1tXh1Y3hA7d3q8VMCr46qtpm6lanKbrebZ-1OD2Q7h/exec";   
+  <script type="module">
+// Import Firebase functions for prosedur management
+import { 
+  getProsedurFiles, 
+  addProsedurFile, 
+  updateProsedurFile, 
+  deleteProsedurFile,
+  searchProsedurFiles 
+} from './prosedur-firebase.js';
+
 const tbody = document.getElementById("cutiBody");
 const addForm = document.getElementById("addForm");
 const editForm = document.getElementById("editForm");
 
-// Ambil data dari server
-async function loadData(){
-  const res = await fetch(API_URL + "?action=files");
-  const data = await res.json();
-  tbody.innerHTML = "";
-  data.forEach((row,i)=>{
-    tbody.insertAdjacentHTML("beforeend", `
-      <tr data-row="${i}">
-        <td>${i+1}</td>
-        <td>${row.namaFile}</td>
-        <td><a href="${row.url}" target="_blank">BACA</a></td>
-        <td>${row.jenis}</td>
-        <td>${row.keterangan}</td>
-        <td>
-          <button class="btn btn-warning btn-sm edit-btn">✏️ edit</button>
-          <button class="btn btn-danger btn-sm delete-btn">🗑️ hapus</button>
-        </td>
-      </tr>
-    `);
-  });
+// Load data from Firebase instead of Google Sheets
+async function loadData() {
+  try {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
+    
+    const files = await getProsedurFiles();
+    tbody.innerHTML = "";
+    
+    if (files.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data prosedur</td></tr>';
+      return;
+    }
+    
+    files.forEach((file, i) => {
+      tbody.insertAdjacentHTML("beforeend", `
+        <tr data-id="${file.id}">
+          <td>${i+1}</td>
+          <td>${file.namaFile}</td>
+          <td><a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">📖 BACA</a></td>
+          <td><span class="badge bg-secondary">${file.jenis}</span></td>
+          <td>${file.keterangan}</td>
+          <td>
+            <button class="btn btn-warning btn-sm edit-btn" data-id="${file.id}">✏️ edit</button>
+            <button class="btn btn-danger btn-sm delete-btn" data-id="${file.id}">🗑️ hapus</button>
+          </td>
+        </tr>
+      `);
+    });
+    
+    updateResultInfo(files.length, files.length);
+  } catch (error) {
+    console.error('Error loading data:', error);
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error loading data. Please try again.</td></tr>';
+  }
 }
 
-// Delegasi tombol edit/hapus
-tbody.addEventListener("click", e=>{
+// Event handler for edit/delete buttons
+tbody.addEventListener("click", async (e) => {
   const tr = e.target.closest("tr");
-  if(!tr) return;
-  const idx = tr.dataset.row;
-
-  if(e.target.classList.contains("edit-btn")){
-    document.getElementById("editIndex").value = idx;
+  if (!tr || !tr.dataset.id) return;
+  
+  const fileId = tr.dataset.id;
+  
+  if (e.target.classList.contains("edit-btn")) {
+    // Edit button clicked
+    document.getElementById("editIndex").value = fileId;
     document.getElementById("editNamaFile").value = tr.children[1].innerText;
     document.getElementById("editUrl").value = tr.children[2].querySelector("a").href;
-    document.getElementById("editJenis").value = tr.children[3].innerText;
+    document.getElementById("editJenis").value = tr.children[3].querySelector("span").innerText;
     document.getElementById("editKet").value = tr.children[4].innerText;
     new bootstrap.Modal(document.getElementById("editModal")).show();
   } 
-  else if(e.target.classList.contains("delete-btn")){
-    if(confirm("Yakin hapus data ini?")){
-      fetch(API_URL, {
-        method:"POST",
-        body: JSON.stringify({action:"delete", row:parseInt(idx)+2, target: "file"})
-      }).then(()=> loadData());
+  else if (e.target.classList.contains("delete-btn")) {
+    // Delete button clicked
+    if (confirm("Yakin hapus data prosedur ini?")) {
+      try {
+        e.target.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        e.target.disabled = true;
+        
+        await deleteProsedurFile(fileId);
+        await loadData(); // Reload data
+        
+        alert("Data berhasil dihapus!");
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        alert("Error menghapus data: " + error.message);
+        e.target.innerHTML = '🗑️ hapus';
+        e.target.disabled = false;
+      }
     }
   }
 });
 
-// Tambah data
-addForm.addEventListener("submit", async e=>{
+// Add new prosedur file
+addForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const namaFile = document.getElementById("namaFile").value;
-  const url = document.getElementById("url").value;
+  
+  const namaFile = document.getElementById("namaFile").value.trim();
+  const url = document.getElementById("url").value.trim();
   const jenis = document.getElementById("jenis").value;
-  const keterangan = document.getElementById("keterangan").value;
-
-  await fetch(API_URL, {
-    method:"POST",
-    body: JSON.stringify({action:"add", namaFile, url, jenis, keterangan, target: "file"})
-  });
-
-  bootstrap.Modal.getInstance(document.getElementById("addModal")).hide();
-  addForm.reset();
-  loadData();
+  const keterangan = document.getElementById("keterangan").value.trim();
+  
+  if (!namaFile || !url || !jenis || !keterangan) {
+    alert("Semua field harus diisi!");
+    return;
+  }
+  
+  const submitBtn = addForm.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  
+  try {
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+    submitBtn.disabled = true;
+    
+    await addProsedurFile({
+      namaFile,
+      url,
+      jenis,
+      keterangan
+    });
+    
+    bootstrap.Modal.getInstance(document.getElementById("addModal")).hide();
+    addForm.reset();
+    await loadData(); // Reload data
+    
+    alert("Data prosedur berhasil ditambahkan!");
+  } catch (error) {
+    console.error('Error adding file:', error);
+    alert("Error menambah data: " + error.message);
+  } finally {
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  }
 });
 
-// Edit data
-editForm.addEventListener("submit", async e=>{
+// Edit prosedur file
+editForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const idx = document.getElementById("editIndex").value;
-  const namaFile = document.getElementById("editNamaFile").value;
-  const url = document.getElementById("editUrl").value;
+  
+  const fileId = document.getElementById("editIndex").value;
+  const namaFile = document.getElementById("editNamaFile").value.trim();
+  const url = document.getElementById("editUrl").value.trim();
   const jenis = document.getElementById("editJenis").value;
-  const keterangan = document.getElementById("editKet").value;
-
-  await fetch(API_URL, {
-    method:"POST",
-    body: JSON.stringify({action:"edit", row:parseInt(idx)+2, namaFile, url, jenis, keterangan, target: "file"})
-  });
-
-  bootstrap.Modal.getInstance(document.getElementById("editModal")).hide();
-  loadData();
+  const keterangan = document.getElementById("editKet").value.trim();
+  
+  if (!namaFile || !url || !jenis || !keterangan) {
+    alert("Semua field harus diisi!");
+    return;
+  }
+  
+  const submitBtn = editForm.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  
+  try {
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+    submitBtn.disabled = true;
+    
+    await updateProsedurFile(fileId, {
+      namaFile,
+      url,
+      jenis,
+      keterangan
+    });
+    
+    bootstrap.Modal.getInstance(document.getElementById("editModal")).hide();
+    await loadData(); // Reload data
+    
+    alert("Data prosedur berhasil diupdate!");
+  } catch (error) {
+    console.error('Error updating file:', error);
+    alert("Error mengupdate data: " + error.message);
+  } finally {
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  }
 });
 
-// Pertama kali load
+// Initial load
 loadData();
-// Fungsi filter tabel
-function filterTable() {
-  const searchValue = document.getElementById("searchInput").value.toLowerCase();
-  const statusValue = document.getElementById("statusFilter").value;
-  let visibleCount = 0;
 
-  const rows = tbody.querySelectorAll("tr");
-  rows.forEach(row => {
-    const namaFile = row.children[1].innerText.toLowerCase();
-    const url = row.children[2].innerText.toLowerCase();
-    const jenis = row.children[3].innerText.toLowerCase();
-    const ket = row.children[4].innerText.toLowerCase();
-
-    const matchSearch = namaFile.includes(searchValue) || url.includes(searchValue) || ket.includes(searchValue);
-    const matchStatus = statusValue === "" || jenis === statusValue.toLowerCase();
-
-    if (matchSearch && matchStatus) {
-      row.style.display = "";
-      visibleCount++;
-    } else {
-      row.style.display = "none";
-    }
-  });
-
-  // Update info
+// Update result info helper function
+function updateResultInfo(visibleCount, totalCount) {
   const info = document.getElementById("resultInfo");
-  if (visibleCount === rows.length) {
-    info.textContent = "Menampilkan semua file";
+  if (visibleCount === totalCount) {
+    info.textContent = `Menampilkan semua ${totalCount} file`;
   } else {
-    info.textContent = `Menampilkan ${visibleCount} file dari total ${rows.length}`;
+    info.textContent = `Menampilkan ${visibleCount} file dari total ${totalCount}`;
   }
 }
 
-// Event listener untuk search & filter
+// Filter function using Firebase search
+async function filterTable() {
+  const searchValue = document.getElementById("searchInput").value.toLowerCase().trim();
+  const statusValue = document.getElementById("statusFilter").value;
+  
+  try {
+    const filteredFiles = await searchProsedurFiles(searchValue, statusValue);
+    const allFiles = await getProsedurFiles();
+    
+    tbody.innerHTML = "";
+    
+    if (filteredFiles.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Tidak ada data yang cocok dengan filter</td></tr>';
+      updateResultInfo(0, allFiles.length);
+      return;
+    }
+    
+    filteredFiles.forEach((file, i) => {
+      tbody.insertAdjacentHTML("beforeend", `
+        <tr data-id="${file.id}">
+          <td>${i+1}</td>
+          <td>${file.namaFile}</td>
+          <td><a href="${file.url}" target="_blank" class="btn btn-sm btn-outline-primary">📖 BACA</a></td>
+          <td><span class="badge bg-secondary">${file.jenis}</span></td>
+          <td>${file.keterangan}</td>
+          <td>
+            <button class="btn btn-warning btn-sm edit-btn" data-id="${file.id}">✏️ edit</button>
+            <button class="btn btn-danger btn-sm delete-btn" data-id="${file.id}">🗑️ hapus</button>
+          </td>
+        </tr>
+      `);
+    });
+    
+    updateResultInfo(filteredFiles.length, allFiles.length);
+  } catch (error) {
+    console.error('Error filtering data:', error);
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error filtering data</td></tr>';
+  }
+}
+
+// Event listeners for search and filter
 document.getElementById("searchInput").addEventListener("input", filterTable);
 document.getElementById("statusFilter").addEventListener("change", filterTable);
-document.getElementById("resetBtn").addEventListener("click", () => {
+document.getElementById("resetBtn").addEventListener("click", async () => {
   document.getElementById("searchInput").value = "";
   document.getElementById("statusFilter").value = "";
-  filterTable();
+  await loadData(); // Reload all data
 });
 
-// Cek login, redirect jika belum login
-// (Handled by Firebase onAuthStateChanged above)
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('service-worker.js');
-  });
-}
-</script>
+  </script>
 </body>
 </html>
