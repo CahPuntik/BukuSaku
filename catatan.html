@@ -401,18 +401,6 @@
           <textarea class="form-control" id="noteContent" rows="4" placeholder="Tulis catatan Anda di sini..." required></textarea>
         </div>
         
-        <div class="mb-3">
-          <label for="noteCategory" class="form-label fw-bold">Kategori</label>
-          <select class="form-select" id="noteCategory">
-            <option value="umum">📝 Umum</option>
-            <option value="penting">⭐ Penting</option>
-            <option value="tugas">📋 Tugas</option>
-            <option value="meeting">🤝 Meeting</option>
-            <option value="ide">💡 Ide</option>
-            <option value="reminder">⏰ Reminder</option>
-          </select>
-        </div>
-        
         <div class="d-flex gap-2">
           <button type="submit" class="btn btn-primary">
             <span id="submitIcon">➕</span> <span id="submitText">Tambah Catatan</span>
@@ -427,15 +415,6 @@
     <!-- Search and Filter -->
     <div class="search-controls">
       <input type="text" class="form-control search-input" id="searchInput" placeholder="🔍 Cari catatan...">
-      <select class="form-select" id="filterCategory" style="width: 200px;">
-        <option value="">Semua Kategori</option>
-        <option value="umum">📝 Umum</option>
-        <option value="penting">⭐ Penting</option>
-        <option value="tugas">📋 Tugas</option>
-        <option value="meeting">🤝 Meeting</option>
-        <option value="ide">💡 Ide</option>
-        <option value="reminder">⏰ Reminder</option>
-      </select>
     </div>
 
     <!-- Loading Indicator -->
@@ -598,7 +577,6 @@
       
       // Search functionality
       document.getElementById('searchInput').addEventListener('input', filterNotes);
-      document.getElementById('filterCategory').addEventListener('change', filterNotes);
     }
 
     // Load notes from Firebase
@@ -681,7 +659,6 @@
       
       const title = document.getElementById('noteTitle').value.trim();
       const content = document.getElementById('noteContent').value.trim();
-      const category = document.getElementById('noteCategory').value;
       
       if (!title || !content) {
         alert('Judul dan isi catatan harus diisi!');
@@ -692,7 +669,6 @@
         const noteData = {
           title: title,
           content: content,
-          category: category,
           updatedAt: new Date().toISOString()
         };
         
@@ -732,7 +708,6 @@
       
       document.getElementById('noteTitle').value = note.title;
       document.getElementById('noteContent').value = note.content;
-      document.getElementById('noteCategory').value = note.category;
       document.getElementById('editingNoteId').value = noteId;
       document.getElementById('submitIcon').textContent = '✏️';
       document.getElementById('submitText').textContent = 'Perbarui Catatan';
@@ -775,16 +750,6 @@
       emptyState.style.display = 'none';
       
       container.innerHTML = filteredNotes.map(note => {
-        const categoryIcons = {
-          'umum': '📝',
-          'penting': '⭐',
-          'tugas': '📋',
-          'meeting': '🤝',
-          'ide': '💡',
-          'reminder': '⏰'
-        };
-        
-        const categoryIcon = categoryIcons[note.category] || '📝';
         const createdDate = new Date(note.createdAt).toLocaleDateString('id-ID', {
           day: '2-digit',
           month: 'short',
@@ -797,7 +762,7 @@
           <div class="note-card">
             <div class="note-header">
               <div>
-                <span>${categoryIcon}</span>
+                <span>📝</span>
                 <strong>${note.title}</strong>
               </div>
               <div class="note-date">${createdDate}</div>
@@ -821,7 +786,6 @@
     // Filter notes based on search and category
     function filterNotes() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      const selectedCategory = document.getElementById('filterCategory').value;
       
       let filtered = notesData;
       
@@ -831,11 +795,6 @@
           note.title.toLowerCase().includes(searchTerm) ||
           note.content.toLowerCase().includes(searchTerm)
         );
-      }
-      
-      // Filter by category
-      if (selectedCategory) {
-        filtered = filtered.filter(note => note.category === selectedCategory);
       }
       
       renderNotes(filtered);
