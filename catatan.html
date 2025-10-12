@@ -391,7 +391,7 @@
     <!-- New Note Button -->
     <div class="mb-3">
       <button type="button" class="btn btn-primary" id="btnNewNote">
-        ➕ New Catatan
+        ➕
       </button>
     </div>
 
@@ -410,7 +410,7 @@
         
         <div class="d-flex gap-2">
           <button type="submit" class="btn btn-primary">
-            <span id="submitIcon">➕</span> <span id="submitText">Tambah Catatan</span>
+            <span id="submitIcon"></span> <span id="submitText">Simpan</span>
           </button>
           <button type="button" class="btn btn-secondary" id="btnCancel">Batal</button>
         </div>
@@ -574,6 +574,9 @@
     // 📝 Notes Management System
     let notesData = [];
     let editingNoteId = null;
+    let notesCache = null; // Cache for notes data
+    let cacheTimestamp = null;
+    const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes cache duration
 
     function setupEventListeners() {
       // New note button
@@ -589,9 +592,18 @@
       document.getElementById('searchInput').addEventListener('input', filterNotes);
     }
 
-    // Load notes from Firebase
+    // Load notes from Firebase with caching
     async function loadNotes() {
       try {
+        // Check if we have valid cached data
+        if (notesCache && cacheTimestamp && 
+            (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+          console.log('Using cached notes data');
+          notesData = notesCache;
+          renderNotes();
+          return;
+        }
+        
         showLoading();
         
         if (!window.firebase || !window.firebase.db) {
@@ -600,10 +612,19 @@
           return;
         }
         
-        const { db, collection, getDocs, query, orderBy } = window.firebase;
+        const { db, collection, getDocs } = window.firebase;
         const notesCollection = collection(db, 'notes');
-        const q = query(notesCollection, orderBy('createdAt', 'desc'));
-        const querySnapshot = await getDocs(q);
+        
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout')), 10000); // 10 second timeout
+        });
+        
+        // Remove orderBy to make query faster - we'll sort locally
+        const queryPromise = getDocs(notesCollection);
+        
+        // Race between fetch and timeout
+        const querySnapshot = await Promise.race([queryPromise, timeoutPromise]);
         
         notesData = [];
         querySnapshot.forEach((doc) => {
@@ -613,12 +634,34 @@
           });
         });
         
+        // Sort by creation date locally (faster than Firebase orderBy)
+        notesData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        // Cache the data
+        notesCache = [...notesData];
+        cacheTimestamp = Date.now();
+        
         console.log('Notes loaded from Firebase:', notesData);
         renderNotes();
         hideLoading();
       } catch (error) {
         console.error('Error loading notes:', error);
         hideLoading();
+        
+        let errorMessage = "Gagal memuat catatan!";
+        if (error.message.includes('timeout')) {
+          errorMessage = "⏱️ Loading terlalu lama. Silakan refresh halaman atau coba lagi.";
+        }
+        
+        // Show error message to user
+        const container = document.getElementById('notesContainer');
+        container.innerHTML = `
+          <div class="alert alert-warning text-center" role="alert">
+            <h6>${errorMessage}</h6>
+            <button class="btn btn-primary btn-sm mt-2" onclick="loadNotes()">🔄 Coba Lagi</button>
+          </div>
+        `;
+        
         showEmptyState();
       }
     }
@@ -630,6 +673,11 @@
         const notesCollection = collection(db, 'notes');
         const docRef = await addDoc(notesCollection, noteData);
         console.log('Note saved with ID:', docRef.id);
+        
+        // Clear cache when data is modified
+        notesCache = null;
+        cacheTimestamp = null;
+        
         return docRef.id;
       } catch (error) {
         console.error('Error saving note:', error);
@@ -644,6 +692,10 @@
         const noteDoc = doc(db, 'notes', noteId);
         await updateDoc(noteDoc, noteData);
         console.log('Note updated successfully');
+        
+        // Clear cache when data is modified
+        notesCache = null;
+        cacheTimestamp = null;
       } catch (error) {
         console.error('Error updating note:', error);
         throw error;
@@ -657,6 +709,10 @@
         const noteDoc = doc(db, 'notes', noteId);
         await deleteDoc(noteDoc);
         console.log('Note deleted successfully');
+        
+        // Clear cache when data is modified
+        notesCache = null;
+        cacheTimestamp = null;
       } catch (error) {
         console.error('Error deleting note:', error);
         throw error;
@@ -827,9 +883,13 @@
 
     // Show loading indicator
     function showLoading() {
-      document.getElementById('loadingIndicator').style.display = 'block';
-      document.getElementById('notesContainer').innerHTML = '';
-      document.getElementById('emptyState').style.display = 'none';
+      const container = document.getElementById('notesContainer');
+      const emptyState = document.getElementById('emptyState');
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      
+      container.innerHTML = '';
+      emptyState.style.display = 'none';
+      loadingIndicator.style.display = 'block';
     }
 
     // Hide loading indicator
@@ -841,6 +901,7 @@
     function showEmptyState() {
       document.getElementById('emptyState').style.display = 'block';
       document.getElementById('notesContainer').innerHTML = '';
+      document.getElementById('loadingIndicator').style.display = 'none';
     }
 
     // Add logout function (optional)
