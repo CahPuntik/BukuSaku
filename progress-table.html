@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Progress Table</title>
+  <title>UPDATE HM</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <meta name="theme-color" content="#fda085">
@@ -11,7 +11,6 @@
       background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
       min-height: 100vh;
     }
-    
     .btn-back {
       background: linear-gradient(90deg, #f76b1c 60%, #fda085 100%);
       color: #fff;
@@ -22,12 +21,14 @@
       background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
       color: #fff;
     }
-
     .offcanvas {
-      background: #fff8f3;
-      border-top-right-radius: 18px;
-      border-bottom-right-radius: 18px;
-      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      width: 90px !important;
+    }
+    .offcanvas-header {
+      display: none;
     }
     .offcanvas-title {
       color: #f76b1c;
@@ -38,12 +39,18 @@
       font-weight: 500;
       color: #f76b1c;
       border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
     }
     .nav-link:hover, .nav-link.active {
       background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
       color: #f76b1c;
     }
-
     .dashboard-container {
       max-width: 900px;
       margin: 10px auto;
@@ -54,14 +61,12 @@
       position: relative;
       overflow: hidden;
     }
-
     .dashboard-header {
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 18px;
     }
-
     .avatar {
       width: 54px;
       height: 54px;
@@ -75,18 +80,15 @@
       margin-right: 16px;
       box-shadow: 0 2px 8px rgba(253,160,133,0.18);
     }
-    
     .dashboard-title {
       font-size: 1.4rem;
       font-weight: 700;
       color: #f76b1c;
       letter-spacing: 1px;
     }
-
     .admin-desc, .text-muted { 
       color: #666; 
     }
-
     .form-row { 
       gap: 12px; 
       display: flex; 
@@ -96,7 +98,6 @@
     .form-row > * { 
       flex: 1 1 200px; 
     }
-    
     .form-select {
       border: 1px solid #ced4da;
       border-radius: 6px;
@@ -105,18 +106,15 @@
       background-color: #fff;
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
-    
     .form-select:focus {
       border-color: #fda085;
       outline: 0;
       box-shadow: 0 0 0 0.2rem rgba(253, 160, 133, 0.25);
     }
-
     /* Table general styling */
     table td, table th { 
       vertical-align: middle; 
     }
-
     /* Progress Table styling */
     .progress-table {
       width: 100%;
@@ -126,7 +124,6 @@
       background: #fff;
       table-layout: fixed;
     }
-    
     .progress-table th,
     .progress-table td {
       border: 1px solid #000;
@@ -136,7 +133,6 @@
       font-size: 12px;
       word-wrap: break-word;
     }
-
     /* Header styling */
     .main-header {
       background: linear-gradient(135deg, #4472C4 0%, #5B9BD5 100%) !important;
@@ -145,7 +141,6 @@
       font-size: 10px;
       text-align: center;
     }
-
     .sub-header {
       background: linear-gradient(135deg, #9DC3E6 0%, #BDD7EE 100%) !important;
       color: #000 !important;
@@ -153,46 +148,39 @@
       font-size: 10px;
       text-align: center;
     }
-
     /* Column specific styling */
     .no-col { 
       width: 40px;
       background: linear-gradient(135deg, #D9E1F2 0%, #E7EFFA 100%) !important;
       color: #000 !important;
     }
-    
     .nama-col { 
       width: 150px;
       background: linear-gradient(135deg, #D9E1F2 0%, #E7EFFA 100%) !important;
       color: #000 !important;
       text-align: center !important;
     }
-
     .nrp-col {
       width: 80px;
       background: linear-gradient(135deg, #D9E1F2 0%, #E7EFFA 100%) !important;
       color: #000 !important;
     }
-
     /* Training stage columns with alternating light blue backgrounds */
     .stage-col {
       width: 50px;
       background: linear-gradient(135deg, #E7F3FF 0%, #F0F8FF 100%) !important;
     }
-
     /* Progress columns - plan/actual */
     .progress-col {
       width: 45px;
       font-size: 10px;
       background: linear-gradient(135deg, #E7F3FF 0%, #F0F8FF 100%) !important;
     }
-
     /* DDT and Orientasi columns */
     .single-col {
       width: 50px;
       background: linear-gradient(135deg, #F0F8FF 0%, #E7F3FF 100%) !important;
     }
-
     /* Total columns with yellow background */
     .total-col {
       width: 50px;
@@ -200,7 +188,6 @@
       font-weight: bold;
       color: #000 !important;
     }
-
     /* Achievement column with green background */
     .achievement-col {
       width: 50px;
@@ -208,55 +195,45 @@
       font-weight: bold;
       color: #000 !important;
     }
-
     /* OJT columns with orange background */
     .ojt-col {
       width: 45px;
       background: linear-gradient(135deg, #FCE4D6 0%, #F8CBAD 100%) !important;
       color: #000 !important;
     }
-
     /* Data rows without background colors */
     .progress-table tbody tr:not(.average-row) {
       background: transparent !important;
     }
-
     .progress-table tbody tr:not(.average-row) td {
       background: transparent !important;
     }
-
     .progress-table tbody tr:not(.average-row):hover {
       background: #f0f8ff !important;
     }
-
     .progress-table tbody tr:not(.average-row):hover td {
       background: #f0f8ff !important;
     }
-
     /* Orange background for all P header cells */
     .orange-header {
       background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%) !important;
       color: white !important;
     }
-
     /* Light blue background for all A header cells */
     .light-blue-header {
       background: linear-gradient(135deg, #87CEEB 0%, #ADD8E6 100%) !important;
       color: #000 !important;
     }
-
     /* Average row styling */
     .average-row {
       background: linear-gradient(135deg, #FFEB9C 0%, #FFD966 100%) !important;
       font-weight: bold;
     }
-
     .average-row td {
       background: linear-gradient(135deg, #FFEB9C 0%, #FFD966 100%) !important;
       font-weight: bold;
       color: #000 !important;
     }
-
     /* Green background for average sub A columns */
     .average-row td[data-field="avg_sim_a"],
     .average-row td[data-field="avg_unit_a"],
@@ -270,7 +247,6 @@
       color: #000 !important;
       font-weight: bold;
     }
-
     /* Red background for average sub P columns */
     .average-row td[data-field="avg_sim_p"],
     .average-row td[data-field="avg_unit_p"],
@@ -284,23 +260,19 @@
       color: #fff !important;
       font-weight: bold;
     }
-
     /* Editable cells */
     .editable {
       background: #fff !important;
       cursor: text;
       transition: background-color 0.2s ease;
     }
-
     .editable:hover {
       background: #f0f8ff !important;
     }
-
     .editable:focus {
       background: #e6f3ff !important;
       outline: 2px solid #4472C4;
     }
-
     /* Horizontal scroll container */
     .table-container {
       overflow-x: auto;
@@ -314,32 +286,26 @@
       scrollbar-width: thin;
       scrollbar-color: #fda085 #f0f0f0;
     }
-
     .table-container::-webkit-scrollbar {
       height: 8px;
     }
-
     .table-container::-webkit-scrollbar-track {
       background: #f0f0f0;
       border-radius: 4px;
     }
-
     .table-container::-webkit-scrollbar-thumb {
       background: linear-gradient(90deg, #fda085, #f76b1c);
       border-radius: 4px;
     }
-
     .table-container::-webkit-scrollbar-thumb:hover {
       background: linear-gradient(90deg, #f76b1c, #fda085);
     }
-
     /* Responsive design */
     @media (min-width: 1200px) {
       .dashboard-container {
         max-width: 1200px;
       }
     }
-
     @media (max-width: 900px) {
       .dashboard-container {
         padding: 18px 6px 16px 6px;
@@ -359,7 +325,6 @@
         margin-right: 0;
         margin-bottom: 6px;
       }
-      
       .offcanvas.offcanvas-start {
         width: 82%;
         max-width: 360px;
@@ -371,18 +336,15 @@
         border-bottom-right-radius: 18px;
         font-size: 1.4rem;
       }
-      
       .offcanvas-backdrop {
         background-color: rgba(0,0,0,0.35);
       }
-      
       .nav-buttons {
         flex-wrap: nowrap;
         gap: 8px;
         justify-content: center;
         margin: 15px 0;
       }
-      
       .btn-nav {
         padding: 8px 12px;
         font-size: 0.8rem;
@@ -390,46 +352,38 @@
         max-width: 48%;
         min-width: 80px;
       }
-      
       .table-container {
         margin: 15px 0;
         border-radius: 8px;
         border: 2px solid #000;
       }
-      
       .progress-table {
         font-size: 11px;
         min-width: 1000px;
       }
-      
       .progress-table th,
       .progress-table td {
         padding: 6px 4px;
         font-size: 10px;
         line-height: 1.5;
       }
-      
       .action-buttons {
         flex-wrap: wrap;
         gap: 8px;
       }
-      
       .action-buttons button {
         padding: 8px 15px;
         font-size: 0.85rem;
         flex: 1 1 calc(50% - 4px);
         min-width: 120px;
       }
-      
       .form-row {
         flex-direction: column;
         gap: 8px;
       }
-      
       .form-row > * {
         flex: 1 1 auto;
       }
-      
       .respon-container {
         padding: 15px;
         margin: 15px 0;
@@ -437,127 +391,106 @@
         border: 1px solid #dee2e6;
         font-size: 0.85rem;
       }
-      
       .respon-container h5 {
         font-size: 1rem;
       }
-      
       .respon-container .form-label {
         font-size: 0.8rem;
       }
-      
       .respon-container .btn {
         font-size: 0.8rem;
         padding: 6px 12px;
       }
-      
       .respon-container .card {
         font-size: 0.8rem;
       }
-      
       .respon-container .card-title {
         font-size: 0.9rem;
       }
-      
       .respon-container .form-control,
       .respon-container .form-select {
         font-size: 0.8rem;
       }
+      .btn-sm {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.4rem;
+      }
     }
-
     /* Extra small screens */
     @media (max-width: 480px) {
       .dashboard-container {
         padding: 10px;
       }
-      
       .nav-buttons {
         gap: 5px;
       }
-      
       .avatar {
         width: 40px;
         height: 40px;
         font-size: 1.5rem;
       }
-      
       .dashboard-title {
         font-size: 1.1rem;
       }
-      
       .btn-nav {
         padding: 6px 8px;
         font-size: 0.75rem;
         flex: 1;
         max-width: 48%;
       }
-      
       .progress-table {
         font-size: 10px;
       }
-      
       .progress-table th,
       .progress-table td {
         padding: 5px 3px;
         font-size: 9px;
       }
-      
       .action-buttons button {
         flex: 1 1 100%;
         margin-bottom: 5px;
       }
-      
       .respon-container {
         font-size: 0.75rem;
         padding: 12px;
       }
-      
       .respon-container h5 {
         font-size: 0.9rem;
       }
-      
       .respon-container .form-label {
         font-size: 0.7rem;
       }
-      
       .respon-container .btn {
         font-size: 0.7rem;
         padding: 4px 8px;
       }
-      
       .respon-container .card {
         font-size: 0.7rem;
       }
-      
       .respon-container .card-title {
         font-size: 0.8rem;
       }
-      
       .respon-container .form-control,
       .respon-container .form-select {
         font-size: 0.75rem;
         padding: 6px 8px;
       }
     }
-
     /* Tablet */
     @media (min-width: 769px) and (max-width: 1024px) {
       .dashboard-container {
         max-width: 720px;
         padding: 24px;
       }
-      
       .progress-table {
         font-size: 9px;
       }
-      
       .progress-table th,
       .progress-table td {
         padding: 3px 2px;
         font-size: 8px;
       }
     }
-
     /* Action buttons */
     .action-buttons {
       margin: 20px 0;
@@ -565,7 +498,6 @@
       gap: 10px;
       justify-content: center;
     }
-
     .btn-save {
       background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
       color: white;
@@ -575,13 +507,11 @@
       font-weight: 500;
       transition: all 0.3s ease;
     }
-
     .btn-save:hover {
       background: linear-gradient(90deg, #20c997 0%, #28a745 100%);
       color: white;
       transform: translateY(-2px);
     }
-
     .btn-clear {
       background: linear-gradient(90deg, #6c757d 0%, #495057 100%);
       color: white;
@@ -591,13 +521,11 @@
       font-weight: 500;
       transition: all 0.3s ease;
     }
-
     .btn-clear:hover {
       background: linear-gradient(90deg, #495057 0%, #6c757d 100%);
       color: white;
       transform: translateY(-2px);
     }
-
     /* Navigation buttons */
     .nav-buttons {
       display: flex;
@@ -605,7 +533,6 @@
       gap: 10px;
       margin-bottom: 20px;
     }
-
     .btn-nav {
       background: linear-gradient(90deg, #6c757d 0%, #495057 100%);
       color: white;
@@ -615,33 +542,27 @@
       font-weight: 500;
       transition: all 0.3s ease;
     }
-
     .btn-nav:hover {
       background: linear-gradient(90deg, #495057 0%, #6c757d 100%);
       color: white;
       transform: translateY(-2px);
     }
-
     .btn-nav.active {
       background: linear-gradient(90deg, #f76b1c 0%, #fda085 100%);
       color: white;
     }
-
     .btn-nav.active:hover {
       background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
       color: white;
       transform: translateY(-2px);
     }
-
     /* Section content */
     .section-content {
       display: none;
     }
-
     .section-content.active {
       display: block;
     }
-
     /* Respon section styling */
     .respon-container {
       padding: 20px;
@@ -650,7 +571,6 @@
       border: 1px solid #dee2e6;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-
     .form-control {
       border: 1px solid #ced4da;
       border-radius: 6px;
@@ -659,69 +579,81 @@
       background-color: #fff;
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
-    
     .form-control:focus {
       border-color: #fda085;
       outline: 0;
       box-shadow: 0 0 0 0.2rem rgba(253, 160, 133, 0.25);
     }
-
     .data-display .card {
       border: none;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-
     .data-display .card-header {
       border-bottom: none;
       font-weight: 600;
+    }
+    /* Make data response table font smaller */
+    .data-display table {
+      font-size: 8px !important;
+    }
+    .data-display table th {
+      font-size: 8px !important;
+      font-weight: 600;
+      padding: 4px !important;
+    }
+    .data-display table td {
+      font-size: 8px !important;
+      padding: 3px !important;
+      line-height: 1.2;
+    }
+    .data-display .table-sm th,
+    .data-display .table-sm td {
+      font-size: 8px !important;
+      padding: 3px !important;
     }
   </style>
 </head>
 <body>
   <!-- Tombol buka sidebar dan kembali -->
-    <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰ Menu</button>
+  <div>
+    <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰</button>
   </div>
-
   <!-- Sidebar (sinkronkan ke halaman lain) -->
   <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title">📚 Buku Saku</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
-    <div class="offcanvas-body px-2">
+    <div class="offcanvas-body px-1">
       <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠 Dashboard</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑 Prosedur</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️ Administrasi</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
-        <li class="nav-item mb-2"><a class="nav-link active" href="progress-table.html">⏰ Update HM</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
-        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪 Logout</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="progress-table.html">⏰</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="catatan.html">📋</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪</a></li>
       </ul>
     </div>
   </nav>
-
   <div class="dashboard-container">
     <div class="dashboard-header">
       <div class="avatar">⏰</div>
-      <div class="dashboard-title">Update HM</div>
+      <div class="dashboard-title">UPDATE HM</div>
     </div>
-    
     <div class="mb-3 text-center">
       <p class="admin-desc mb-0">Tabel perolehan jam praktek dengan format yang sama dengan Summary pada spreadsheet.</p>
     </div>
-
     <!-- Navigation Buttons -->
     <div class="nav-buttons mb-3">
       <button class="btn btn-nav active" id="summaryBtn" onclick="showSection('summary')">⏰ SUMMARY</button>
       <button class="btn btn-nav" id="responBtn" onclick="showSection('respon')">📋 RESPON</button>
     </div>
-
     <!-- Summary Section (Table) -->
     <div id="summarySection" class="section-content active">
-
     <!-- Progress Table -->
     <div class="table-container">
       <table class="progress-table" id="progressTable">
@@ -769,13 +701,20 @@
         </tbody>
       </table>
     </div>
+    
+    <!-- Firebase Status -->
+    <div class="mt-2 text-center">
+      <small class="text-muted">
+        <span class="badge bg-info" id="firebaseStatus">🔗 Firebase Connected</span>
+        <span id="lastSync" class="ms-2"></span>
+      </small>
     </div>
-
+    
+    </div>
     <!-- Respon Section (Data) -->
     <div id="responSection" class="section-content">
       <div class="respon-container">
         <h5 class="mb-3">📋 Data Response</h5>
-        
         <!-- Training Data Dropdown -->
         <div class="mb-4">
           <div class="row align-items-center">
@@ -788,19 +727,18 @@
             <div class="col-md-6">
               <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-success" onclick="showAddForm()">
-                  ➕ Tambah
+                  ➕
                 </button>
                 <button class="btn btn-warning" onclick="showEditForm()">
-                  ✏️ Edit
+                  ✏️
                 </button>
                 <button class="btn btn-danger" onclick="showDeleteForm()">
-                  🗑️ Hapus
+                  🗑️
                 </button>
               </div>
             </div>
           </div>
         </div>
-
         <!-- Add Training Form Modal -->
         <div class="modal fade" id="addTrainingModal" tabindex="-1">
           <div class="modal-dialog">
@@ -845,7 +783,6 @@
             </div>
           </div>
         </div>
-
         <!-- Delete Training Form Modal -->
         <div class="modal fade" id="deleteTrainingModal" tabindex="-1">
           <div class="modal-dialog">
@@ -874,7 +811,6 @@
             </div>
           </div>
         </div>
-
         <!-- Edit Training Form Modal -->
         <div class="modal fade" id="editTrainingModal" tabindex="-1">
           <div class="modal-dialog">
@@ -927,23 +863,361 @@
             </div>
           </div>
         </div>
-
         <div class="data-display" id="dataSummary">
           <p class="text-muted">Data akan ditampilkan setelah memilih sumber pelatihan...</p>
         </div>
+        <div class="cache-status mt-2" id="cacheStatus" style="display: none;">
+          <small class="text-muted">
+            <span class="badge bg-secondary">Cache Status</span>
+            <span id="cacheInfo" class="ms-1"></span>
+          </small>
+        </div>
       </div>
     </div>
-
-    <!-- Back button -->
-    <div class="text-center">
-      <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
-    </div>
   </div>
-
+  
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, updateDoc, onSnapshot, enableNetwork, disableNetwork } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
+      authDomain: "buku-saku-instruktur.firebaseapp.com",
+      projectId: "buku-saku-instruktur",
+      storageBucket: "buku-saku-instruktur.firebasestorage.app",
+      messagingSenderId: "180222950163",
+      appId: "1:180222950163:web:3331e9673249098aa038e6"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Make Firebase available globally
+    window.firebaseApp = app;
+    window.firebaseDB = db;
+    window.firebaseDoc = doc;
+    window.firebaseSetDoc = setDoc;
+    window.firebaseGetDoc = getDoc;
+    window.firebaseCollection = collection;
+    window.firebaseAddDoc = addDoc;
+    window.firebaseDeleteDoc = deleteDoc;
+    window.firebaseUpdateDoc = updateDoc;
+    window.firebaseOnSnapshot = onSnapshot;
+    window.firebaseEnableNetwork = enableNetwork;
+    window.firebaseDisableNetwork = disableNetwork;
+    
+    // Handle connection errors
+    window.addEventListener('online', () => {
+      console.log('🌐 Network online - enabling Firestore');
+      enableNetwork(db).catch(console.error);
+    });
+    
+    window.addEventListener('offline', () => {
+      console.log('📴 Network offline - disabling Firestore');
+      disableNetwork(db).catch(console.error);
+    });
+  </script>
+  
   <script>
+    // Firebase Helper Functions
+    async function saveToFirebase(collection, docId, data) {
+      try {
+        updateFirebaseStatus('saving');
+        
+        // Check if Firebase is available
+        if (!window.firebaseDB) {
+          throw new Error('Firebase not initialized');
+        }
+        
+        const docRef = window.firebaseDoc(window.firebaseDB, collection, docId);
+        await window.firebaseSetDoc(docRef, {
+          ...data,
+          lastUpdated: new Date().toISOString(),
+          updatedBy: 'Progress Table System'
+        });
+        
+        console.log(`✅ Data saved to Firebase: ${collection}/${docId}`);
+        updateFirebaseStatus('connected', `Last saved: ${new Date().toLocaleTimeString()}`);
+        
+        // Also save to localStorage as backup
+        localStorage.setItem(`firebase_backup_${collection}_${docId}`, JSON.stringify(data));
+        
+        return true;
+      } catch (error) {
+        console.error('❌ Error saving to Firebase:', error);
+        
+        // Handle specific Firebase errors
+        if (error.code === 'permission-denied') {
+          updateFirebaseStatus('error', 'Permission denied');
+          alert('❌ Permission denied. Pastikan Firestore rules sudah dikonfigurasi dengan benar.');
+        } else if (error.code === 'unavailable') {
+          updateFirebaseStatus('offline', 'Service unavailable');
+          alert('❌ Firebase service tidak tersedia. Menggunakan penyimpanan lokal.');
+        } else if (error.code === 'failed-precondition') {
+          updateFirebaseStatus('error', 'Failed precondition');
+          alert('❌ Firebase failed precondition. Periksa konfigurasi project.');
+        } else {
+          updateFirebaseStatus('error', 'Save failed - using local backup');
+          alert('❌ Gagal simpan ke Firebase. Data disimpan secara lokal.\nError: ' + error.message);
+        }
+        
+        // Fallback to localStorage
+        localStorage.setItem(`firebase_backup_${collection}_${docId}`, JSON.stringify(data));
+        
+        return false;
+      }
+    }
+
+    async function loadFromFirebase(collection, docId) {
+      try {
+        updateFirebaseStatus('loading');
+        
+        const docRef = window.firebaseDoc(window.firebaseDB, collection, docId);
+        const docSnap = await window.firebaseGetDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          console.log(`✅ Data loaded from Firebase: ${collection}/${docId}`);
+          updateFirebaseStatus('connected', `Last loaded: ${new Date().toLocaleTimeString()}`);
+          return data;
+        } else {
+          console.log(`📄 No Firebase data found for: ${collection}/${docId}`);
+          updateFirebaseStatus('connected', 'No data found - checking local backup');
+          
+          // Try loading from localStorage backup
+          const backupData = localStorage.getItem(`firebase_backup_${collection}_${docId}`);
+          if (backupData) {
+            console.log(`📦 Loading from localStorage backup: ${collection}/${docId}`);
+            updateFirebaseStatus('offline', 'Loaded from local backup');
+            return JSON.parse(backupData);
+          }
+          
+          return null;
+        }
+      } catch (error) {
+        console.error('❌ Error loading from Firebase:', error);
+        updateFirebaseStatus('error', 'Load failed - using local backup');
+        
+        // Fallback to localStorage
+        const backupData = localStorage.getItem(`firebase_backup_${collection}_${docId}`);
+        if (backupData) {
+          console.log(`📦 Fallback to localStorage: ${collection}/${docId}`);
+          return JSON.parse(backupData);
+        }
+        
+        return null;
+      }
+    }
+
+    async function deleteFromFirebase(collection, docId) {
+      try {
+        const docRef = window.firebaseDoc(window.firebaseDB, collection, docId);
+        await window.firebaseDeleteDoc(docRef);
+        console.log(`🗑️ Data deleted from Firebase: ${collection}/${docId}`);
+        
+        // Also remove from localStorage backup
+        localStorage.removeItem(`firebase_backup_${collection}_${docId}`);
+        
+        return true;
+      } catch (error) {
+        console.error('❌ Error deleting from Firebase:', error);
+        alert('❌ Gagal hapus dari Firebase: ' + error.message);
+        return false;
+      }
+    }
+
+    // Save progress table data to Firebase
+    async function saveProgressTableData() {
+      const selectedIndex = selectedTrainingSource;
+      if (selectedIndex !== null && trainingDataList[selectedIndex]) {
+        const training = trainingDataList[selectedIndex];
+        const docId = `${training.programPelatihan}_${training.classId}`.replace(/\s+/g, '_').toLowerCase();
+        await saveToFirebase('progressTables', docId, { 
+          trainingInfo: training,
+          progressData: tableData 
+        });
+      } else {
+        // Fallback: save with generic ID
+        await saveToFirebase('progressTables', 'default', { progressData: tableData });
+      }
+      
+      // Also save to old localStorage for compatibility
+      localStorage.setItem('progressTableData', JSON.stringify(tableData));
+    }
+
+    // Test Firebase connection
+    async function testFirebaseConnection() {
+      try {
+        updateFirebaseStatus('loading', 'Testing Firebase connection...');
+        
+        if (!window.firebaseDB) {
+          throw new Error('Firebase not initialized');
+        }
+        
+        // Try to write and read a test document
+        const testDocRef = window.firebaseDoc(window.firebaseDB, 'test', 'connection');
+        const testData = {
+          timestamp: new Date().toISOString(),
+          test: true
+        };
+        
+        // Test write
+        await window.firebaseSetDoc(testDocRef, testData);
+        console.log('✅ Firebase write test successful');
+        
+        // Test read
+        const testDoc = await window.firebaseGetDoc(testDocRef);
+        if (testDoc.exists()) {
+          console.log('✅ Firebase read test successful');
+          updateFirebaseStatus('connected', 'Connection verified');
+          
+          // Clean up test document
+          await window.firebaseDeleteDoc(testDocRef);
+          
+          return true;
+        } else {
+          throw new Error('Test document not found after write');
+        }
+        
+      } catch (error) {
+        console.error('❌ Firebase connection test failed:', error);
+        
+        if (error.code === 'permission-denied') {
+          updateFirebaseStatus('error', 'Permission denied - check Firestore rules');
+          alert('🚨 Firebase Permission Denied!\n\nPastikan Firestore rules sudah dikonfigurasi:\n\nrules_version = \'2\';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /{document=**} {\n      allow read, write: if true;\n    }\n  }\n}');
+        } else if (error.code === 'unavailable') {
+          updateFirebaseStatus('offline', 'Firebase service unavailable');
+        } else {
+          updateFirebaseStatus('error', `Connection failed: ${error.message}`);
+        }
+        
+        return false;
+      }
+    }
+
+    // Update Firebase status indicator
+    function updateFirebaseStatus(status, message = '') {
+      const statusElement = document.getElementById('firebaseStatus');
+      const lastSyncElement = document.getElementById('lastSync');
+      
+      if (statusElement) {
+        switch(status) {
+          case 'connected':
+            statusElement.className = 'badge bg-success';
+            statusElement.textContent = '✅ Firebase Connected';
+            break;
+          case 'saving':
+            statusElement.className = 'badge bg-warning';
+            statusElement.textContent = '💾 Saving...';
+            break;
+          case 'loading':
+            statusElement.className = 'badge bg-info';
+            statusElement.textContent = '📡 Loading...';
+            break;
+          case 'error':
+            statusElement.className = 'badge bg-danger';
+            statusElement.textContent = '❌ Firebase Error';
+            break;
+          case 'offline':
+            statusElement.className = 'badge bg-secondary';
+            statusElement.textContent = '📴 Offline Mode';
+            break;
+        }
+      }
+      
+      if (lastSyncElement && message) {
+        lastSyncElement.textContent = message;
+      }
+    }
+
+    // Simple function to update sync status for auto-save
+    function updateSyncStatus(message) {
+      const lastSyncElement = document.getElementById('lastSync');
+      if (lastSyncElement) {
+        lastSyncElement.textContent = `${message} ${new Date().toLocaleTimeString()}`;
+      }
+    }
+
+    // Load progress table data from Firebase
+    async function loadProgressTableData() {
+      const selectedIndex = selectedTrainingSource;
+      if (selectedIndex !== null && trainingDataList[selectedIndex]) {
+        const training = trainingDataList[selectedIndex];
+        const docId = `${training.programPelatihan}_${training.classId}`.replace(/\s+/g, '_').toLowerCase();
+        
+        const data = await loadFromFirebase('progressTables', docId);
+        if (data && data.progressData) {
+          tableData = data.progressData;
+          return data.progressData;
+        }
+      }
+      
+      // Fallback: try loading from old localStorage
+      const savedData = localStorage.getItem('progressTableData');
+      if (savedData) {
+        tableData = JSON.parse(savedData);
+        return tableData;
+      }
+      
+      return [];
+    }
+
+    // Load progress data for specific training
+    async function loadProgressDataForTraining(training) {
+      try {
+        const docId = `${training.programPelatihan}_${training.classId}`.replace(/\s+/g, '_').toLowerCase();
+        const data = await loadFromFirebase('progressTables', docId);
+        
+        if (data && data.progressData) {
+          tableData = data.progressData;
+          // Populate the table with saved progress data
+          populateTableWithProgressData(data.progressData);
+          updateSyncStatus('📥 Loaded from Firebase');
+          return;
+        }
+      } catch (error) {
+        console.warn('Failed to load progress data from Firebase:', error.message);
+      }
+      
+      // If no Firebase data, check localStorage as backup
+      const savedData = localStorage.getItem(`progressTableData_${training.programPelatihan}_${training.classId}`);
+      if (savedData) {
+        tableData = JSON.parse(savedData);
+        populateTableWithProgressData(tableData);
+        updateSyncStatus('📦 Loaded from local backup');
+      }
+    }
+
+    // Populate table with progress data
+    function populateTableWithProgressData(progressData) {
+      // Clear existing data first
+      clearAllTableData();
+      
+      // Populate each row with saved data
+      progressData.forEach((rowData, index) => {
+        if (rowData) {
+          const rowNumber = index + 1;
+          Object.keys(rowData).forEach(field => {
+            const cell = document.querySelector(`[data-row="${rowNumber}"][data-field="${field}"]`);
+            if (cell && rowData[field] !== undefined) {
+              cell.textContent = rowData[field];
+            }
+          });
+        }
+      });
+      
+      // Recalculate totals and averages
+      recalculateAllTotals();
+      calculateAverages();
+    }
+
     // Initialize table data
     let tableData = [];
     
@@ -954,11 +1228,26 @@
     let currentDisplayedData = null;
     let selectedTrainingSource = null;
 
-    // Load training data from localStorage
-    function loadTrainingList() {
-      const savedTraining = localStorage.getItem('trainingDataList');
-      if (savedTraining) {
-        trainingDataList = JSON.parse(savedTraining);
+    // Load training data from Firebase/localStorage
+    async function loadTrainingList() {
+      try {
+        const data = await loadFromFirebase('settings', 'trainingList');
+        
+        if (data && data.trainingDataList) {
+          trainingDataList = data.trainingDataList;
+        } else {
+          // Try old localStorage method as fallback
+          const savedTraining = localStorage.getItem('trainingDataList');
+          if (savedTraining) {
+            trainingDataList = JSON.parse(savedTraining);
+            
+            // Migrate to Firebase
+            await saveToFirebase('settings', 'trainingList', { trainingDataList });
+            console.log('📦 Migrated training list from localStorage to Firebase');
+          } else {
+            trainingDataList = [];
+          }
+        }
         
         // Migrate old data format to new format if needed
         let needsMigration = false;
@@ -981,11 +1270,16 @@
           }
         });
         
-        // Save migrated data
+        // Save migrated data to Firebase
         if (needsMigration) {
-          localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+          await saveToFirebase('settings', 'trainingList', { trainingDataList });
         }
         
+        updateTrainingDropdown();
+        
+      } catch (error) {
+        console.error('Error loading training list:', error);
+        trainingDataList = [];
         updateTrainingDropdown();
       }
     }
@@ -1020,8 +1314,8 @@
       modal.show();
     }
 
-    // Save training data
-    function saveTrainingData() {
+    // Save training data to Firebase
+    async function saveTrainingData() {
       const programPelatihan = document.getElementById('programPelatihan').value.trim();
       const classId = document.getElementById('classId').value.trim();
       const link = document.getElementById('trainingLink').value.trim();
@@ -1039,6 +1333,19 @@
         return;
       }
       
+      // Show saving indicator
+      const saveBtn = document.querySelector('button[onclick="saveTrainingData()"]');
+      if (saveBtn) {
+        const originalText = saveBtn.textContent;
+        saveBtn.textContent = '💾 Menyimpan...';
+        saveBtn.disabled = true;
+        
+        setTimeout(() => {
+          saveBtn.textContent = originalText;
+          saveBtn.disabled = false;
+        }, 3000);
+      }
+      
       // Add to training list
       trainingDataList.push({
         programPelatihan: programPelatihan,
@@ -1048,8 +1355,8 @@
         dateAdded: new Date().toISOString()
       });
       
-      // Save to localStorage
-      localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+      // Save to Firebase
+      const success = await saveToFirebase('settings', 'trainingList', { trainingDataList });
       
       // Update dropdown
       updateTrainingDropdown();
@@ -1058,7 +1365,11 @@
       const modal = bootstrap.Modal.getInstance(document.getElementById('addTrainingModal'));
       modal.hide();
       
-      alert('Data pelatihan berhasil disimpan!');
+      if (success) {
+        alert('✅ Data pelatihan berhasil disimpan ke Firebase!');
+      } else {
+        alert('⚠️ Data pelatihan disimpan secara lokal (Firebase error)');
+      }
     }
 
     // Load selected training data
@@ -1085,6 +1396,9 @@
         
         // Immediately populate plan columns based on selected program
         populatePlanColumnsForProgram(training.programPelatihan);
+        
+        // Load existing progress data for this training if available
+        loadProgressDataForTraining(training);
         
         // Fetch data from Google Sheets via GAS
         fetchGoogleSheetsData(training.link, training.name);
@@ -1289,10 +1603,22 @@
       const currentRows = document.querySelectorAll('#progressBody tr:not(.average-row)').length;
       const neededRows = uniqueNRPData.length;
 
-      if (neededRows > currentRows) {
+      // Only add rows if uniqueNRPData has more than 5 unique entries
+      if (uniqueNRPData.length > 5 && neededRows > currentRows) {
         const additionalRows = neededRows - currentRows;
         for (let i = 0; i < additionalRows; i++) {
           addRowForNRP();
+        }
+      } else if (uniqueNRPData.length <= 5) {
+        // If 5 or fewer unique NRP, only populate existing rows (limit to 5)
+        const maxRowsToUse = Math.min(5, neededRows);
+        // Clear data beyond the needed rows
+        for (let i = maxRowsToUse; i < currentRows; i++) {
+          const rowNumber = i + 1;
+          const editableCells = document.querySelectorAll(`[data-row="${rowNumber}"].editable`);
+          editableCells.forEach(cell => {
+            cell.textContent = '';
+          });
         }
       }
 
@@ -1354,6 +1680,17 @@
 
       // Save to localStorage
       localStorage.setItem('progressTableData', JSON.stringify(tableData));
+      
+      // Auto-save to Firebase after populating data
+      if (selectedTrainingSource !== null && trainingDataList[selectedTrainingSource]) {
+        const training = trainingDataList[selectedTrainingSource];
+        saveProgressTableData().then(() => {
+          updateSyncStatus('✅ Data populated & saved');
+        }).catch(error => {
+          console.warn('Auto-save failed after populate:', error.message);
+          updateSyncStatus('⚠️ Populated, save failed');
+        });
+      }
     }
 
     // Calculate and populate training hours based on NRP and training phases
@@ -1734,6 +2071,9 @@
         calculateAchievementForRow(rowNumber);
       }
       
+      // Save data to Firebase
+      saveProgressTableData();
+      
       return totalPlan;
     }
 
@@ -1802,6 +2142,9 @@
         calculateAchievementForRow(rowNumber);
       }
       
+      // Save data to Firebase
+      saveProgressTableData();
+      
       return totalActual;
     }
 
@@ -1836,6 +2179,9 @@
         
         // Update averages after achievement calculation
         calculateAverages();
+        
+        // Save data to Firebase
+        saveProgressTableData();
         
         return achievement;
       }
@@ -2020,7 +2366,7 @@
     }
 
     // Confirm delete training data
-    function confirmDeleteTraining() {
+    async function confirmDeleteTraining() {
       const select = document.getElementById('deleteTrainingSelect');
       const selectedIndex = select.value;
       
@@ -2035,8 +2381,8 @@
         // Remove from array
         trainingDataList.splice(selectedIndex, 1);
         
-        // Save to localStorage
-        localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+        // Save to Firebase
+        await saveToFirebase('settings', 'trainingList', { trainingDataList });
         
         // Update both dropdowns
         updateTrainingDropdown();
@@ -2046,7 +2392,7 @@
         const modal = bootstrap.Modal.getInstance(document.getElementById('deleteTrainingModal'));
         modal.hide();
         
-        alert('Data pelatihan berhasil dihapus!');
+        alert('✅ Data pelatihan berhasil dihapus!');
       }
     }
 
@@ -2103,7 +2449,7 @@
     }
 
     // Save edited training data
-    function saveEditTraining() {
+    async function saveEditTraining() {
       const select = document.getElementById('editTrainingSelect');
       const selectedIndex = select.value;
       
@@ -2139,8 +2485,8 @@
         lastUpdated: new Date().toISOString() // Add update timestamp
       };
       
-      // Save to localStorage
-      localStorage.setItem('trainingDataList', JSON.stringify(trainingDataList));
+      // Save to Firebase
+      await saveToFirebase('settings', 'trainingList', { trainingDataList });
       
       // Update all dropdowns
       updateTrainingDropdown();
@@ -2151,7 +2497,7 @@
       const modal = bootstrap.Modal.getInstance(document.getElementById('editTrainingModal'));
       modal.hide();
       
-      alert('Data pelatihan berhasil diupdate!');
+      alert('✅ Data pelatihan berhasil diupdate!');
     }
 
     // Generate table rows
@@ -2226,7 +2572,7 @@
     function addEventListeners() {
       const editableCells = document.querySelectorAll('.editable');
       editableCells.forEach(cell => {
-        cell.addEventListener('blur', function() {
+        cell.addEventListener('blur', async function() {
           const row = this.getAttribute('data-row');
           const field = this.getAttribute('data-field');
           const value = this.textContent.trim();
@@ -2238,8 +2584,33 @@
             }
             tableData[row - 1][field] = value;
             
-            // Save to localStorage
+            // Save to localStorage (backup)
             localStorage.setItem('progressTableData', JSON.stringify(tableData));
+            
+            // Auto-save to Firebase
+            try {
+              // Save with specific training ID if available
+              const selectedIndex = selectedTrainingSource;
+              if (selectedIndex !== null && trainingDataList[selectedIndex]) {
+                const training = trainingDataList[selectedIndex];
+                const docId = `${training.programPelatihan}_${training.classId}`.replace(/\s+/g, '_').toLowerCase();
+                await saveToFirebase('progressTables', docId, { 
+                  trainingInfo: training,
+                  progressData: tableData 
+                });
+                // Also save to specific localStorage
+                localStorage.setItem(`progressTableData_${training.programPelatihan}_${training.classId}`, JSON.stringify(tableData));
+              } else {
+                // Fallback: save with generic ID
+                await saveToFirebase('progressTables', 'default', { progressData: tableData });
+              }
+              
+              // Update sync status silently
+              updateSyncStatus('✅ Auto-saved');
+            } catch (error) {
+              console.warn('Auto-save to Firebase failed:', error.message);
+              updateSyncStatus('⚠️ Local only');
+            }
           }
         });
 
@@ -2264,14 +2635,13 @@
       });
     }
 
-    // Load saved data
-    function loadData() {
-      const savedData = localStorage.getItem('progressTableData');
-      if (savedData) {
-        tableData = JSON.parse(savedData);
-        
+    // Load saved data from Firebase
+    async function loadData() {
+      const data = await loadProgressTableData();
+      
+      if (data && data.length > 0) {
         // Populate table with saved data
-        tableData.forEach((rowData, index) => {
+        data.forEach((rowData, index) => {
           Object.keys(rowData).forEach(field => {
             const cell = document.querySelector(`[data-row="${index + 1}"][data-field="${field}"]`);
             if (cell) {
@@ -2288,7 +2658,7 @@
     }
 
     // Save data function
-    function saveData() {
+    async function saveData() {
       // Collect all data from editable cells
       const editableCells = document.querySelectorAll('.editable[data-row]');
       const newData = [];
@@ -2305,14 +2675,16 @@
       });
 
       tableData = newData;
-      localStorage.setItem('progressTableData', JSON.stringify(tableData));
+      
+      // Save to Firebase
+      await saveProgressTableData();
       
       // Show success message
-      alert('Data berhasil disimpan!');
+      alert('✅ Data berhasil disimpan ke Firebase!');
     }
 
     // Clear table function
-    function clearTable() {
+    async function clearTable() {
       if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
         const editableCells = document.querySelectorAll('.editable');
         editableCells.forEach(cell => {
@@ -2320,9 +2692,14 @@
         });
         
         tableData = [];
+        
+        // Clear from Firebase
+        await saveProgressTableData();
+        
+        // Also clear localStorage backup
         localStorage.removeItem('progressTableData');
         
-        alert('Tabel berhasil dibersihkan!');
+        alert('✅ Tabel berhasil dibersihkan!');
       }
     }
 
@@ -2368,12 +2745,36 @@
     }
 
     // Initialize on page load
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Test Firebase connection
+      console.log('🔥 Initializing Firebase connection...');
+      
+      // Wait a bit for Firebase to initialize
+      setTimeout(async () => {
+        const isConnected = await testFirebaseConnection();
+        
+        if (isConnected) {
+          console.log('✅ Firebase connection verified successfully');
+        } else {
+          console.log('❌ Firebase connection failed - using offline mode');
+        }
+        
+        // Continue with app initialization
+        await initializeApp();
+      }, 1000);
+    });
+    
+    // Separate app initialization function
+    async function initializeApp() {
       // Clear any existing data on page load/refresh
       clearAllTableData();
       generateTable();
-      loadData();
+      
+      // Load training data from Firebase first
+      await loadTrainingList();
+      
+      // Load progress data
+      await loadData();
       
       // Calculate achievements for all rows after loading
       for (let i = 1; i <= 5; i++) {
@@ -2383,10 +2784,9 @@
       // Calculate averages
       calculateAverages();
       
-      loadTrainingList(); // Load training data
       // Show SUMMARY section by default
       showSection('summary');
-    });
+    }
 
     // Section navigation functions
     function showSection(sectionName) {
@@ -2468,6 +2868,7 @@
     window.autoPopulateDataToTable = autoPopulateDataToTable;
     window.clearTableData = clearTableData;
     window.refreshGoogleSheetsData = refreshGoogleSheetsData;
+    window.testFirebaseConnection = testFirebaseConnection;
   </script>
 </body>
 </html>

@@ -76,6 +76,91 @@
       transform: translateY(-2px) scale(1.03);
       box-shadow: 0 4px 16px rgba(253,160,133,0.13);
     }
+    
+    /* Card Layout Styles */
+    .admin-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .admin-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 15px;
+      text-decoration: none;
+      color: #333;
+      box-shadow: 0 2px 12px rgba(253,160,133,0.1);
+      border: 1px solid #f0f0f0;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      min-height: 140px;
+    }
+    
+    .admin-card:hover {
+      background: linear-gradient(135deg, #fda085 0%, #f6d365 100%);
+      color: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(253,160,133,0.2);
+      text-decoration: none;
+    }
+    
+    .admin-card.disabled {
+      background: #f8f9fa;
+      color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .admin-card.disabled:hover {
+      background: #f8f9fa;
+      color: #6c757d;
+      transform: none;
+      box-shadow: 0 2px 12px rgba(253,160,133,0.1);
+    }
+    
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f76b1c 0%, #fda085 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    
+    .admin-card:hover .card-icon {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    
+    .card-title {
+      font-weight: 500;
+      font-size: 12px;
+      margin: 0;
+      line-height: 1.3;
+      text-align: center;
+    }
+    
+    .section-divider {
+      background: linear-gradient(90deg, #f76b1c 0%, #fda085 100%);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      margin: 30px 0 20px 0;
+      font-size: 18px;
+    }
+    
     .btn-back {
       background: linear-gradient(90deg, #f76b1c 60%, #fda085 100%);
       border: none;
@@ -93,10 +178,13 @@
       color: #fff;
     }
     .offcanvas {
-      background: #fff8f3;
-      border-top-right-radius: 18px;
-      border-bottom-right-radius: 18px;
-      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      width: 90px !important;
+    }
+    .offcanvas-header {
+      display: none;
     }
     .offcanvas-title {
       color: #f76b1c;
@@ -107,6 +195,13 @@
       font-weight: 500;
       color: #f76b1c;
       border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
     }
     .nav-link:hover, .nav-link.active {
       background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
@@ -148,13 +243,87 @@
       .list-group-item {
         font-size: 1.4rem;
       }
+      
+      .admin-cards {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 12px;
+      }
+      
+      .admin-card {
+        padding: 12px 8px;
+        min-height: 110px;
+        gap: 8px;
+      }
+      
+      .card-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+      }
+      
+      .card-title {
+        font-size: 11px;
+      }
+      
+      .section-divider {
+        font-size: 16px;
+        padding: 10px 15px;
+        margin: 20px 0 15px 0;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .admin-cards {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      
+      .admin-card {
+        padding: 10px 6px;
+        min-height: 100px;
+        gap: 6px;
+      }
+      
+      .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+      
+      .card-title {
+        font-size: 10px;
+        line-height: 1.2;
+      }
+    }
+    
+    @media (max-width: 380px) {
+      .admin-cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      
+      .admin-card {
+        padding: 8px 4px;
+        min-height: 90px;
+        gap: 5px;
+      }
+      
+      .card-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+      }
+      
+      .card-title {
+        font-size: 9px;
+      }
     }
   </style>
 </head>
 <body>
   <!-- Tombol buka sidebar -->
   <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
-    ☰ Menu
+    ☰
   </button>
 
   <!-- Sidebar Offcanvas -->
@@ -163,17 +332,18 @@
       <h5 class="offcanvas-title">📚 Buku Saku'ku</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
-    <div class="offcanvas-body px-2">
+    <div class="offcanvas-body px-1">
       <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠 Dashboard</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑 Prosedur</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
-        <li class="nav-item mb-2"><a class="nav-link active" href="administrasi.html">🗂️ Administrasi</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="progress-table.html">⏰ Update HM</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
-        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪 Logout</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="administrasi.html">🗂️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="progress-table.html">⏰</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="catatan.html">📋</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪</a></li>
       </ul>
     </div>
   </nav>
@@ -185,22 +355,68 @@
     </div>
     <p class="admin-desc">Berikut adalah daftar administrasi yang harus diisi dalam pelatihan:</p>
     <hr>
-    <div class="list-group">
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSefqMhMuZfn0FYmUwM1zFuA6n5AkfgQGNfJbgI3Gr12rMumuA/viewform" class="list-group-item list-group-item-action">1. Jadwal Training</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdvzmMs4F222aGpfL6jMqOG0N30RMrm2B64NfRdQD2-_pQr9g/viewform" class="list-group-item list-group-item-action">2. Personal Data</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdi4a2G0lBnnzMU1HnlGji7zVy3GHVFOFZUQ8o_0iPmjBhG8Q/viewform" class="list-group-item list-group-item-action">3. Surat Pernyataan</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSf2_rmuEN0FhcqQCIyeVY9AXQ_s0cg7LOIK3B2F6_7ogS_KXw/viewform" class="list-group-item list-group-item-action">4. Tanda Terima Handout</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfpCtDQ0tZf3JARZG1jxteY8TEqEZMloq7uWzfw7w-MHZC2mA/viewform" class="list-group-item list-group-item-action">5. Evaluasi Non Teknis</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeLYZBk0r2mwkT_adAVEPPmgvjBTw5m_soPZGwgQGVrwGZvhQ/viewform" class="list-group-item list-group-item-action">6. Training Evaluasi Level 1</a>
-      <a href="https://cahpuntik.github.io/E-PersonalContact/" class="list-group-item list-group-item-action">7. Personal Contact</a>
-      <a href="https://docs.google.com/spreadsheets/d/1-ZWt7BT-EqEcBjxNmiFqX295cBNgfyw-1XoDV8SGcmA/edit?usp=sharing" class="list-group-item list-group-item-action">8. Evaluasi Akhir</a>
-      <div class="list-group-item disabled" style="background:#f6d36522;color:#aaa;">Update KIMPER</div>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSevjYAGmC6_HLTpyBmEHGFZJ65hs1iQbKZXLmgQdBm5uFieYw/viewform" class="list-group-item list-group-item-action">1. Upload Kartu</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfOYXIAhRUdRXJJnerxHA24mfU9v0b4tBRyOfu37vgVehFbNw/viewform?usp=send_form" class="list-group-item list-group-item-action">2. Pengajuan Kimper</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdce7LPhkd0Bx50vBTr8WqIX6i-uLgjkK0w1mJid6pOO6yBoQ/viewform" class="list-group-item list-group-item-action">3. Perubahan Kimper</a>
+    
+    <div class="admin-cards">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSefqMhMuZfn0FYmUwM1zFuA6n5AkfgQGNfJbgI3Gr12rMumuA/viewform" class="admin-card">
+        <div class="card-icon">📅</div>
+        <h5 class="card-title">Jadwal Training</h5>
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdvzmMs4F222aGpfL6jMqOG0N30RMrm2B64NfRdQD2-_pQr9g/viewform" class="admin-card">
+        <div class="card-icon">👤</div>
+        <h5 class="card-title">Personal Data</h5>
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdi4a2G0lBnnzMU1HnlGji7zVy3GHVFOFZUQ8o_0iPmjBhG8Q/viewform" class="admin-card">
+        <div class="card-icon">📋</div>
+        <h5 class="card-title">Surat Pernyataan</h5>
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSf2_rmuEN0FhcqQCIyeVY9AXQ_s0cg7LOIK3B2F6_7ogS_KXw/viewform" class="admin-card">
+        <div class="card-icon">📄</div>
+        <h5 class="card-title">Tanda Terima Handout</h5>
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfpCtDQ0tZf3JARZG1jxteY8TEqEZMloq7uWzfw7w-MHZC2mA/viewform" class="admin-card">
+        <div class="card-icon">⭐</div>
+        <h5 class="card-title">Evaluasi Non Teknis</h5>
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeLYZBk0r2mwkT_adAVEPPmgvjBTw5m_soPZGwgQGVrwGZvhQ/viewform" class="admin-card">
+        <div class="card-icon">📊</div>
+        <h5 class="card-title">Training Evaluasi Level 1</h5>
+      </a>
+      
+      <a href="https://cahpuntik.github.io/E-PersonalContact/" class="admin-card">
+        <div class="card-icon">📞</div>
+        <h5 class="card-title">Personal Contact</h5>
+      </a>
+      
+      <a href="https://docs.google.com/spreadsheets/d/1-ZWt7BT-EqEcBjxNmiFqX295cBNgfyw-1XoDV8SGcmA/edit?usp=sharing" class="admin-card">
+        <div class="card-icon">📈</div>
+        <h5 class="card-title">Evaluasi Akhir</h5>
+      </a>
     </div>
-    <div class="text-center">
-      <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
+    
+    <div class="section-divider">
+      🆔 Update KIMPER
+    </div>
+    
+    <div class="admin-cards">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSevjYAGmC6_HLTpyBmEHGFZJ65hs1iQbKZXLmgQdBm5uFieYw/viewform" class="admin-card">
+        <div class="card-icon">💳</div>
+        <h5 class="card-title">Upload Kartu</h5>
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfOYXIAhRUdRXJJnerxHA24mfU9v0b4tBRyOfu37vgVehFbNw/viewform?usp=send_form" class="admin-card">
+        <div class="card-icon">📝</div>
+        <h5 class="card-title">Pengajuan Kimper</h5>
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdce7LPhkd0Bx50vBTr8WqIX6i-uLgjkK0w1mJid6pOO6yBoQ/viewform" class="admin-card">
+        <div class="card-icon">🔄</div>
+        <h5 class="card-title">Perubahan Kimper</h5>
+      </a>
     </div>
   </div>
 
@@ -215,6 +431,7 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <!-- Authentication Script with Fallback -->
-<script src="auth-helper.js"></script>
+<script src="auth-helper-simple.js"></script>
 </body>
 </html>
+

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Catatan</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="theme-color" content="#fda085">
+  
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
+      authDomain: "buku-saku-instruktur.firebaseapp.com",
+      projectId: "buku-saku-instruktur",
+      storageBucket: "buku-saku-instruktur.firebasestorage.app",
+      messagingSenderId: "180222950163",
+      appId: "1:180222950163:web:3331e9673249098aa038e6"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    // Make Firebase available globally
+    window.firebase = { app, db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy };
+  </script>
+  
+  <style>
+    body {
+      background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    
+    .btn-back {
+      background: linear-gradient(90deg, #f76b1c 60%, #fda085 100%);
+      color: #fff;
+      margin-top: 18px;
+      padding: 10px 36px;
+    }
+    
+    .btn-back:hover {
+      background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
+      color: #fff;
+    }
+
+    /* container gaya timeframe */
+    .container-card {
+      max-width: 900px;
+      margin: 10px auto;
+      padding: 28px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* header gaya timeframe */
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fda085 60%, #f6d365 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: #fff;
+      margin-right: 12px;
+      box-shadow: 0 2px 8px rgba(253,160,133,0.18);
+    }
+    
+    .dashboard-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f76b1c;
+      letter-spacing: 1px;
+    }
+    
+    .admin-desc, .text-muted { color: #666; }
+
+    .offcanvas {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      width: 90px !important;
+    }
+    
+    .offcanvas-header {
+      display: none;
+    }
+    
+    .offcanvas-title {
+      color: #f76b1c;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .nav-link {
+      font-weight: 500;
+      color: #f76b1c;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
+      color: #f76b1c;
+    }
+    
+    @media (max-width: 900px) {
+      .container-card {
+        padding: 18px 6px 16px 6px;
+        max-width: 90vw;
+      }
+      
+      .dashboard-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .dashboard-title {
+        text-align: center;
+        width: 100%;
+      }
+      
+      .avatar {
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
+      
+      .offcanvas.offcanvas-start{
+        width: 82%;
+        max-width: 360px;
+        left: 0;
+        top: 0;
+        height: 100%;
+        box-shadow: 2px 8px 40px rgba(0,0,0,0.12);
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+        font-size: 1.4rem;
+      }
+      
+      .offcanvas-backdrop {
+        background-color: rgba(0,0,0,0.35);
+      }
+      
+      .list-group-item {
+        font-size: 1.4rem;
+      }
+    }
+    
+    /* Note Card Styling */
+    .note-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border-left: 4px solid #fda085;
+    }
+    
+    .note-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    .note-header {
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+      color: #fff;
+      padding: 12px 15px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .note-date {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+    
+    .note-content {
+      padding: 15px;
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    .note-actions {
+      padding: 10px 15px;
+      background: #f8f9fa;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
+    /* Form Styling */
+    .note-form {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    .form-control:focus {
+      border-color: #fda085;
+      box-shadow: 0 0 0 0.2rem rgba(253, 160, 133, 0.25);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, #f76b1c, #fda085);
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #fda085, #f76b1c);
+      transform: translateY(-1px);
+    }
+    
+    /* Authentication Modal Styles */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    
+    .auth-modal {
+      background: white;
+      padding: 40px;
+      border-radius: 18px;
+      text-align: center;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .auth-title {
+      color: #f76b1c;
+      margin-bottom: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .auth-subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 0.95rem;
+    }
+    
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .auth-input {
+      padding: 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .auth-input:focus {
+      outline: none;
+      border-color: #fda085;
+      box-shadow: 0 0 0 0.2rem rgba(253, 160, 133, 0.25);
+    }
+    
+    .auth-button {
+      background: linear-gradient(90deg, #f76b1c, #fda085);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .auth-button:hover {
+      background: linear-gradient(90deg, #fda085, #f76b1c);
+      transform: translateY(-1px);
+    }
+    
+    .auth-error {
+      color: #dc3545;
+      margin-top: 15px;
+      padding: 10px;
+      background: #f8d7da;
+      border: 1px solid #f5c2c7;
+      border-radius: 6px;
+      display: none;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Search and filter */
+    .search-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tombol buka sidebar -->
+  <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰</button>
+
+  <!-- Sidebar -->
+  <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">📚 Buku Saku</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body px-1">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="catatan.html">📋</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container container-card">
+    <div class="dashboard-header">
+      <div class="avatar">📋</div>
+      <div class="dashboard-title">Catatan</div>
+    </div>
+    
+    <div class="mb-3">
+      <p class="admin-desc mb-0">Buat dan kelola catatan penting. Data tersimpan di Firebase.</p>
+    </div>
+
+    <!-- Form Tambah Catatan -->
+    <div class="note-form">
+      <form id="noteForm">
+        <div class="mb-3">
+          <label for="noteTitle" class="form-label fw-bold">Judul Catatan *</label>
+          <input type="text" class="form-control" id="noteTitle" placeholder="Masukkan judul catatan..." required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="noteContent" class="form-label fw-bold">Isi Catatan *</label>
+          <textarea class="form-control" id="noteContent" rows="4" placeholder="Tulis catatan Anda di sini..." required></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="noteCategory" class="form-label fw-bold">Kategori</label>
+          <select class="form-select" id="noteCategory">
+            <option value="umum">📝 Umum</option>
+            <option value="penting">⭐ Penting</option>
+            <option value="tugas">📋 Tugas</option>
+            <option value="meeting">🤝 Meeting</option>
+            <option value="ide">💡 Ide</option>
+            <option value="reminder">⏰ Reminder</option>
+          </select>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            <span id="submitIcon">➕</span> <span id="submitText">Tambah Catatan</span>
+          </button>
+          <button type="button" class="btn btn-secondary" id="btnCancel" style="display: none;">Batal</button>
+        </div>
+        
+        <input type="hidden" id="editingNoteId">
+      </form>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="search-controls">
+      <input type="text" class="form-control search-input" id="searchInput" placeholder="🔍 Cari catatan...">
+      <select class="form-select" id="filterCategory" style="width: 200px;">
+        <option value="">Semua Kategori</option>
+        <option value="umum">📝 Umum</option>
+        <option value="penting">⭐ Penting</option>
+        <option value="tugas">📋 Tugas</option>
+        <option value="meeting">🤝 Meeting</option>
+        <option value="ide">💡 Ide</option>
+        <option value="reminder">⏰ Reminder</option>
+      </select>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="text-center py-4" style="display: none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="mt-2">Memuat catatan...</div>
+    </div>
+
+    <!-- Notes Container -->
+    <div id="notesContainer">
+      <!-- Notes will be rendered here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <span style="font-size: 3rem;">📝</span>
+      <h5>Belum Ada Catatan</h5>
+      <p class="text-muted">Mulai buat catatan pertama Anda dengan mengisi form di atas.</p>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // 🔐 Authentication System
+    const AUTH_CONFIG = {
+      username: 'Slamet Herianto',
+      password: 'Slh0216597',
+      sessionKey: 'catatanAuthSession'
+    };
+
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!isAuthenticated()) {
+        showAuthModal();
+      } else {
+        initializePage();
+      }
+    });
+
+    function isAuthenticated() {
+      const session = sessionStorage.getItem(AUTH_CONFIG.sessionKey);
+      return session === 'authenticated';
+    }
+
+    function showAuthModal() {
+      // Hide main content
+      const mainContent = document.querySelector('.container-card');
+      if (mainContent) {
+        mainContent.classList.add('hidden');
+      }
+      
+      // Create auth modal
+      const authOverlay = document.createElement('div');
+      authOverlay.className = 'auth-overlay';
+      authOverlay.id = 'authOverlay';
+      
+      authOverlay.innerHTML = `
+        <div class="auth-modal">
+          <div class="auth-title">🔒 Akses Terbatas</div>
+          <div class="auth-subtitle">Halaman khusus Slamet Herianto</div>
+          
+          <form class="auth-form" onsubmit="return handleLogin(event)">
+            <input type="text" 
+                   id="authUsername" 
+                   class="auth-input" 
+                   placeholder="Username" 
+                   required 
+                   autocomplete="username">
+            
+            <input type="password" 
+                   id="authPassword" 
+                   class="auth-input" 
+                   placeholder="Password" 
+                   required 
+                   autocomplete="current-password">
+            
+            <button type="submit" class="auth-button">
+              🔑 Login
+            </button>
+          </form>
+          
+          <div id="authError" class="auth-error">
+            Username atau password salah! Silakan coba lagi.
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(authOverlay);
+      
+      // Focus on username input
+      setTimeout(() => {
+        document.getElementById('authUsername').focus();
+      }, 100);
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('authUsername').value.trim();
+      const password = document.getElementById('authPassword').value;
+      
+      if (username === AUTH_CONFIG.username && password === AUTH_CONFIG.password) {
+        // Authentication successful
+        sessionStorage.setItem(AUTH_CONFIG.sessionKey, 'authenticated');
+        
+        // Remove auth modal
+        const authOverlay = document.getElementById('authOverlay');
+        if (authOverlay) {
+          authOverlay.remove();
+        }
+        
+        // Show main content
+        const mainContent = document.querySelector('.container-card');
+        if (mainContent) {
+          mainContent.classList.remove('hidden');
+        }
+        
+        // Initialize page functionality
+        initializePage();
+        
+      } else {
+        // Show error
+        const errorDiv = document.getElementById('authError');
+        errorDiv.style.display = 'block';
+        
+        // Clear form
+        document.getElementById('authUsername').value = '';
+        document.getElementById('authPassword').value = '';
+        document.getElementById('authUsername').focus();
+        
+        // Hide error after 3 seconds
+        setTimeout(() => {
+          errorDiv.style.display = 'none';
+        }, 3000);
+      }
+      
+      return false;
+    }
+
+    function initializePage() {
+      // Initialize page functionality
+      setupEventListeners();
+      loadNotes();
+    }
+
+    // 📝 Notes Management System
+    let notesData = [];
+    let editingNoteId = null;
+
+    function setupEventListeners() {
+      // Form submit
+      document.getElementById('noteForm').addEventListener('submit', handleSubmitNote);
+      
+      // Cancel button
+      document.getElementById('btnCancel').addEventListener('click', resetForm);
+      
+      // Search functionality
+      document.getElementById('searchInput').addEventListener('input', filterNotes);
+      document.getElementById('filterCategory').addEventListener('change', filterNotes);
+    }
+
+    // Load notes from Firebase
+    async function loadNotes() {
+      try {
+        showLoading();
+        
+        if (!window.firebase || !window.firebase.db) {
+          console.log('Firebase not initialized yet, retrying...');
+          setTimeout(loadNotes, 500);
+          return;
+        }
+        
+        const { db, collection, getDocs, query, orderBy } = window.firebase;
+        const notesCollection = collection(db, 'notes');
+        const q = query(notesCollection, orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        
+        notesData = [];
+        querySnapshot.forEach((doc) => {
+          notesData.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        
+        console.log('Notes loaded from Firebase:', notesData);
+        renderNotes();
+        hideLoading();
+      } catch (error) {
+        console.error('Error loading notes:', error);
+        hideLoading();
+        showEmptyState();
+      }
+    }
+
+    // Save note to Firebase
+    async function saveNote(noteData) {
+      try {
+        const { db, collection, addDoc } = window.firebase;
+        const notesCollection = collection(db, 'notes');
+        const docRef = await addDoc(notesCollection, noteData);
+        console.log('Note saved with ID:', docRef.id);
+        return docRef.id;
+      } catch (error) {
+        console.error('Error saving note:', error);
+        throw error;
+      }
+    }
+
+    // Update note in Firebase
+    async function updateNote(noteId, noteData) {
+      try {
+        const { db, doc, updateDoc } = window.firebase;
+        const noteDoc = doc(db, 'notes', noteId);
+        await updateDoc(noteDoc, noteData);
+        console.log('Note updated successfully');
+      } catch (error) {
+        console.error('Error updating note:', error);
+        throw error;
+      }
+    }
+
+    // Delete note from Firebase
+    async function deleteNote(noteId) {
+      try {
+        const { db, doc, deleteDoc } = window.firebase;
+        const noteDoc = doc(db, 'notes', noteId);
+        await deleteDoc(noteDoc);
+        console.log('Note deleted successfully');
+      } catch (error) {
+        console.error('Error deleting note:', error);
+        throw error;
+      }
+    }
+
+    // Handle form submission
+    async function handleSubmitNote(event) {
+      event.preventDefault();
+      
+      const title = document.getElementById('noteTitle').value.trim();
+      const content = document.getElementById('noteContent').value.trim();
+      const category = document.getElementById('noteCategory').value;
+      
+      if (!title || !content) {
+        alert('Judul dan isi catatan harus diisi!');
+        return;
+      }
+      
+      try {
+        const noteData = {
+          title: title,
+          content: content,
+          category: category,
+          updatedAt: new Date().toISOString()
+        };
+        
+        if (editingNoteId) {
+          // Update existing note
+          await updateNote(editingNoteId, noteData);
+          alert('✅ Catatan berhasil diperbarui!');
+        } else {
+          // Add new note
+          noteData.createdAt = new Date().toISOString();
+          const docId = await saveNote(noteData);
+          alert('✅ Catatan berhasil ditambahkan!');
+        }
+        
+        resetForm();
+        loadNotes();
+      } catch (error) {
+        console.error('Error saving note:', error);
+        alert('❌ Gagal menyimpan catatan. Silakan coba lagi.');
+      }
+    }
+
+    // Reset form
+    function resetForm() {
+      document.getElementById('noteForm').reset();
+      document.getElementById('editingNoteId').value = '';
+      document.getElementById('submitIcon').textContent = '➕';
+      document.getElementById('submitText').textContent = 'Tambah Catatan';
+      document.getElementById('btnCancel').style.display = 'none';
+      editingNoteId = null;
+    }
+
+    // Edit note
+    function editNote(noteId) {
+      const note = notesData.find(n => n.id === noteId);
+      if (!note) return;
+      
+      document.getElementById('noteTitle').value = note.title;
+      document.getElementById('noteContent').value = note.content;
+      document.getElementById('noteCategory').value = note.category;
+      document.getElementById('editingNoteId').value = noteId;
+      document.getElementById('submitIcon').textContent = '✏️';
+      document.getElementById('submitText').textContent = 'Perbarui Catatan';
+      document.getElementById('btnCancel').style.display = 'inline-block';
+      
+      editingNoteId = noteId;
+      
+      // Scroll to form
+      document.getElementById('noteForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Delete note with confirmation
+    async function confirmDeleteNote(noteId) {
+      const note = notesData.find(n => n.id === noteId);
+      if (!note) return;
+      
+      if (confirm(`Yakin ingin menghapus catatan "${note.title}"?\n\nData yang dihapus tidak dapat dikembalikan.`)) {
+        try {
+          await deleteNote(noteId);
+          alert('✅ Catatan berhasil dihapus!');
+          loadNotes();
+        } catch (error) {
+          console.error('Error deleting note:', error);
+          alert('❌ Gagal menghapus catatan. Silakan coba lagi.');
+        }
+      }
+    }
+
+    // Render notes
+    function renderNotes(filteredNotes = notesData) {
+      const container = document.getElementById('notesContainer');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (filteredNotes.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      container.innerHTML = filteredNotes.map(note => {
+        const categoryIcons = {
+          'umum': '📝',
+          'penting': '⭐',
+          'tugas': '📋',
+          'meeting': '🤝',
+          'ide': '💡',
+          'reminder': '⏰'
+        };
+        
+        const categoryIcon = categoryIcons[note.category] || '📝';
+        const createdDate = new Date(note.createdAt).toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        return `
+          <div class="note-card">
+            <div class="note-header">
+              <div>
+                <span>${categoryIcon}</span>
+                <strong>${note.title}</strong>
+              </div>
+              <div class="note-date">${createdDate}</div>
+            </div>
+            <div class="note-content">
+              ${note.content.replace(/\n/g, '<br>')}
+            </div>
+            <div class="note-actions">
+              <button class="btn btn-sm btn-warning" onclick="editNote('${note.id}')">
+                ✏️ Edit
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="confirmDeleteNote('${note.id}')">
+                🗑️ Hapus
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Filter notes based on search and category
+    function filterNotes() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const selectedCategory = document.getElementById('filterCategory').value;
+      
+      let filtered = notesData;
+      
+      // Filter by search term
+      if (searchTerm) {
+        filtered = filtered.filter(note => 
+          note.title.toLowerCase().includes(searchTerm) ||
+          note.content.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      // Filter by category
+      if (selectedCategory) {
+        filtered = filtered.filter(note => note.category === selectedCategory);
+      }
+      
+      renderNotes(filtered);
+    }
+
+    // Show loading indicator
+    function showLoading() {
+      document.getElementById('loadingIndicator').style.display = 'block';
+      document.getElementById('notesContainer').innerHTML = '';
+      document.getElementById('emptyState').style.display = 'none';
+    }
+
+    // Hide loading indicator
+    function hideLoading() {
+      document.getElementById('loadingIndicator').style.display = 'none';
+    }
+
+    // Show empty state
+    function showEmptyState() {
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('notesContainer').innerHTML = '';
+    }
+
+    // Add logout function (optional)
+    function logout() {
+      sessionStorage.removeItem(AUTH_CONFIG.sessionKey);
+      location.reload();
+    }
+  </script>
+</body>
+</html>

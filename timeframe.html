@@ -74,8 +74,7 @@
       color: #f76b1c;
       border-color: #fda085;
       font-weight: 500;
-      margin-right: 10px;
-      padding: 5px 20px;
+      margin-right: 8px;
       margin-bottom: 5px;
     }
     
@@ -83,6 +82,14 @@
       background-color: #f76b1c;
       border-color: #f76b1c;
       color: white;
+    }
+
+    /* Small buttons styling */
+    .btn-sm {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 500;
     }
 
     /* Form input styling */
@@ -131,10 +138,13 @@
 
     /* Sidebar styling */
     .offcanvas {
-      background: #fff8f3;
-      border-top-right-radius: 18px;
-      border-bottom-right-radius: 18px;
-      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      width: 90px !important;
+    }
+    .offcanvas-header {
+      display: none;
     }
     .offcanvas-title {
       color: #f76b1c;
@@ -145,6 +155,13 @@
       font-weight: 500;
       color: #f76b1c;
       border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
     }
     .nav-link:hover, .nav-link.active {
       background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
@@ -199,37 +216,46 @@
       left: 0;
       background-color: #f8f9fa !important;
       z-index: 15;
-      border-right: 2px solid #000 !important;
+      border-right: 1px solid #ddd !important; /* Thinner border */
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     }
     
     .activity-table th.activity-col,
     .activity-table td.activity-col {
       position: sticky;
-      left: 60px; /* Width of No column */
+      left: 40px; /* Back to original NO column width */
       background-color: #fff !important;
-      z-index: 15;
-      border-right: 2px solid #000 !important;
+      z-index: 14;
+      border-right: 2px solid #ddd !important;
+      border-left: none !important; /* Remove left border to eliminate gap */
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      margin-left: -1px; /* Small negative margin */
     }
     
     /* Higher z-index for header cells in frozen columns */
     .activity-table th.no-col {
       z-index: 25;
+      background-color: #f8f9fa !important;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.15);
     }
     
     .activity-table th.activity-col {
-      z-index: 25;
+      z-index: 24;
       background-color: #f8f9fa !important;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.15);
     }
     
     /* Day row freeze pane styling */
     .activity-table tr#dayRow th.no-col {
-      background-color: transparent !important;
-      z-index: 24;
+      background-color: #f8f9fa !important;
+      z-index: 23;
+      box-shadow: 2px 0 3px rgba(0,0,0,0.1);
     }
     
     .activity-table tr#dayRow th.activity-col {
-      background-color: transparent !important;
-      z-index: 24;
+      background-color: #fff !important;
+      z-index: 22;
+      box-shadow: 2px 0 3px rgba(0,0,0,0.1);
     }
     
     .activity-table tbody tr:hover {
@@ -239,10 +265,12 @@
     /* Ensure frozen columns maintain their background on hover */
     .activity-table tbody tr:hover td.no-col {
       background-color: #f8f9fa !important;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.15) !important;
     }
     
     .activity-table tbody tr:hover td.activity-col {
       background-color: #fff !important;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.15) !important;
     }
     
     /* Column widths */
@@ -259,8 +287,8 @@
     }
     
     .date-col { 
-      width: 50px; 
-      min-width: 40px;
+      width: 35px; 
+      min-width: 30px;
       text-align: center !important;
       padding: 4px 2px !important;
       font-size: 10px !important;
@@ -333,12 +361,16 @@
 
     .timeline-view-toggle {
       display: flex;
-      gap: 5px;
+      gap: 3px;
     }
 
     .timeline-view-toggle .btn {
-      font-size: 0.85rem;
-      padding: 5px 12px;
+      font-size: 0.7rem;
+      padding: 6px 16px;
+      border-radius: 3px;
+      font-weight: 500;
+      min-width: 60px;
+      text-align: center;
     }
 
     .timeline-filter-bar {
@@ -351,13 +383,14 @@
       white-space: nowrap;
       font-weight: 500;
       color: #666;
+      font-size: 0.85rem;
     }
 
     .timeline-filter-bar .form-select {
-      font-size: 0.9rem;
-      padding: 6px 12px;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 4px;
       border: 1px solid #dee2e6;
-      border-radius: 6px;
     }
 
     .timeline {
@@ -372,94 +405,77 @@
       top: 0;
       bottom: 0;
       width: 2px;
-      background: linear-gradient(to bottom, #fda085, #f6d365);
+      background: linear-gradient(to bottom, #f76b1c, #fda085);
+      opacity: 0.6;
     }
 
     .timeline-item {
       position: relative;
-      margin-bottom: 25px;
+      margin-bottom: 12px;
       background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
       margin-left: 20px;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid rgba(253, 160, 133, 0.2);
     }
 
     .timeline-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(247, 107, 28, 0.15);
+      border-color: rgba(247, 107, 28, 0.3);
+    }
+
+    .timeline-row-1,
+    .timeline-row-2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      line-height: 1.2;
+    }
+
+    .timeline-row-1 {
+      margin-bottom: 6px;
+    }
+
+    .timeline-title-compact {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    .timeline-date-compact {
+      font-size: 0.8rem;
+      color: #666;
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    .btn-xs {
+      padding: 2px 6px;
+      font-size: 0.65rem;
+      border-radius: 3px;
+      min-width: 45px;
     }
 
     .timeline-item::before {
       content: '';
       position: absolute;
-      left: -32px;
-      top: 20px;
-      width: 14px;
-      height: 14px;
-      background: #fda085;
+      left: -28px;
+      top: 16px;
+      width: 10px;
+      height: 10px;
+      background: #f76b1c;
       border-radius: 50%;
-      border: 3px solid #fff;
+      border: 2px solid #fff;
       box-shadow: 0 0 0 2px #fda085;
     }
 
     .timeline-content {
       position: relative;
-    }
-
-    .timeline-date {
-      position: absolute;
-      top: -8px;
-      right: 0;
-      background: linear-gradient(45deg, #fda085, #f6d365);
-      color: white;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .timeline-title-item {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .timeline-subtitle {
-      color: #666;
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-    }
-
-    .timeline-duration {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #eee;
-    }
-
-    .duration-badge {
-      background: #e9ecef;
-      color: #495057;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .timeline-actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .timeline-actions .btn {
-      padding: 4px 10px;
-      font-size: 0.8rem;
     }
 
     .timeline-empty {
@@ -513,13 +529,28 @@
       
       .no-col { width: 40px; min-width: 40px; }
       .activity-col { width: 150px; min-width: 120px; }
-      .date-col { width: 80px; min-width: 70px; }
+      .date-col { width: 30px; min-width: 25px; }
+      
+      .btn-sm {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.3rem;
+      }
     }
 
     /* Horizontal scroll container */
     .table-container {
       overflow-x: auto;
       max-width: 100%;
+      position: relative;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      background: white;
+    }
+    
+    /* Ensure sticky positioning works properly */
+    .table-container .activity-table {
+      margin: 0;
+      border: none;
     }
 
     /* Loading spinner */
@@ -541,7 +572,7 @@
 </head>
 <body>
   <!-- Menu button -->
-  <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰ Menu</button>
+  <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰</button>
 
   <!-- Sidebar -->
   <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
@@ -549,17 +580,18 @@
       <h5 class="offcanvas-title">📚 Buku Saku</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
-    <div class="offcanvas-body px-2">
+    <div class="offcanvas-body px-1">
       <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠 Dashboard</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑 Prosedur</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️ Administrasi</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
-        <li class="nav-item mb-2"><a class="nav-link active" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="progress-table.html">⏰ Update HM</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘 Daily Activity</a></li>
-        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪 Logout</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="timeframe.html">🕒</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="progress-table.html">⏰</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="daily.html">📘</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="catatan.html">📋</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪</a></li>
       </ul>
     </div>
   </nav>
@@ -567,7 +599,7 @@
   <div class="container container-card">
     <div class="dashboard-header">
       <div class="avatar">🕒</div>
-      <div class="dashboard-title">Jadwal Pelatihan</div>
+      <div class="dashboard-title">JADWAL PELATIHAN</div>
     </div>
     
     <div class="mb-2">
@@ -575,18 +607,14 @@
     </div>
 
     <!-- View Toggle -->
-    <ul class="nav nav-tabs view-toggle" id="viewTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline-view" type="button" role="tab">
-          Timeline View
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-view" type="button" role="tab">
-          Table View
-        </button>
-      </li>
-    </ul>
+    <div class="d-flex gap-2 mb-3">
+      <button class="btn btn-primary btn-sm active" id="timeline-tab" onclick="showTab('timeline-view')" type="button">
+        Timeline
+      </button>
+      <button class="btn btn-outline-primary btn-sm" id="table-tab" onclick="showTab('table-view')" type="button">
+        Table
+      </button>
+    </div>
 
     <div class="tab-content" id="viewTabsContent">
       <!-- Timeline View -->
@@ -617,8 +645,8 @@
                    onfocus="this.type='date'" onblur="if(!this.value) this.type='text'">
           </div>
           <div class="d-flex gap-2" style="margin-top:8px;">
-            <button class="btn btn-primary" type="submit">Simpan</button>
-            <button id="clearAllTimeline" type="button" class="btn btn-outline-secondary">Reset</button>
+            <button class="btn btn-primary btn-sm" type="submit">Simpan</button>
+            <button id="clearAllTimeline" type="button" class="btn btn-outline-secondary btn-sm">Reset</button>
           </div>
         </form>
 
@@ -690,7 +718,7 @@
 
         <!-- Controls -->
         <div class="d-flex align-items-center gap-2 mt-2">
-          <button id="btnRefresh" class="btn btn-outline-primary">🔄 Refresh</button>
+          <button id="btnRefresh" class="btn btn-outline-primary">🔄</button>
         </div>
 
         <!-- Color Legend -->
@@ -702,11 +730,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Back button -->
-    <div class="text-center">
-      <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
-    </div>
   </div>
 
   <!-- Bootstrap JS -->
@@ -716,9 +739,12 @@
     // API configuration
     const API_URL = "https://script.google.com/macros/s/AKfycbyCbEPQIcaKgBU-jQbmSeC_1R1tXh1Y3hA7d3q8VMCr46qtpm6lanKbrebZ-1OD2Q7h/exec";
     const KEY = 'bukuSakuTimeframes';
+    const CACHE_KEY = 'bukuSakuTimeframes_cache';
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
     // State management for both views
     let STATE = [];
+    let CACHE_TIMESTAMP = 0;
     let TIMELINE_DATA = [];
     let COLUMNS = ['no', 'paket', 'kegiatan', 'tanggal_mulai', 'tanggal_selesai']; // Updated to match timeline data
     let isEditing = false;
@@ -959,49 +985,40 @@
       });
     }
 
-    // Load and render data for table (using timeline data)
+    // Load and render data for table (optimized with lazy loading)
     async function reload() {
       try {
         setLoading(true);
-        console.log("Loading timeline data for table view from:", API_URL);
+        console.log("Loading timeline data for table view...");
         
-        // Load timeline data for table display
+        // Show initial empty state immediately
+        renderTable();
+        
+        // Load timeline data asynchronously
         TIMELINE_DATA = await loadTimeline();
         
         // Start with empty STATE - show no selection message initially
         STATE = [];
         
-        // Generate empty date columns initially
-        generateDateColumns();
+        // Generate empty date columns initially (lazy)
+        setTimeout(() => {
+          generateDateColumns();
+          console.log("Timeline data loaded:", TIMELINE_DATA.length, "items");
+          
+          // Re-render with data
+          renderTable();
+          
+          // Populate training filter dropdown
+          populateTrainingFilter();
+        }, 50);
         
-        console.log("Timeline data loaded:", TIMELINE_DATA.length, "items");
-
-        renderTable();
-        
-        // Populate training filter dropdown
-        populateTrainingFilter();
-        
-        // Show no selection message initially
-        const noSelectionMessage = document.getElementById('noSelectionMessage');
+      } catch (error) {
+        console.error("Error loading data:", error);
+        // Show error state
         const tableContainer = document.querySelector('.table-container');
-        const controlsDiv = document.querySelector('.d-flex.align-items-center.gap-2.mt-2');
-        const colorLegend = document.querySelector('.mt-3');
-        
-        if (noSelectionMessage) noSelectionMessage.style.display = 'block';
-        if (tableContainer) tableContainer.style.display = 'none';
-        if (controlsDiv) controlsDiv.style.display = 'none';
-        if (colorLegend) colorLegend.style.display = 'none';
-        
-        if (TIMELINE_DATA.length === 0) {
-          showInfoMessage("Tidak ada data timeline ditemukan. Tambahkan data di Timeline View untuk melihatnya di tabel.");
+        if (tableContainer) {
+          tableContainer.innerHTML = '<div class="alert alert-warning">Error loading data. Please refresh the page.</div>';
         }
-        
-      } catch (err) {
-        console.error("Load error:", err);
-        showErrorMessage("Gagal memuat data timeline. Periksa koneksi internet Anda.");
-        
-        STATE = [];
-        renderTable();
       } finally {
         setLoading(false);
       }
@@ -1503,22 +1520,58 @@
 
     // ===== TIMELINE VIEW FUNCTIONS =====
 
-    // Load timeline data + mapping baris spreadsheet
+    // Load timeline data + mapping baris spreadsheet (with caching)
     async function loadTimeline(){
+      // Check cache first
+      const now = Date.now();
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const cacheTime = localStorage.getItem(CACHE_KEY + '_time');
+      
+      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
+        console.log("Loading from cache");
+        try {
+          return JSON.parse(cachedData);
+        } catch(e) {
+          console.warn("Cache parse error:", e);
+        }
+      }
+      
       let arr = [];
       try{
+        console.log("Fetching fresh data from API");
         const res = await fetch(API_URL + '?action=timeframe');
         if(res.ok){
           const data = await res.json();
           if(Array.isArray(data)){
             arr = data.map((x,i)=>({ ...x, row: i+2 }));
+            
+            // Cache the fresh data
+            localStorage.setItem(CACHE_KEY, JSON.stringify(arr));
+            localStorage.setItem(CACHE_KEY + '_time', now.toString());
           }
         }
-      }catch(e){ console.warn(e); }
-      if(!arr.length){
-        try{ arr = JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){ arr=[]; }
-        arr = arr.map((x,i)=>({ ...x, row: x.row || (i+2) }));
+      }catch(e){ 
+        console.warn("API fetch error:", e); 
+        
+        // Fallback to old local storage
+        try{ 
+          arr = JSON.parse(localStorage.getItem(KEY)||'[]'); 
+          console.log("Using fallback local storage");
+        } catch(e){ 
+          arr=[]; 
+        }
       }
+      
+      if(!arr.length){
+        try{ 
+          arr = JSON.parse(localStorage.getItem(KEY)||'[]'); 
+          console.log("Using backup local storage");
+        } catch(e){ 
+          arr=[]; 
+        }
+      }
+      
+      arr = arr.map((x,i)=>({ ...x, row: x.row || (i+2) }));
       return arr;
     }
 
@@ -1747,15 +1800,13 @@
         html += `
           <div class="timeline-item">
             <div class="timeline-content">
-              <div class="timeline-date">${formatDate(item.mulai)} <-> ${formatDate(item.selesai)}</div>
-              <div class="timeline-title-item">${item.paket || 'Tanpa Nama'}</div>
-              <div class="timeline-subtitle">${item.nama || 'Tanpa Deskripsi'}</div>
-              <div class="timeline-duration">
-                <span class="duration-badge">${duration} hari</span>
+              <div class="timeline-row-1">
+                <span class="timeline-title-compact">${item.paket || 'Tanpa Nama'}, ${item.nama || 'Tanpa Deskripsi'}</span>
+                <button class="btn btn-outline-primary btn-xs" onclick="editTimelineItem(${item.row})">Edit</button>
               </div>
-              <div class="timeline-actions">
-                <button class="btn btn-outline-primary btn-sm" onclick="editTimelineItem(${item.row})">Edit</button>
-                <button class="btn btn-outline-danger btn-sm" onclick="deleteTimelineItem(${item.row})">Hapus</button>
+              <div class="timeline-row-2">
+                <span class="timeline-date-compact">${formatDate(item.mulai)} <-> ${formatDate(item.selesai)}</span>
+                <button class="btn btn-outline-danger btn-xs" onclick="deleteTimelineItem(${item.row})">Hapus</button>
               </div>
             </div>
           </div>
@@ -1864,24 +1915,50 @@
         });
       }
 
-      // Tab switching event listeners
-      const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
-      tabButtons.forEach(button => {
-        button.addEventListener('shown.bs.tab', function (e) {
-          const target = e.target.getAttribute('data-bs-target');
-          if (target === '#table-view') {
-            // Load table data when switching to table view
-            reload();
-          } else if (target === '#timeline-view') {
-            // Load timeline data when switching to timeline view
-            renderTimeline();
-          }
+      // Tab switching function
+      function showTab(targetId) {
+        // Hide all tab contents
+        document.querySelectorAll('.view-content').forEach(content => {
+          content.classList.remove('show', 'active');
         });
-      });
+        
+        // Show target tab content
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          targetElement.classList.add('show', 'active');
+        }
+        
+        // Update button states
+        const allButtons = document.querySelectorAll('#timeline-tab, #table-tab');
+        allButtons.forEach(btn => {
+          btn.classList.remove('active', 'btn-primary');
+          btn.classList.add('btn-outline-primary');
+        });
+        
+        // Set active button
+        const activeButton = targetId === 'timeline-view' ? 
+          document.getElementById('timeline-tab') : 
+          document.getElementById('table-tab');
+        
+        if (activeButton) {
+          activeButton.classList.add('active', 'btn-primary');
+          activeButton.classList.remove('btn-outline-primary');
+        }
+        
+        // Load data based on tab
+        if (targetId === 'table-view') {
+          reload();
+        } else if (targetId === 'timeline-view') {
+          renderTimeline();
+        }
+      }
+      
+      // Make showTab function global
+      window.showTab = showTab;
 
       // Initial load based on active tab
-      const activeTab = document.querySelector('.view-toggle .nav-link.active');
-      if (activeTab && activeTab.getAttribute('data-bs-target') === '#timeline-view') {
+      const activeTimelineTab = document.getElementById('timeline-tab');
+      if (activeTimelineTab && activeTimelineTab.classList.contains('active')) {
         renderTimeline();
       } else {
         reload();

@@ -38,11 +38,16 @@
       // Make Firebase available globally
       window.firebase = { app, db, auth };
       
-      // Check if user is already logged in
+      // Disable auto-redirect to prevent navigation conflicts
+      // onAuthStateChanged will only be used for detecting auth state
+      // Manual redirect only happens after successful login
+      
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          // User is signed in, redirect to dashboard
-          window.location.href = 'dashboard.html';
+          console.log("User is logged in:", user.email);
+          // Don't auto-redirect, let user navigate manually
+        } else {
+          console.log("No user logged in");
         }
       });
       

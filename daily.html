@@ -10,7 +10,7 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
-    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
     
     const firebaseConfig = {
       apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
@@ -25,7 +25,7 @@
     const db = getFirestore(app);
     
     // Make Firebase available globally
-    window.firebase = { app, db };
+    window.firebase = { app, db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy };
   </script>
   <style>
     body {
@@ -112,10 +112,13 @@
     }
 
     .offcanvas {
-      background: #fff8f3;
-      border-top-right-radius: 18px;
-      border-bottom-right-radius: 18px;
-      box-shadow: 2px 0 16px rgba(253,160,133,0.08);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      width: 90px !important;
+    }
+    .offcanvas-header {
+      display: none;
     }
     .offcanvas-title {
       color: #f76b1c;
@@ -126,6 +129,13 @@
       font-weight: 500;
       color: #f76b1c;
       border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
     }
     .nav-link:hover, .nav-link.active {
       background: linear-gradient(90deg, #fda08522 0%, #f6d36522 100%);
@@ -166,6 +176,10 @@
       }
       .list-group-item {
         font-size: 1.4rem;
+      }
+      .btn-sm {
+        font-size: 0.6rem !important;
+        padding: 1px 3px !important;
       }
     }
     
@@ -364,11 +378,38 @@
     .hidden {
       display: none !important;
     }
+    
+    /* Deploy Info Card Styling */
+    .deploy-info .card {
+      border: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    
+    .deploy-info .card-header {
+      border-bottom: none;
+      border-radius: 12px 12px 0 0 !important;
+      font-weight: 600;
+    }
+    
+    .deploy-info .card-body {
+      padding: 20px;
+    }
+    
+    .deploy-info .btn-outline-primary {
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .deploy-info .btn-outline-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
   <!-- Tombol buka sidebar dan kembali -->
-    <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰ Menu</button>
+    <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">☰</button>
   </div>
 
   <!-- Sidebar (sinkronkan ke halaman lain) -->
@@ -377,16 +418,17 @@
       <h5 class="offcanvas-title">📚 Buku Saku</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
-    <div class="offcanvas-body px-2">
+    <div class="offcanvas-body px-1">
       <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠 Dashboard</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑 Prosedur</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️ Roster Cuti</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️ Administrasi</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝 Pre/Post Test</a></li>
-        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒 Jadwal Pelatihan</a></li>
-        <li class="nav-item mb-2"><a class="nav-link active" href="daily.html">📘 Daily Activity</a></li>
-        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪 Logout</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="dashboard.html">🏠</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="prosedur2.html">📑</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="rostercuti2.html">🗓️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="administrasi.html">🗂️</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="preposttest.html">📝</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="timeframe.html">🕒</a></li>
+        <li class="nav-item mb-2"><a class="nav-link active" href="daily.html">📘</a></li>
+        <li class="nav-item mb-2"><a class="nav-link" href="catatan.html">📋</a></li>
+        <li class="nav-item mt-4"><a class="nav-link text-danger" href="index.html">🚪</a></li>
       </ul>
     </div>
   </nav>
@@ -421,6 +463,125 @@
         <button type="submit" id="btnSave" class="btn btn-primary">Tambah</button>
       </div>
     </form>
+
+    <!-- Deploy Management Section -->
+    <div class="d-flex align-items-end gap-3 mt-3 mb-3">
+      <!-- Deploy Data Dropdown -->
+      <div class="flex-grow-1">
+        <label for="deploySelect" class="form-label fw-bold mb-1">Nama Instruktur:</label>
+        <select class="form-select" id="deploySelect" onchange="handleDeploySelection()">
+          <option value="">-- Pilih Deploy --</option>
+        </select>
+      </div>
+      
+      <!-- Management Buttons -->
+      <div class="d-flex gap-2">
+        <button class="btn btn-success" onclick="showAddDeployForm()">
+          ➕
+        </button>
+        <button class="btn btn-warning" onclick="showEditDeployForm()">
+          ✏️
+        </button>
+        <button class="btn btn-danger" onclick="showDeleteDeployForm()">
+          🗑️
+        </button>
+      </div>
+    </div>
+
+    <!-- Add Deploy Modal -->
+    <div class="modal fade" id="addDeployModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Tambah Data Deploy</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="deployForm">
+              <div class="mb-3">
+                <label for="deployNama" class="form-label">Nama *</label>
+                <input type="text" class="form-control" id="deployNama" placeholder="Nama Lengkap" required>
+              </div>
+              <div class="mb-3">
+                <label for="deployLink" class="form-label">Link Deploy *</label>
+                <input type="url" class="form-control" id="deployLink" placeholder="https://script.google.com/macros/s/.../exec" required>
+                <div class="form-text">Hanya menerima link Google Apps Script yang berakhiran '/exec'</div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-success" onclick="saveDeployData()">💾 Simpan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Deploy Modal -->
+    <div class="modal fade" id="editDeployModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">✏️ Edit Data Deploy</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="editDeploySelect" class="form-label">Pilih Data yang akan diedit:</label>
+              <select class="form-select" id="editDeploySelect" onchange="loadEditDeployData()">
+                <option value="">-- Pilih data untuk diedit --</option>
+              </select>
+            </div>
+            <form id="editDeployForm">
+              <div class="mb-3">
+                <label for="editDeployNama" class="form-label">Nama *</label>
+                <input type="text" class="form-control" id="editDeployNama" placeholder="Contoh: Daily Report System" required>
+              </div>
+              <div class="mb-3">
+                <label for="editDeployLink" class="form-label">Link Deploy *</label>
+                <input type="url" class="form-control" id="editDeployLink" placeholder="https://script.google.com/macros/s/.../exec" required>
+                <div class="form-text">Hanya menerima link Google Apps Script yang berakhiran '/exec'</div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-warning" onclick="saveEditDeploy()">
+              ✏️ Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Deploy Modal -->
+    <div class="modal fade" id="deleteDeployModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">🗑️ Hapus Data Deploy</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning" role="alert">
+              <strong>⚠️ Peringatan!</strong> Data yang dihapus tidak dapat dikembalikan.
+            </div>
+            <div class="mb-3">
+              <label for="deleteDeploySelect" class="form-label">Pilih Data yang akan dihapus:</label>
+              <select class="form-select" id="deleteDeploySelect">
+                <option value="">-- Pilih data untuk dihapus --</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-danger" onclick="confirmDeleteDeploy()">
+              🗑️ Hapus
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="table-responsive">
       <table class="activity-table">
@@ -483,11 +644,6 @@
   <option value="Slamet Herianto|082122726176" selected>Slamet Herianto (082122726176)</option>
 </select>
       <button id="btnKirim" class="btn btn-success ms-auto">📥 Download Excel</button>
-    </div>
-
-    <!-- Tombol kembali di halaman (bukan sidebar) -->
-    <div class="text-center">
-      <a href="dashboard.html" class="btn btn-back">⬅️ Kembali ke Dashboard</a>
     </div>
   </div>
 
@@ -617,7 +773,9 @@ function handleLogin(event) {
 function initializePage() {
   // Initialize all page functionality here
   wireTotAuto();
-  reload();
+  // Don't auto-reload data, wait for dropdown selection
+  clearTable(); // Show initial empty message
+  loadDeployData();
 }
 
 // Add logout function (optional)
@@ -627,35 +785,153 @@ function logout() {
 }
 
 // 🔹 Original code starts here
-const API_URL = "https://script.google.com/macros/s/AKfycbytfLIjRLZ4vkNwTAg5NXu-aZmmxq3J2Q0obkQsDQ7WRFVVTnYZBKTYnD4iP_8D9FYE/exec";
+let currentApiUrl = ""; // Will be set when deploy is selected
 
-// 🔹 Helper kirim request ke GAS pakai POST JSON
-async function sendRequest(payload) {
-  const res = await fetch(API_URL, {
+// 🔹 Helper kirim request ke GAS pakai POST JSON dengan timeout
+async function sendRequest(payload, apiUrl = currentApiUrl) {
+  if (!apiUrl) {
+    throw new Error("Pilih deploy terlebih dahulu!");
+  }
+  
+  // Create timeout promise
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Request timeout - server response too slow')), 15000); // 15 second timeout
+  });
+  
+  // Create fetch promise - Remove Content-Type header to avoid CORS preflight
+  const fetchPromise = fetch(apiUrl, {
     method: "POST",
     body: JSON.stringify(payload)
+    // Don't set Content-Type header to avoid CORS preflight issues
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    return res.json();
+  }).catch(error => {
+    // Handle CORS and network errors
+    if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+      throw new Error('CORS_ERROR: Tidak dapat terhubung ke server. Pastikan URL deploy benar dan dapat diakses.');
+    }
+    throw error;
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  
+  // Race between fetch and timeout
+  return Promise.race([fetchPromise, timeoutPromise]);
+}
+
+// 🔹 Load data dari spreadsheet (Daily) untuk deploy yang dipilih
+async function loadDataForSelectedDeploy(deployUrl) {
+  try {
+    // Show loading indicator
+    showLoadingIndicator();
+    
+    currentApiUrl = deployUrl;
+    console.log("Loading data from:", currentApiUrl);
+    
+    const result = await sendRequest({ target: "daily", action: "read" });
+    console.log("DEBUG result dari GAS:", result);
+
+    STATE = Array.isArray(result) ? result : result.data || [];
+    renderTable();
+    
+    // Hide loading indicator
+    hideLoadingIndicator();
+  } catch (err) {
+    console.error("loadDataForSelectedDeploy error", err);
+    
+    let errorMessage = "Gagal memuat data Daily Activity dari deploy yang dipilih!";
+    
+    if (err.message.includes('CORS_ERROR')) {
+      errorMessage = "❌ CORS Error: Tidak dapat mengakses URL deploy.\n\n" +
+                    "Kemungkinan penyebab:\n" +
+                    "1. URL deploy tidak valid atau tidak dapat diakses\n" +
+                    "2. Server Google Apps Script sedang down\n" +
+                    "3. Masalah koneksi internet\n\n" +
+                    "Solusi: Coba buka URL deploy langsung di browser untuk memastikan dapat diakses.";
+    } else if (err.message.includes('timeout')) {
+      errorMessage = "⏱️ Timeout: Server response terlalu lambat.\nSilakan coba lagi atau periksa koneksi internet.";
+    }
+    
+    alert(errorMessage);
+    clearTable();
+    hideLoadingIndicator();
+  }
+}
+
+// Show loading indicator
+function showLoadingIndicator() {
+  const tbody = document.querySelector("#listDaily");
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="12" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-2">Memuat data...</div>
+      </td>
+    </tr>
+  `;
+}
+
+// Hide loading indicator
+function hideLoadingIndicator() {
+  // This will be called after data is loaded or on error
+}
+
+// 🔹 Clear table when no deploy selected
+function clearTable() {
+  const tbody = document.querySelector("#listDaily");
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="12" class="text-center text-muted py-4">
+        <em>Pilih deploy dari dropdown untuk menampilkan data</em>
+      </td>
+    </tr>
+  `;
+  
+  // Reset totals
+  document.getElementById('totalTC').textContent = '0';
+  document.getElementById('totalID').textContent = '0';
+  document.getElementById('totalMD').textContent = '0';
+  document.getElementById('totalPD').textContent = '0';
+  document.getElementById('totalTR').textContent = '0';
+  document.getElementById('totalL').textContent = '0';
+  document.getElementById('totalS').textContent = '0';
+  document.getElementById('grandTotal').textContent = '0';
+  
+  // Clear current API URL
+  currentApiUrl = "";
+  STATE = [];
 }
 
 // 🔹 Load data dari spreadsheet (Daily)
 async function loadRemote() {
+  if (!currentApiUrl) {
+    throw new Error("Pilih deploy terlebih dahulu!");
+  }
   return sendRequest({ target: "daily", action: "read" });
 }
 
 // 🔹 Tambah data baru
 async function addRemote(params) {
+  if (!currentApiUrl) {
+    throw new Error("Pilih deploy terlebih dahulu!");
+  }
   return sendRequest({ target: "daily", action: "add", ...params });
 }
 
 // 🔹 Edit data (pakai row index agar selaras dengan GAS)
 async function editRemote(params) {
+  if (!currentApiUrl) {
+    throw new Error("Pilih deploy terlebih dahulu!");
+  }
   return sendRequest({ target: "daily", action: "edit", ...params });
 }
 
 // 🔹 Hapus data (pakai row index agar selaras dengan GAS)
 async function deleteRemote(row) {
+  if (!currentApiUrl) {
+    throw new Error("Pilih deploy terlebih dahulu!");
+  }
   return sendRequest({ target: "daily", action: "delete", row });
 }
 
@@ -700,17 +976,37 @@ function wireTotAuto() {
   updateTot();
 }
 
-// 🔹 Reload tabel
+// 🔹 Reload tabel dengan loading indicator
 async function reload() {
   try {
+    if (!currentApiUrl) {
+      clearTable();
+      return;
+    }
+    
+    showLoadingIndicator();
+    
     const result = await loadRemote();
     console.log("DEBUG result dari GAS:", result);
 
     STATE = Array.isArray(result) ? result : result.data || [];
     renderTable();
+    
+    hideLoadingIndicator();
   } catch (err) {
     console.error("loadRemote error", err);
-    alert("Gagal memuat data Daily Activity!");
+    
+    let errorMessage = "Gagal memuat data Daily Activity!";
+    
+    if (err.message.includes('CORS_ERROR')) {
+      errorMessage = "❌ CORS Error: Tidak dapat mengakses URL deploy.\nPastikan URL deploy benar dan dapat diakses.";
+    } else if (err.message.includes('timeout')) {
+      errorMessage = "⏱️ Server response terlalu lambat. Silakan coba lagi atau periksa koneksi internet.";
+    }
+    
+    alert(errorMessage);
+    clearTable();
+    hideLoadingIndicator();
   }
 }
 
@@ -787,6 +1083,13 @@ function calculateTotals() {
 // 🔹 Tambah / Update data via form
 async function onSubmitForm(ev) {
   ev.preventDefault();
+  
+  // Check if deploy is selected
+  if (!currentApiUrl) {
+    alert("Pilih deploy terlebih dahulu sebelum menambah data!");
+    return;
+  }
+  
   const form = ev.target;
 
   // pastikan TOT terbaru sebelum dikirim
@@ -797,20 +1100,30 @@ async function onSubmitForm(ev) {
   // jaga-jaga kalau browser belum menulis ulang nilai TOT ke FormData
   data.tot = String(computeTotFromInputs());
 
-  if (data.row) {
-    await editRemote(data);
-    alert("Data berhasil diupdate!");
-  } else {
-    await addRemote(data);
-    alert("Data berhasil ditambahkan!");
-  }
+  try {
+    if (data.row) {
+      await editRemote(data);
+      alert("Data berhasil diupdate!");
+    } else {
+      await addRemote(data);
+      alert("Data berhasil ditambahkan!");
+    }
 
-  resetForm();
-  reload();
+    resetForm();
+    reload();
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    alert("Error: " + error.message);
+  }
 }
 
 // 🔹 Edit data → isi form
 function onEdit(row) {
+  if (!currentApiUrl) {
+    alert("Pilih deploy terlebih dahulu!");
+    return;
+  }
+  
   const idx = row - 2; // hitung index di STATE
   const data = STATE[idx];
   if (!data) return;
@@ -848,10 +1161,21 @@ function resetForm(){
 
 // 🔹 Hapus data
 async function onDelete(row) {
+  if (!currentApiUrl) {
+    alert("Pilih deploy terlebih dahulu!");
+    return;
+  }
+  
   if (!confirm("Yakin ingin hapus data ini?")) return;
-  await deleteRemote(row);
-  alert("Data berhasil dihapus!");
-  reload();
+  
+  try {
+    await deleteRemote(row);
+    alert("Data berhasil dihapus!");
+    reload();
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    alert("Error: " + error.message);
+  }
 }
 async function exportExcel() {
   // URL Google Sheets untuk download format Excel
@@ -893,6 +1217,336 @@ document.addEventListener("DOMContentLoaded", () => {
     btnKirim.addEventListener("click", exportExcel);
   }
 });
+
+// Deploy Management System
+let deployDataList = [];
+let deployDataCache = null; // Cache for deploy data
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+// Validate Google Apps Script URL format
+function validateGoogleAppsScriptURL(url) {
+  const gasUrlPattern = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
+  return gasUrlPattern.test(url);
+}
+
+// Load deploy data from Firebase with caching
+async function loadDeployData() {
+  try {
+    // Check if we have valid cached data
+    if (deployDataCache && cacheTimestamp && 
+        (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+      console.log('Using cached deploy data');
+      deployDataList = deployDataCache;
+      updateDeploySelectOptions();
+      return;
+    }
+    
+    if (!window.firebase || !window.firebase.db) {
+      console.log('Firebase not initialized yet, retrying...');
+      setTimeout(loadDeployData, 500);
+      return;
+    }
+    
+    const { db, collection, getDocs } = window.firebase;
+    const deployCollection = collection(db, 'deployData');
+    // Remove orderBy to make query faster
+    const querySnapshot = await getDocs(deployCollection);
+    
+    deployDataList = [];
+    querySnapshot.forEach((doc) => {
+      deployDataList.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    // Sort by creation date locally (faster than Firebase orderBy)
+    deployDataList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    // Cache the data
+    deployDataCache = [...deployDataList];
+    cacheTimestamp = Date.now();
+    
+    console.log('Deploy data loaded from Firebase:', deployDataList);
+    updateDeploySelectOptions();
+  } catch (error) {
+    console.error('Error loading deploy data from Firebase:', error);
+    deployDataList = [];
+    updateDeploySelectOptions();
+  }
+}
+
+// Save deploy data to Firebase
+async function saveDeployDataToFirebase(deployData) {
+  try {
+    const { db, collection, addDoc } = window.firebase;
+    const deployCollection = collection(db, 'deployData');
+    const docRef = await addDoc(deployCollection, deployData);
+    console.log('Deploy data saved to Firebase with ID:', docRef.id);
+    
+    // Clear cache when data is modified
+    deployDataCache = null;
+    cacheTimestamp = null;
+    
+    return docRef.id;
+  } catch (error) {
+    console.error('Error saving deploy data to Firebase:', error);
+    throw error;
+  }
+}
+
+// Update deploy data in Firebase
+async function updateDeployDataInFirebase(docId, deployData) {
+  try {
+    const { db, doc, updateDoc } = window.firebase;
+    const deployDoc = doc(db, 'deployData', docId);
+    await updateDoc(deployDoc, deployData);
+    console.log('Deploy data updated in Firebase');
+    
+    // Clear cache when data is modified
+    deployDataCache = null;
+    cacheTimestamp = null;
+  } catch (error) {
+    console.error('Error updating deploy data in Firebase:', error);
+    throw error;
+  }
+}
+
+// Delete deploy data from Firebase
+async function deleteDeployDataFromFirebase(docId) {
+  try {
+    const { db, doc, deleteDoc } = window.firebase;
+    const deployDoc = doc(db, 'deployData', docId);
+    await deleteDoc(deployDoc);
+    console.log('Deploy data deleted from Firebase');
+    
+    // Clear cache when data is modified
+    deployDataCache = null;
+    cacheTimestamp = null;
+  } catch (error) {
+    console.error('Error deleting deploy data from Firebase:', error);
+    throw error;
+  }
+}
+
+// Update select options in edit and delete modals
+function updateDeploySelectOptions() {
+  const editSelect = document.getElementById('editDeploySelect');
+  const deleteSelect = document.getElementById('deleteDeploySelect');
+  const mainSelect = document.getElementById('deploySelect');
+  
+  if (editSelect && deleteSelect && mainSelect) {
+    // Clear existing options except first one
+    editSelect.innerHTML = '<option value="">-- Pilih data untuk diedit --</option>';
+    deleteSelect.innerHTML = '<option value="">-- Pilih data untuk dihapus --</option>';
+    mainSelect.innerHTML = '<option value="">-- Pilih Deploy --</option>';
+    
+    deployDataList.forEach((deploy, index) => {
+      const option = `<option value="${index}">${deploy.nama}</option>`;
+      editSelect.innerHTML += option;
+      deleteSelect.innerHTML += option;
+      mainSelect.innerHTML += option;
+    });
+  }
+}
+
+// Handle main deploy selection
+function handleDeploySelection() {
+  const select = document.getElementById('deploySelect');
+  const selectedIndex = select.value;
+  
+  if (selectedIndex === '') {
+    // Clear table when no selection
+    clearTable();
+    return;
+  }
+  
+  const deploy = deployDataList[selectedIndex];
+  if (deploy) {
+    // Load daily activity data for selected deploy
+    loadDataForSelectedDeploy(deploy.link);
+  }
+}
+
+// Show Add Deploy Modal
+function showAddDeployForm() {
+  const modal = new bootstrap.Modal(document.getElementById('addDeployModal'));
+  modal.show();
+}
+
+// Show Edit Deploy Modal
+function showEditDeployForm() {
+  updateDeploySelectOptions();
+  const modal = new bootstrap.Modal(document.getElementById('editDeployModal'));
+  modal.show();
+}
+
+// Show Delete Deploy Modal
+function showDeleteDeployForm() {
+  updateDeploySelectOptions();
+  const modal = new bootstrap.Modal(document.getElementById('deleteDeployModal'));
+  modal.show();
+}
+
+// Save new deploy data
+async function saveDeployData() {
+  const nama = document.getElementById('deployNama').value.trim();
+  const link = document.getElementById('deployLink').value.trim();
+  
+  if (!nama || !link) {
+    alert('Mohon isi semua field!');
+    return;
+  }
+  
+  // Validate Google Apps Script URL format
+  if (!validateGoogleAppsScriptURL(link)) {
+    alert('❌ Format link tidak valid!\n\nHanya menerima link Google Apps Script dengan format:\nhttps://script.google.com/macros/s/[ID]/exec');
+    return;
+  }
+  
+  try {
+    const newDeploy = {
+      nama: nama,
+      link: link,
+      createdAt: new Date().toISOString()
+    };
+    
+    // Save to Firebase
+    const docId = await saveDeployDataToFirebase(newDeploy);
+    
+    // Add to local array with Firebase document ID
+    deployDataList.unshift({
+      id: docId,
+      ...newDeploy
+    });
+    
+    updateDeploySelectOptions();
+    
+    // Clear form
+    document.getElementById('deployNama').value = '';
+    document.getElementById('deployLink').value = '';
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addDeployModal'));
+    modal.hide();
+    
+    alert('✅ Data deploy berhasil ditambahkan!');
+  } catch (error) {
+    console.error('Error saving deploy data:', error);
+    alert('❌ Gagal menyimpan data. Silakan coba lagi.');
+  }
+}
+
+// Load data for editing
+function loadEditDeployData() {
+  const select = document.getElementById('editDeploySelect');
+  const selectedIndex = select.value;
+  
+  if (selectedIndex === '') {
+    document.getElementById('editDeployNama').value = '';
+    document.getElementById('editDeployLink').value = '';
+    return;
+  }
+  
+  const deploy = deployDataList[selectedIndex];
+  if (deploy) {
+    document.getElementById('editDeployNama').value = deploy.nama;
+    document.getElementById('editDeployLink').value = deploy.link;
+  }
+}
+
+// Save edited deploy data
+async function saveEditDeploy() {
+  const select = document.getElementById('editDeploySelect');
+  const selectedIndex = select.value;
+  
+  if (selectedIndex === '') {
+    alert('Pilih data yang akan diedit!');
+    return;
+  }
+  
+  const nama = document.getElementById('editDeployNama').value.trim();
+  const link = document.getElementById('editDeployLink').value.trim();
+  
+  if (!nama || !link) {
+    alert('Mohon isi semua field!');
+    return;
+  }
+  
+  // Validate Google Apps Script URL format
+  if (!validateGoogleAppsScriptURL(link)) {
+    alert('❌ Format link tidak valid!\n\nHanya menerima link Google Apps Script dengan format:\nhttps://script.google.com/macros/s/[ID]/exec');
+    return;
+  }
+  
+  try {
+    const deployItem = deployDataList[selectedIndex];
+    const updatedData = {
+      nama: nama,
+      link: link,
+      updatedAt: new Date().toISOString()
+    };
+    
+    // Update in Firebase
+    await updateDeployDataInFirebase(deployItem.id, updatedData);
+    
+    // Update local array
+    deployDataList[selectedIndex] = {
+      ...deployItem,
+      ...updatedData
+    };
+    
+    updateDeploySelectOptions();
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('editDeployModal'));
+    modal.hide();
+    
+    alert('✅ Data deploy berhasil diupdate!');
+  } catch (error) {
+    console.error('Error updating deploy data:', error);
+    alert('❌ Gagal mengupdate data. Silakan coba lagi.');
+  }
+}
+
+// Confirm delete deploy data
+async function confirmDeleteDeploy() {
+  const select = document.getElementById('deleteDeploySelect');
+  const selectedIndex = select.value;
+  
+  if (selectedIndex === '') {
+    alert('Pilih data yang akan dihapus!');
+    return;
+  }
+  
+  const deploy = deployDataList[selectedIndex];
+  if (confirm(`Yakin ingin menghapus "${deploy.nama}"?\n\nData yang dihapus tidak dapat dikembalikan.`)) {
+    try {
+      // Delete from Firebase
+      await deleteDeployDataFromFirebase(deploy.id);
+      
+      // Remove from local array
+      deployDataList.splice(selectedIndex, 1);
+      updateDeploySelectOptions();
+      
+      // Close modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('deleteDeployModal'));
+      modal.hide();
+      
+      alert('✅ Data deploy berhasil dihapus!');
+    } catch (error) {
+      console.error('Error deleting deploy data:', error);
+      alert('❌ Gagal menghapus data. Silakan coba lagi.');
+    }
+  }
+}
+
+// Initialize deploy data on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadDeployData();
+});
+
   </script>
 
 

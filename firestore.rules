@@ -36,5 +36,25 @@ service cloud.firestore {
     match /administrasi/{adminId} {
       allow read, write: if true; // For now, allow all access for development
     }
+    
+    // Prosedur files - authenticated users can read/write
+    match /prosedur_files/{fileId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Prosedur cache - for faster loading (cache collection)
+    match /prosedur_cache/{cacheId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Settings collection - for application settings and training lists
+    match /settings/{settingId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
+    
+    // Progress tables - for training progress tracking
+    match /progressTables/{tableId} {
+      allow read, write: if true; // For now, allow all access for development
+    }
   }
 }
