@@ -388,8 +388,15 @@
       <p class="admin-desc mb-0">Buat dan kelola catatan penting. Data tersimpan di Firebase.</p>
     </div>
 
-    <!-- Form Tambah Catatan -->
-    <div class="note-form">
+    <!-- New Note Button -->
+    <div class="mb-3">
+      <button type="button" class="btn btn-primary" id="btnNewNote">
+        ➕ New Catatan
+      </button>
+    </div>
+
+    <!-- Form Tambah Catatan (Hidden by default) -->
+    <div class="note-form" id="noteFormContainer" style="display: none;">
       <form id="noteForm">
         <div class="mb-3">
           <label for="noteTitle" class="form-label fw-bold">Judul Catatan *</label>
@@ -405,7 +412,7 @@
           <button type="submit" class="btn btn-primary">
             <span id="submitIcon">➕</span> <span id="submitText">Tambah Catatan</span>
           </button>
-          <button type="button" class="btn btn-secondary" id="btnCancel" style="display: none;">Batal</button>
+          <button type="button" class="btn btn-secondary" id="btnCancel">Batal</button>
         </div>
         
         <input type="hidden" id="editingNoteId">
@@ -569,11 +576,14 @@
     let editingNoteId = null;
 
     function setupEventListeners() {
+      // New note button
+      document.getElementById('btnNewNote').addEventListener('click', showNoteForm);
+      
       // Form submit
       document.getElementById('noteForm').addEventListener('submit', handleSubmitNote);
       
       // Cancel button
-      document.getElementById('btnCancel').addEventListener('click', resetForm);
+      document.getElementById('btnCancel').addEventListener('click', hideNoteForm);
       
       // Search functionality
       document.getElementById('searchInput').addEventListener('input', filterNotes);
@@ -683,12 +693,26 @@
           alert('✅ Catatan berhasil ditambahkan!');
         }
         
-        resetForm();
+        hideNoteForm();
         loadNotes();
       } catch (error) {
         console.error('Error saving note:', error);
         alert('❌ Gagal menyimpan catatan. Silakan coba lagi.');
       }
+    }
+
+    // Show note form
+    function showNoteForm() {
+      document.getElementById('noteFormContainer').style.display = 'block';
+      document.getElementById('btnNewNote').style.display = 'none';
+      document.getElementById('noteTitle').focus();
+    }
+
+    // Hide note form
+    function hideNoteForm() {
+      document.getElementById('noteFormContainer').style.display = 'none';
+      document.getElementById('btnNewNote').style.display = 'inline-block';
+      resetForm();
     }
 
     // Reset form
@@ -697,7 +721,6 @@
       document.getElementById('editingNoteId').value = '';
       document.getElementById('submitIcon').textContent = '➕';
       document.getElementById('submitText').textContent = 'Tambah Catatan';
-      document.getElementById('btnCancel').style.display = 'none';
       editingNoteId = null;
     }
 
@@ -711,9 +734,11 @@
       document.getElementById('editingNoteId').value = noteId;
       document.getElementById('submitIcon').textContent = '✏️';
       document.getElementById('submitText').textContent = 'Perbarui Catatan';
-      document.getElementById('btnCancel').style.display = 'inline-block';
       
       editingNoteId = noteId;
+      
+      // Show form and hide new button
+      showNoteForm();
       
       // Scroll to form
       document.getElementById('noteForm').scrollIntoView({ behavior: 'smooth' });
