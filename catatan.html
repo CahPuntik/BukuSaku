@@ -204,6 +204,35 @@
       padding: 15px;
       line-height: 1.6;
       color: #333;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .note-content.collapsed {
+      max-height: 60px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .note-content.collapsed::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 30px;
+      width: 100%;
+      background: linear-gradient(transparent, white);
+    }
+    
+    .note-content.expanded {
+      max-height: none;
+    }
+    
+    .expand-indicator {
+      font-size: 0.8rem;
+      color: #666;
+      font-style: italic;
+      margin-top: 5px;
     }
     
     .note-actions {
@@ -839,6 +868,13 @@
           minute: '2-digit'
         });
         
+        // Create preview (first 100 characters)
+        const preview = note.content.length > 100 
+          ? note.content.substring(0, 100) + '...' 
+          : note.content;
+        
+        const showExpand = note.content.length > 100;
+        
         return `
           <div class="note-card">
             <div class="note-header">
@@ -848,8 +884,15 @@
               </div>
               <div class="note-date">${createdDate}</div>
             </div>
-            <div class="note-content">
-              ${note.content.replace(/\n/g, '<br>')}
+            <div class="note-content collapsed" id="content-${note.id}" onclick="toggleNoteContent('${note.id}')">
+              <div id="preview-${note.id}">
+                ${preview.replace(/\n/g, '<br>')}
+                ${showExpand ? '<div class="expand-indicator">👆 Klik untuk melihat selengkapnya</div>' : ''}
+              </div>
+              <div id="full-${note.id}" style="display: none;">
+                ${note.content.replace(/\n/g, '<br>')}
+                <div class="expand-indicator">👆 Klik untuk menyembunyikan</div>
+              </div>
             </div>
             <div class="note-actions">
               <button class="btn btn-sm btn-warning" onclick="editNote('${note.id}')">
@@ -862,6 +905,27 @@
           </div>
         `;
       }).join('');
+    }
+
+    // Toggle note content expand/collapse
+    function toggleNoteContent(noteId) {
+      const contentDiv = document.getElementById(`content-${noteId}`);
+      const previewDiv = document.getElementById(`preview-${noteId}`);
+      const fullDiv = document.getElementById(`full-${noteId}`);
+      
+      if (contentDiv.classList.contains('collapsed')) {
+        // Expand
+        contentDiv.classList.remove('collapsed');
+        contentDiv.classList.add('expanded');
+        previewDiv.style.display = 'none';
+        fullDiv.style.display = 'block';
+      } else {
+        // Collapse
+        contentDiv.classList.remove('expanded');
+        contentDiv.classList.add('collapsed');
+        previewDiv.style.display = 'block';
+        fullDiv.style.display = 'none';
+      }
     }
 
     // Filter notes based on search and category
