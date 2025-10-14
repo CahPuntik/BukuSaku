@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Berita - Buku Saku</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body { background: #f6f6f6; }
+    .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 32px 24px; }
+    .news-list { margin-top: 24px; }
+  .news-item { background: #f9f9f9; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .news-item .news-text { white-space: pre-line; }
+    .news-actions button { margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="mb-4">Kelola Berita</h2>
+    <a href="dashboard.html" class="btn btn-secondary mb-3">← Kembali ke Dashboard</a>
+  <form id="newsForm" class="mb-3" autocomplete="off">
+      <div class="mb-2">
+        <label for="newsText" class="form-label">Teks Berita</label>
+  <textarea class="form-control" id="newsText" required rows="3" style="resize:vertical;"></textarea>
+  <script>
+    // Fitur paste gambar dari clipboard ke input file gambar
+    document.addEventListener('DOMContentLoaded', function() {
+      const newsText = document.getElementById('newsText');
+      const newsImage = document.getElementById('newsImage');
+      newsText.addEventListener('paste', function(e) {
+        if (e.clipboardData && e.clipboardData.items) {
+          for (let i = 0; i < e.clipboardData.items.length; i++) {
+            const item = e.clipboardData.items[i];
+            if (item.type.indexOf('image') !== -1) {
+              const file = item.getAsFile();
+              // Buat DataTransfer untuk set file ke input file
+              const dt = new DataTransfer();
+              dt.items.add(file);
+              newsImage.files = dt.files;
+              // Optional: preview gambar
+              break;
+            }
+          }
+        }
+      });
+    });
+  </script>
+      </div>
+      <div class="mb-2">
+        <label for="newsImage" class="form-label">Gambar (opsional)</label>
+        <input type="file" class="form-control" id="newsImage" accept="image/*">
+      </div>
+      <button type="submit" class="btn btn-primary">Tambah Berita</button>
+    </form>
+    <div class="news-list" id="newsList"></div>
+  </div>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
+      authDomain: "buku-saku-instruktur.firebaseapp.com",
+      projectId: "buku-saku-instruktur",
+      storageBucket: "buku-saku-instruktur.firebasestorage.app",
+      messagingSenderId: "180222950163",
+      appId: "1:180222950163:web:3331e9673249098aa038e6"
+    };
+    const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    const ADMIN_EMAIL = "slametherianto32@gmail.com";
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function(tag) {
+        const charsToReplace = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        };
+        return charsToReplace[tag] || tag;
+      });
+    }
+
+    function renderNews(news) {
+      const list = document.getElementById('newsList');
+      list.innerHTML = '';
+      news.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'news-item';
+        let imgHtml = '';
+        if (item.imageUrl) {
+          imgHtml = `<img src="${item.imageUrl}" alt="Gambar Berita" style="max-width:120px;max-height:80px;margin-right:12px;border-radius:6px;object-fit:cover;">`;
+        }
+        div.innerHTML = `${imgHtml}<span class="news-text">${escapeHTML(item.text)}</span>
+          <span class="news-actions">
+            <button class="btn btn-sm btn-danger" data-id="${item.id}" data-action="delete">Hapus</button>
+          </span>`;
+        list.appendChild(div);
+      });
+    }
+
+    async function loadNews() {
+      const snapshot = await getDocs(collection(db, 'news'));
+      const news = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderNews(news);
+    }
+
+    document.getElementById('newsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = document.getElementById('newsText').value.trim();
+      const imageInput = document.getElementById('newsImage');
+      let imageUrl = '';
+      if (!text) return;
+      if (imageInput.files && imageInput.files[0]) {
+        const file = imageInput.files[0];
+        const imgRef = storageRef(storage, 'news-images/' + Date.now() + '-' + file.name);
+        await uploadBytes(imgRef, file);
+        imageUrl = await getDownloadURL(imgRef);
+      }
+      await addDoc(collection(db, 'news'), { text, imageUrl, createdAt: new Date() });
+      document.getElementById('newsText').value = '';
+      imageInput.value = '';
+      loadNews();
+    });
+
+    document.getElementById('newsList').addEventListener('click', async (e) => {
+      if (e.target.dataset.action === 'delete') {
+        await deleteDoc(doc(db, 'news', e.target.dataset.id));
+        loadNews();
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== ADMIN_EMAIL) {
+        alert('Akses hanya untuk admin!');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      loadNews();
+    });
+  </script>
+</body>
+</html>

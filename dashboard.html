@@ -18,17 +18,30 @@
   <!-- Firebase SDK -->
   <script src="user-utils.js"></script>
   <script type="module">
+    // Escape karakter HTML dan ganti newline dengan <br>
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function(tag) {
+        const charsToReplace = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        };
+        return charsToReplace[tag] || tag;
+      });
+    }
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
-    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
     
     const firebaseConfig = {
-      apiKey: "AIzaSyDh8YbByLG7AZEaaCgXiWJOK3cuzjxkqog",
+      apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
       authDomain: "buku-saku-instruktur.firebaseapp.com",
       projectId: "buku-saku-instruktur",
       storageBucket: "buku-saku-instruktur.firebasestorage.app",
-      messagingSenderId: "971524107627",
-      appId: "1:971524107627:web:89707dc7b42b32e7d1e470"
+      messagingSenderId: "180222950163",
+      appId: "1:180222950163:web:3331e9673249098aa038e6"
     };
     
     const app = initializeApp(firebaseConfig);
@@ -47,11 +60,9 @@
         console.log("Firebase auth timeout, using localStorage fallback");
         const localUser = userUtils.getCurrentUser();
         if (userUtils.isUserLoggedIn()) {
-          const namaUser = userUtils.getUserDisplayName(localUser);
-          document.getElementById('welcomeMessage').textContent = `Selamat datang! ${namaUser}`;
           authCheckDone = true;
         } else {
-          window.location.href = 'index.html';
+          // window.location.href = 'index.html'; // Dihapus: tidak redirect ke index
         }
       }
     }, 2000); // 2 second timeout
@@ -59,17 +70,16 @@
     onAuthStateChanged(auth, (user) => {
       if (authCheckDone) return; // Prevent multiple executions
       authCheckDone = true;
-      
       if (!user) {
         // Check localStorage as fallback
         const localUser = userUtils.getCurrentUser();
         if (!userUtils.isUserLoggedIn()) {
-          window.location.href = 'index.html';
+          // window.location.href = 'index.html'; // Dihapus: tidak redirect ke index
           return;
         }
         // Use localStorage user - prioritize nama field
         const namaUser = userUtils.getUserDisplayName(localUser);
-        document.getElementById('welcomeMessage').textContent = `Selamat datang! ${namaUser}`;
+        document.getElementById('welcomeMessage').textContent = `Selamat datang, ${namaUser}`;
       } else {
         // Get user data from Firestore to get the nama field
         getDoc(doc(db, 'users', user.uid)).then((userDoc) => {
@@ -86,7 +96,7 @@
           }
           
           const namaUser = userUtils.getUserDisplayName(userData);
-          document.getElementById('welcomeMessage').textContent = `Selamat datang! ${namaUser}`;
+          document.getElementById('welcomeMessage').textContent = `Selamat datang, ${namaUser}`;
           
           // Update localStorage with complete user data
           userUtils.saveCurrentUser(userData);
@@ -100,7 +110,7 @@
             uid: user.uid
           };
           const namaUser = userUtils.getUserDisplayName(userData);
-          document.getElementById('welcomeMessage').textContent = `Selamat datang! ${namaUser}`;
+          document.getElementById('welcomeMessage').textContent = `Selamat datang, ${namaUser}`;
         });
       }
     });
@@ -118,8 +128,154 @@
         window.location.href = "index.html";
       }
     }
-  </script>
-  
+
+    // Ganti IIFE (function(){...})() menjadi function biasa agar tidak error
+    function handleAdminMenu() {
+      const adminEmail = "slametherianto32@gmail.com";
+      function showAdminMenuIfNeeded(email) {
+        var menu = document.getElementById('adminNewsMenu');
+        if (menu) menu.classList.toggle('d-none', email !== adminEmail);
+      }
+      // Cek dari Firebase Auth jika ada
+      if (window.firebase && window.firebase.auth) {
+        window.firebase.auth.onAuthStateChanged(function(user) {
+          showAdminMenuIfNeeded(user && user.email);
+        });
+      } else {
+        // fallback ke localStorage
+        try {
+          var user = JSON.parse(localStorage.getItem('bukuSakuUser'));
+          showAdminMenuIfNeeded(user && user.email);
+        } catch(e) {}
+      }
+    }
+    handleAdminMenu();
+
+    // --- Dynamic News Slider from Firestore ---
+    async function loadNewsSlider() {
+      const newsSlider = document.getElementById('news-slider');
+      const indicatorsContainer = document.getElementById('news-indicators');
+      newsSlider.innerHTML = '<div class="news-item">Memuat berita...</div>';
+      indicatorsContainer.innerHTML = '';
+  try {
+        const q = query(collection(db, 'news'), orderBy('createdAt', 'desc'));
+        const snapshot = await getDocs(q);
+        const newsList = snapshot.docs.map(doc => ({
+          text: doc.data().text,
+          id: doc.id,
+          imageUrl: doc.data().imageUrl || ''
+        })).filter(n => n.text);
+        if (newsList.length === 0) {
+          newsSlider.innerHTML = '<div class="news-item">Belum ada berita.</div>';
+          return;
+        }
+        newsSlider.innerHTML = newsList.map((n, i) => {
+          const lines = n.text.split('\n');
+          let preview = lines.slice(0,5).join('\n');
+          if (lines.length > 5) preview += '...';
+          let imgHtml = '';
+          if (n.imageUrl) {
+            imgHtml = `<img src="${n.imageUrl}" alt="Gambar Berita" style="max-width:100%;max-height:140px;display:block;margin:0 auto 10px auto;border-radius:8px;object-fit:cover;">`;
+          }
+          return `<div class="news-item news-preview" data-id="${n.id}" data-index="${i}">${imgHtml}<div>${escapeHTML(preview)}</div></div>`;
+        }).join('');
+        // Buat indikator
+        newsList.forEach((_, i) => {
+          const dot = document.createElement('span');
+          dot.className = 'news-indicator' + (i === 0 ? ' active' : '');
+          dot.addEventListener('click', () => {
+            showNews(i);
+            stopNewsInterval();
+            startNewsInterval();
+          });
+          indicatorsContainer.appendChild(dot);
+        });
+        // Reset slider
+        currentNews = 0;
+        showNews(0);
+        startNewsInterval();
+        // Tambah event klik untuk buka detail
+        document.querySelectorAll('.news-preview').forEach(el => {
+          el.addEventListener('click', function() {
+            showNewsDetail(newsList[parseInt(this.dataset.index)]);
+          });
+        });
+      } catch (e) {
+        newsSlider.innerHTML = '<div class="news-item">Gagal memuat berita.</div>';
+        console.error('Gagal memuat berita:', e);
+      }
+    }
+
+    // Section detail berita
+    function showNewsDetail(news) {
+      let detailSection = document.getElementById('news-detail-section');
+      if (!detailSection) {
+        detailSection = document.createElement('div');
+        detailSection.id = 'news-detail-section';
+        detailSection.className = 'news-detail-section';
+        document.querySelector('.dashboard-container').insertBefore(detailSection, document.querySelector('.cards-container'));
+      }
+      let imgHtml = '';
+      if (news.imageUrl) {
+        imgHtml = `<img src="${news.imageUrl}" alt="Gambar Berita" style="max-width:100%;max-height:260px;display:block;margin:0 auto 16px auto;border-radius:10px;object-fit:cover;">`;
+      }
+      detailSection.innerHTML = `<div class='card mb-3'><div class='card-body'><h5 class='card-title'>Berita</h5>${imgHtml}<p class='card-text'>${news.text.replace(/\n/g, '<br>')}</p><button class='btn btn-sm btn-secondary' id='closeNewsDetail'>Tutup</button></div></div>`;
+      document.getElementById('closeNewsDetail').onclick = function() {
+        detailSection.remove();
+      };
+      detailSection.scrollIntoView({behavior:'smooth'});
+    }
+
+    // Slider logic
+    let currentNews = 0;
+    let newsInterval;
+    function showNews(index) {
+      const newsSlider = document.getElementById('news-slider');
+      if (!newsSlider) return;
+      newsSlider.style.transform = `translateX(-${index * 100}%)`;
+      document.querySelectorAll('.news-indicator').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+      currentNews = index;
+    }
+    function nextNews() {
+      const newsItems = document.querySelectorAll('.news-item');
+      let next = (currentNews + 1) % newsItems.length;
+      showNews(next);
+    }
+    function startNewsInterval() {
+      stopNewsInterval();
+      newsInterval = setInterval(nextNews, 4000);
+    }
+    function stopNewsInterval() {
+      clearInterval(newsInterval);
+    }
+
+    // Tambah CSS untuk tampilan berita sedang dan detail
+    const style = document.createElement('style');
+    style.innerHTML = `
+  .news-item.news-preview {
+    cursor:pointer;
+    font-size:1rem;
+    white-space:pre-line;
+    background:#f6f6f6;
+    border-bottom:1px solid #eee;
+    word-break:break-word;
+    text-align:left;
+    max-height: 7.5em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+  }
+      .news-detail-section { max-width:600px; margin:24px auto; }
+      .news-detail-section .card { box-shadow:0 2px 12px rgba(0,0,0,0.08); }
+    `;
+    document.head.appendChild(style);
+
+    // Jalankan saat halaman siap
+    loadNewsSlider();
+</script>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
@@ -351,6 +507,65 @@
       transform: scale(1.05);
       color: #fff;
     }
+
+    /* Berita Slider Styles */
+    .news-slider-container {
+  position: relative;
+  margin: 20px 0;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  min-height: 140px; /* Box berita diperbesar */
+    }
+    
+    .news-slider {
+      display: flex;
+      transition: transform 0.6s cubic-bezier(.4,1.3,.6,1);
+      will-change: transform;
+    }
+    
+    .news-item {
+  min-width: 100%;
+  padding: 32px 24px;
+  font-size: 1.25rem;
+  color: #333;
+  background: #f6f6f6;
+  text-align: left;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+    }
+    
+    .news-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      margin-top: 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 2px;
+      z-index: 2;
+    }
+    
+    .news-indicator {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #bbb;
+      opacity: 0.6;
+      transition: background 0.2s, opacity 0.2s;
+      cursor: pointer;
+    }
+    
+    .news-indicator.active {
+      background: #f76b1c;
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -358,6 +573,7 @@
   <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
     ☰
   </button>
+  <div id="welcomeMessage" class="welcome"></div>
 
   <div class="dashboard-container">
     <div class="dashboard-header">
@@ -366,13 +582,20 @@
       </div>
       <div class="dashboard-title">DASHBOARD INSTRUKTUR</div>
     </div>
-    <div id="welcomeMessage" class="welcome"></div>
+    
     
     <!-- Container Jam Otomatis -->
     <div class="datetime-container">
       <div id="currentDateTime" class="current-datetime"></div>
     </div>
-    
+
+    <!-- Container Berita Slider Otomatis -->
+    <div id="news-slider-container" class="news-slider-container">
+      <div id="news-slider" class="news-slider">
+        
+      </div>
+      <div class="news-indicators" id="news-indicators"></div>
+    </div>
     <hr>
     <div class="cards-container">
       <a href="prosedur2.html" class="dashboard-card">
@@ -406,6 +629,11 @@
       <a href="catatan.html" class="dashboard-card">
         <span class="card-icon">📋</span>
         <p class="card-title">Catatan</p>
+      </a>
+      <!-- Menu Kelola Berita, hanya untuk admin -->
+      <a href="kelola-berita.html" class="dashboard-card d-none" id="adminNewsMenu">
+        <span class="card-icon">📰</span>
+        <p class="card-title">Kelola Berita</p>
       </a>
     </div>
     <div class="text-center">
@@ -456,7 +684,6 @@
       const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
       const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
                      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      
       const dayName = days[now.getDay()];
       const day = now.getDate();
       const month = months[now.getMonth()];
@@ -464,9 +691,9 @@
       const hours = now.getHours().toString().padStart(2, '0');
       const minutes = now.getMinutes().toString().padStart(2, '0');
       const seconds = now.getSeconds().toString().padStart(2, '0');
-      
       const dateTimeString = `${dayName}, ${day} ${month} ${year} pukul ${hours}.${minutes}.${seconds}`;
-      document.getElementById('currentDateTime').textContent = dateTimeString;
+      var el = document.getElementById('currentDateTime');
+      if (el) el.textContent = dateTimeString;
     }
 
     // Jalankan sekali saat load
