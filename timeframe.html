@@ -5,6 +5,46 @@
   <title>Jadwal Pelatihan</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCBwvqjaG_M0a7308ZfDDJb7Mm3LjHxeI",
+      authDomain: "buku-saku-instruktur.firebaseapp.com",
+      projectId: "buku-saku-instruktur",
+      storageBucket: "buku-saku-instruktur.firebasestorage.app",
+      messagingSenderId: "180222950163",
+      appId: "1:180222950163:web:3331e9673249098aa038e6"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Simpan cache timeline ke Firestore
+    async function saveTimelineCacheToFirestore(arr) {
+      try {
+        await db.collection('timelineCache').doc('main').set({ data: arr, updated: new Date().toISOString() });
+        console.log('Cache timeline berhasil disimpan ke Firestore');
+      } catch (e) {
+        console.error('Gagal simpan cache ke Firestore:', e);
+      }
+    }
+
+    // Ambil cache timeline dari Firestore
+    async function loadTimelineCacheFromFirestore() {
+      try {
+        const doc = await db.collection('timelineCache').doc('main').get();
+        if (doc.exists) {
+          console.log('Cache timeline diambil dari Firestore');
+          return doc.data().data || [];
+        }
+      } catch (e) {
+        console.error('Gagal ambil cache dari Firestore:', e);
+      }
+      return [];
+    }
+  </script>
   <meta name="theme-color" content="#fda085">
   <style>
     body {
@@ -738,9 +778,9 @@
   <script>
     // API configuration
     const API_URL = "https://script.google.com/macros/s/AKfycbyCbEPQIcaKgBU-jQbmSeC_1R1tXh1Y3hA7d3q8VMCr46qtpm6lanKbrebZ-1OD2Q7h/exec";
-    const KEY = 'bukuSakuTimeframes';
-    const CACHE_KEY = 'bukuSakuTimeframes_cache';
-    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+  // const KEY = 'bukuSakuTimeframes';
+  // const CACHE_KEY = 'bukuSakuTimeframes_cache';
+  // const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
     // State management for both views
     let STATE = [];
@@ -1522,21 +1562,14 @@
 
     // Load timeline data + mapping baris spreadsheet (with caching)
     async function loadTimeline(){
-      // Check cache first
-      const now = Date.now();
-      const cachedData = localStorage.getItem(CACHE_KEY);
-      const cacheTime = localStorage.getItem(CACHE_KEY + '_time');
-      
-      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
-        console.log("Loading from cache");
-        try {
-          return JSON.parse(cachedData);
-        } catch(e) {
-          console.warn("Cache parse error:", e);
-        }
+      // 1. Coba ambil cache dari Firestore
+      let arr = await loadTimelineCacheFromFirestore();
+      if (arr && arr.length) {
+        console.log('Timeline diambil dari cache Firestore');
+        arr = arr.map((x,i)=>({ ...x, row: x.row || (i+2) }));
+        return arr;
       }
-      
-      let arr = [];
+      // 2. Jika cache kosong, ambil dari server lalu simpan ke Firestore
       try{
         console.log("Fetching fresh data from API");
         const res = await fetch(API_URL + '?action=timeframe');
@@ -1544,56 +1577,67 @@
           const data = await res.json();
           if(Array.isArray(data)){
             arr = data.map((x,i)=>({ ...x, row: i+2 }));
-            
-            // Cache the fresh data
-            localStorage.setItem(CACHE_KEY, JSON.stringify(arr));
-            localStorage.setItem(CACHE_KEY + '_time', now.toString());
+            await saveTimelineCacheToFirestore(arr);
           }
         }
       }catch(e){ 
         console.warn("API fetch error:", e); 
-        
-        // Fallback to old local storage
-        try{ 
-          arr = JSON.parse(localStorage.getItem(KEY)||'[]'); 
-          console.log("Using fallback local storage");
-        } catch(e){ 
-          arr=[]; 
-        }
+        arr = [];
       }
-      
-      if(!arr.length){
-        try{ 
-          arr = JSON.parse(localStorage.getItem(KEY)||'[]'); 
-          console.log("Using backup local storage");
-        } catch(e){ 
-          arr=[]; 
-        }
-      }
-      
       arr = arr.map((x,i)=>({ ...x, row: x.row || (i+2) }));
       return arr;
     }
 
-    function saveLocal(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+  // function saveLocal(arr){} // Nonaktifkan penyimpanan lokal
 
     // CRUD for timeline
     async function addRemote(item){
       const payload = { action: 'add', target: 'timeframe', paket: item.paket, nama: item.nama, mulai: item.mulai, selesai: item.selesai };
       const r = await apiFetch(payload);
+      // Setelah tambah, ambil data terbaru dan simpan ke Firestore
+      if (r?.status === 'success') {
+        const arr = await loadTimelineFromServerAndCache();
+        await saveTimelineCacheToFirestore(arr);
+      }
       return r?.status === 'success';
     }
 
     async function editRemote(row, item){
       const payload = { action: 'edit', target: 'timeframe', row: parseInt(row,10), paket: item.paket, nama: item.nama, mulai: item.mulai, selesai: item.selesai };
       const r = await apiFetch(payload);
+      // Setelah edit, ambil data terbaru dan simpan ke Firestore
+      if (r?.status === 'success') {
+        const arr = await loadTimelineFromServerAndCache();
+        await saveTimelineCacheToFirestore(arr);
+      }
       return r?.status === 'success';
     }
 
     async function deleteRemote(row){
       const payload = { action: 'delete', target: 'timeframe', row: parseInt(row,10) };
       const r = await apiFetch(payload);
+      // Setelah hapus, ambil data terbaru dan simpan ke Firestore
+      if (r?.status === 'success') {
+        const arr = await loadTimelineFromServerAndCache();
+        await saveTimelineCacheToFirestore(arr);
+      }
       return r?.status === 'success';
+    }
+    // Fungsi ambil data timeline langsung dari server dan simpan ke Firestore
+    async function loadTimelineFromServerAndCache() {
+      let arr = [];
+      try {
+        const res = await fetch(API_URL + '?action=timeframe');
+        if(res.ok){
+          const data = await res.json();
+          if(Array.isArray(data)){
+            arr = data.map((x,i)=>({ ...x, row: i+2 }));
+          }
+        }
+      } catch(e) {
+        arr = [];
+      }
+      return arr;
     }
 
     // Calculate days between dates
@@ -1659,7 +1703,7 @@
         return;
       }
 
-      // Find the earliest start date and latest end date
+      // Find the earliest start date and latest end date dari STATE (data yang difilter)
       let minDate = null;
       let maxDate = null;
 
@@ -1682,16 +1726,17 @@
       COLUMNS = ['no', 'kegiatan'];
       
       if (minDate && maxDate) {
-        // Generate date columns
+        // Pastikan tanggal terakhir (maxDate) selalu muncul
         const dateColumns = [];
         const currentDate = new Date(minDate);
-        
+
+        // Pastikan tanggal terakhir (maxDate) ikut masuk (inclusive)
         while (currentDate <= maxDate) {
           const dateKey = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
           dateColumns.push(dateKey);
           currentDate.setDate(currentDate.getDate() + 1);
         }
-        
+
         COLUMNS = COLUMNS.concat(dateColumns);
         
         // Add status data for each date to STATE items
@@ -1881,9 +1926,10 @@
       }
 
       // Timeline view event listeners
+
       const timelineForm = document.getElementById('timelineForm');
       if (timelineForm) {
-        timelineForm.addEventListener('submit', async e=>{
+        timelineForm.addEventListener('submit', async e => {
           e.preventDefault();
           const f = new FormData(e.target);
           const obj = {
@@ -1892,15 +1938,22 @@
             mulai: f.get('mulai'),
             selesai: f.get('selesai')
           };
-          const ok = await addRemote(obj);
-          if(!ok){
-            const arr = await loadTimeline();
-            arr.push(obj);
-            saveLocal(arr);
+
+          // Simpan langsung ke server, reload timeline setelah berhasil
+          try {
+            const ok = await addRemote(obj);
+            if (!ok) {
+              showErrorMessage("Gagal menyimpan ke server. Silakan cek koneksi atau coba lagi.");
+              console.error("addRemote gagal:", obj);
+            } else {
+              await renderTimeline();
+              showSuccessMessage("Timeline berhasil ditambahkan!");
+              e.target.reset();
+            }
+          } catch (err) {
+            showErrorMessage("Terjadi error saat menyimpan data.");
+            console.error("Error simpan timeline:", err);
           }
-          e.target.reset();
-          await renderTimeline();
-          showSuccessMessage("Timeline berhasil ditambahkan!");
         });
       }
 
@@ -1909,11 +1962,12 @@
         clearTimelineBtn.addEventListener('click', async () => {
           if (!confirm('Reset: hapus data lokal timeline (tidak menghapus data di spreadsheet) dan setel ulang form?')) return;
           document.getElementById('timelineForm').reset();
-          localStorage.removeItem(KEY);
+          // Tidak perlu hapus data lokal, karena cache sudah dihapus
           await renderTimeline();
-          showInfoMessage("Data timeline lokal telah direset.");
+          showInfoMessage("Data timeline telah direset.");
         });
       }
+
 
       // Tab switching function
       function showTab(targetId) {
@@ -1921,34 +1975,36 @@
         document.querySelectorAll('.view-content').forEach(content => {
           content.classList.remove('show', 'active');
         });
-        
+
         // Show target tab content
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
           targetElement.classList.add('show', 'active');
         }
-        
+
         // Update button states
         const allButtons = document.querySelectorAll('#timeline-tab, #table-tab');
         allButtons.forEach(btn => {
           btn.classList.remove('active', 'btn-primary');
           btn.classList.add('btn-outline-primary');
         });
-        
+
         // Set active button
-        const activeButton = targetId === 'timeline-view' ? 
-          document.getElementById('timeline-tab') : 
+        const activeButton = targetId === 'timeline-view' ?
+          document.getElementById('timeline-tab') :
           document.getElementById('table-tab');
-        
+
         if (activeButton) {
           activeButton.classList.add('active', 'btn-primary');
           activeButton.classList.remove('btn-outline-primary');
         }
-        
+
         // Load data based on tab
         if (targetId === 'table-view') {
           reload();
         } else if (targetId === 'timeline-view') {
+          // Timeline otomatis fetch data terbaru dari server
+          // Tidak perlu hapus cache, karena cache sudah dihapus
           renderTimeline();
         }
       }
